@@ -110,7 +110,6 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
-
         marginBottom: paddings.large,
         padding: paddings.medium,
         textAlign: "center",
