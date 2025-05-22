@@ -7,13 +7,13 @@ import {
     isValidPassword,
 } from "../../validations/input_validations";
 import SubimitButton from "../ATOMIC/atoms/submit_button";
-import { ThemedText } from "../ThemedText";
 // import CustomButton from "../atoms/button";
 // import CustomTextInput from "../atoms/text_input";
 
-export default function LoginForm() {
+export default function RegisterForm() {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+    const [confirmPassword, setConfirmPassword] = useState<string>("");
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [emailError, setEmailError] = useState<string>("");
     const [passwordError, setPasswordError] = useState<string>("");
@@ -41,9 +41,6 @@ export default function LoginForm() {
     return (
         <View style={styles.container}>
             {errorMessage ? <Text>{errorMessage}</Text> : null}
-            <ThemedText style={styles.title}>
-                Faça login na sua conta
-            </ThemedText>
             <TextInput
                 placeholder="E-mail"
                 keyboardType="email-address"
@@ -59,15 +56,24 @@ export default function LoginForm() {
                 onChangeText={setPassword}
                 style={[styles.text, styles.input]}
             />
+            <TextInput
+                placeholder="Confirme sua senha"
+                secureTextEntry={true}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                style={[styles.text, styles.input]}
+            />
             <SubimitButton
                 onClick={handleSubmit}
-                label="Entrar"
+                label="Cadastrar"
             ></SubimitButton>
 
             <View style={styles.boxLink}>
-                <Text style={styles.text}>Não tem uma conta? </Text>
+                <Text style={styles.text}>Dúvidas? </Text>
                 <Link href="/register">
-                    <Text style={[styles.text, styles.link]}>Registre-se</Text>
+                    <Text style={[styles.text, styles.link]}>
+                        Acesse nosso FAQ!
+                    </Text>
                 </Link>
             </View>
         </View>
