@@ -7,7 +7,7 @@ interface Event {
     id: number;
     name: string;
     date: Date;
-    local: string;
+    location: string;
 }
 
 export const EventItem: React.FC<{ event: Event }> = ({ event }) => {
@@ -20,7 +20,7 @@ export const EventItem: React.FC<{ event: Event }> = ({ event }) => {
                     locale: ptBR,
                 })}
             </Text>
-            <Text style={styles.eventLocal}>Local: {event.local}</Text>
+            <Text style={styles.eventLocal}>Local: {event.location}</Text>
         </View>
     );
 };
