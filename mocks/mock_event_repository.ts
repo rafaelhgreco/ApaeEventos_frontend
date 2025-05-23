@@ -16,15 +16,15 @@ const mockEvents: Event[] = [
     }),
     new Event({
         id: 3,
-        name: "RAFAELLLLL",
+        name: "Evento 3",
         date: new Date("2023-10-03"),
         local: "Local 3",
     }),
     new Event({
         id: 4,
-        name: "KITKAT",
+        name: "Evento 4",
         date: new Date("2023-10-03"),
-        local: "Local 3",
+        local: "Local 4",
     }),
 ];
 

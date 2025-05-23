@@ -5,7 +5,6 @@ import { apiClient } from "../src/infrastructure/api";
 
 const App = () => {
     useEffect(() => {
-        // Exemplo de chamada
         apiClient
             .get("/events")
             .then((response) => console.log("Eventos:", response.data))

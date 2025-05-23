@@ -1,10 +1,6 @@
 import { create } from "zustand";
-import { MockEventRepository } from "../../../mocks/mock_event_repository";
 import { Event } from "../../domain/events";
-import {
-    EventFindAllService,
-    EventFindByIdService,
-} from "./../../application/services/event_services";
+import { apiClient } from "../api"; // Importe a instância do apiClient
 
 interface EventState {
     events: Event[];
@@ -22,31 +18,26 @@ export const useEventStore = create<EventState>((set, get) => ({
     fetchEvents: async () => {
         set({ loading: true, error: null });
         try {
-            const mockEventRepository = new MockEventRepository();
-            const eventFindAllEventsUseCase = new EventFindAllService(
-                mockEventRepository
-            );
-            const events = await eventFindAllEventsUseCase.execute();
-            set({ events, loading: false });
-        } catch (error) {
-            set({ loading: false, error: "Failed to fetch events" });
+            const response = await apiClient.get<Event[]>("/events");
+            set({ events: response.data, loading: false });
+        } catch (error: any) {
+            set({
+                loading: false,
+                error: error.message || "Failed to fetch events",
+            });
         }
     },
+
     fetchEventById: async (id: string) => {
         set({ loading: true, error: null });
         try {
-            const mockEventRepository = new MockEventRepository();
-            const eventFindByIdUseCase = new EventFindByIdService(
-                mockEventRepository
-            );
-            const event = await eventFindByIdUseCase.execute(id);
-            if (event) {
-                set({ events: [event], loading: false });
-            } else {
-                set({ loading: false, error: "Event not found" });
-            }
-        } catch (error) {
-            set({ loading: false, error: "Failed to fetch event" });
+            const response = await apiClient.get<Event>(`/events/${id}`);
+            set({ events: [response.data], loading: false });
+        } catch (error: any) {
+            set({
+                loading: false,
+                error: error.response?.data.message || "Failed to fetch event",
+            });
         }
     },
 }));

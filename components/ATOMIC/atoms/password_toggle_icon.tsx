@@ -1,5 +1,3 @@
-// src/components/atoms/PasswordToggleIcon.tsx
-
 import { colors } from "@/styles/themes";
 import { Feather } from "@expo/vector-icons";
 import React from "react";
