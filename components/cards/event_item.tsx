@@ -1,3 +1,4 @@
+import { paddings } from "@/styles/themes";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import React from "react";
@@ -51,9 +52,9 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     eventItem: {
-        padding: 15,
         borderBottomWidth: 1,
         borderBottomColor: "#ddd",
+        padding: paddings.small,
     },
     eventName: {
         fontSize: 16,

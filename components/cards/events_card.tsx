@@ -1,9 +1,11 @@
 // import { useEventStore } from "@/stores/event_store";
 
 import { useEventStore } from "@/src/infrastructure/stores/event_store";
-import { colors } from "@/styles/themes";
+import { border, colors } from "@/styles/themes";
+import { Link } from "expo-router";
 import React, { useEffect } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+import SubmitButton from "../ATOMIC/atoms/submit_button";
 import { EventItem } from "./event_item";
 
 export default function EventsCard() {
@@ -35,17 +37,39 @@ export default function EventsCard() {
                         <EventItem key={event.id} event={event} />
                     ))}
                 </ScrollView>
-                {/* <Link href="/register" style={styles.linkBox}>
-                    <Text style={styles.link}>Ver todos os eventos</Text>
-                </Link> */}
+                <View>
+                    <Link href="/explore" style={styles.linkBox}>
+                        <Text style={styles.link}>Ver todos os eventos</Text>
+                    </Link>
+                </View>
             </View>
-            <View>
-                {/* <View style={styles.actionsBox}>
-                    <SubmitButton
-                        label="Cadastrar Evento"
-                        onClick={handleClick}
-                    ></SubmitButton>
-                </View> */}
+            <View style={styles.actionsBox}>
+                <Text style={styles.title}>Ações</Text>
+                <View style={styles.buttonRow}>
+                    <View style={styles.buttonContainer}>
+                        <SubmitButton
+                            label="Novo evento"
+                            onClick={handleClick}
+                        />
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <SubmitButton
+                            label="Validar Ingresso"
+                            onClick={handleClick}
+                        />
+                    </View>
+                </View>
+                <View style={styles.buttonRow}>
+                    <View style={styles.buttonContainer}>
+                        <SubmitButton label="Dashboard" onClick={handleClick} />
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <SubmitButton
+                            label="Relatorios"
+                            onClick={handleClick}
+                        />
+                    </View>
+                </View>
             </View>
         </View>
     );
@@ -55,20 +79,36 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: colors.button,
+        height: Dimensions.get("window").height * 0.3,
+        width: 350,
+        maxHeight: 250,
+        backgroundColor: "#fff",
+        borderRadius: border.radiusLarge,
     },
-    // eventsBox: {
-    //     height: Dimensions.get("window").height * 0.3,
-    //     width: 400,
-    // },
     actionsBox: {
+        marginTop: 10,
+        flex: 1,
+        padding: 20,
+        backgroundColor: "#fff",
+        width: 350,
+        maxHeight: 195,
+        borderRadius: border.radiusLarge,
+    },
+    buttonRow: {
         flexDirection: "row",
         justifyContent: "space-between",
-        marginTop: 10,
-        width: 200,
-        height: 200,
+        padding: 10,
     },
-
+    buttonContainer: {
+        width: "48%", // Largura com espaço entre os botões
+        height: "100%", // Altura total da linha
+    },
+    button: {
+        padding: 10,
+        borderRadius: border.radiusMedium,
+        width: 110,
+        alignItems: "center",
+    },
     title: {
         fontSize: 18,
         fontWeight: "bold",
@@ -77,24 +117,6 @@ const styles = StyleSheet.create({
     },
     scrollView: {
         flex: 1,
-    },
-    eventItem: {
-        padding: 15,
-        borderBottomWidth: 1,
-        borderBottomColor: "#ddd",
-    },
-    eventName: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: "#555",
-    },
-    eventData: {
-        fontSize: 14,
-        color: "#777",
-    },
-    eventLocal: {
-        fontSize: 14,
-        color: "#777",
     },
     link: {
         fontSize: 16,

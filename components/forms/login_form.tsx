@@ -1,12 +1,14 @@
 import { border, colors, paddings, shadows } from "@/styles/themes";
 import { Link, useRouter } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 import {
     isValidEmailFormat,
     isValidPassword,
 } from "../../validations/input_validations";
 import SubimitButton from "../ATOMIC/atoms/submit_button";
+import { TextInputBase } from "../ATOMIC/atoms/text_input_base";
+import { PasswordInput } from "../ATOMIC/molecules/password_input";
 import { ThemedText } from "../ThemedText";
 // import CustomButton from "../atoms/button";
 // import CustomTextInput from "../atoms/text_input";
@@ -44,21 +46,18 @@ export default function LoginForm() {
             <ThemedText style={styles.title}>
                 Faça login na sua conta
             </ThemedText>
-            <TextInput
-                placeholder="E-mail"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                value={email}
-                onChangeText={setEmail}
-                style={[styles.text, styles.input]}
-            />
-            <TextInput
-                placeholder="Senha"
-                secureTextEntry={true}
-                value={password}
-                onChangeText={setPassword}
-                style={[styles.text, styles.input]}
-            />
+            <SafeAreaView style={styles.container}>
+                <TextInputBase
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
+                />
+                <PasswordInput
+                    placeholder="Senha"
+                    value={password}
+                    onChangeText={setPassword}
+                />
+            </SafeAreaView>
             <SubimitButton
                 onClick={handleSubmit}
                 label="Entrar"

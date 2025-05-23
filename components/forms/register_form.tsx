@@ -1,14 +1,14 @@
 import { border, colors, paddings, shadows } from "@/styles/themes";
 import { Link, useRouter } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 import {
     isValidEmailFormat,
     isValidPassword,
 } from "../../validations/input_validations";
 import SubimitButton from "../ATOMIC/atoms/submit_button";
-// import CustomButton from "../atoms/button";
-// import CustomTextInput from "../atoms/text_input";
+import { TextInputBase } from "../ATOMIC/atoms/text_input_base";
+import { PasswordInput } from "../ATOMIC/molecules/password_input";
 
 export default function RegisterForm() {
     const [name, setName] = useState<string>("");
@@ -39,40 +39,47 @@ export default function RegisterForm() {
         router.push("/management");
     };
 
+    const createUser = async () => {
+        try {
+            console.log("Criando usuário...");
+            console.log("Nome: ", name);
+            console.log("Email: ", email);
+            console.log("Passoword: ", password);
+            console.log("COnfirmPAssword: ", confirmPassword);
+            handleSubmit();
+        } catch (error) {
+            console.error("Erro ao criar usuário:", error);
+            setErrorMessage("Erro ao criar usuário");
+        }
+    };
+
     return (
         <View style={styles.container}>
             {errorMessage ? <Text>{errorMessage}</Text> : null}
-            <TextInput
-                placeholder="Nome"
-                autoCapitalize="none"
-                value={name}
-                onChangeText={setName}
-                style={[styles.text, styles.input]}
-            />
-            <TextInput
-                placeholder="E-mail"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                value={email}
-                onChangeText={setEmail}
-                style={[styles.text, styles.input]}
-            />
-            <TextInput
-                placeholder="Senha"
-                secureTextEntry={true}
-                value={password}
-                onChangeText={setPassword}
-                style={[styles.text, styles.input]}
-            />
-            <TextInput
-                placeholder="Confirme sua senha"
-                secureTextEntry={true}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                style={[styles.text, styles.input]}
-            />
+            <SafeAreaView style={styles.container}>
+                <TextInputBase
+                    placeholder="Digite seu nome"
+                    value={name}
+                    onChangeText={setName}
+                />
+                <TextInputBase
+                    placeholder="Digite seu e-mail"
+                    value={email}
+                    onChangeText={setEmail}
+                />
+                <PasswordInput
+                    placeholder="Digite sua senha"
+                    value={password}
+                    onChangeText={setPassword}
+                />
+                <PasswordInput
+                    placeholder="Confirme sua senha"
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                />
+            </SafeAreaView>
             <SubimitButton
-                onClick={handleSubmit}
+                onClick={createUser}
                 label="Cadastrar"
             ></SubimitButton>
 
