@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import "text-encoding-polyfill";
-import apiClient from "../mocks/api_client";
 import AppNavigator from "../routes/app_navigator";
+import { apiClient } from "../src/infrastructure/api";
 
 const App = () => {
     useEffect(() => {

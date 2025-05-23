@@ -11,6 +11,7 @@ import SubimitButton from "../ATOMIC/atoms/submit_button";
 // import CustomTextInput from "../atoms/text_input";
 
 export default function RegisterForm() {
+    const [name, setName] = useState<string>("");
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -42,6 +43,13 @@ export default function RegisterForm() {
         <View style={styles.container}>
             {errorMessage ? <Text>{errorMessage}</Text> : null}
             <TextInput
+                placeholder="Nome"
+                autoCapitalize="none"
+                value={name}
+                onChangeText={setName}
+                style={[styles.text, styles.input]}
+            />
+            <TextInput
                 placeholder="E-mail"
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -70,7 +78,7 @@ export default function RegisterForm() {
 
             <View style={styles.boxLink}>
                 <Text style={styles.text}>Dúvidas? </Text>
-                <Link href="/register">
+                <Link href="/explore">
                     <Text style={[styles.text, styles.link]}>
                         Acesse nosso FAQ!
                     </Text>
