@@ -1,4 +1,3 @@
-// src/config/env.ts
 type Environment = {
     API_BASE_URL: string;
 };

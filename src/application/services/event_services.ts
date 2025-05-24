@@ -13,7 +13,7 @@ export class EventFindAllService {
 export class EventFindByIdService {
     constructor(private eventRepository: EventRepository) {}
 
-    async execute(id: string): Promise<Event | null> {
+    async execute(id: number): Promise<Event | null> {
         const event = await this.eventRepository.findById(id);
         return event;
     }

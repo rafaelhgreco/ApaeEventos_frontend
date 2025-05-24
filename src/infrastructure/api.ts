@@ -26,10 +26,10 @@ mock.onGet("/events").reply(200, [
     },
     {
         id: "3",
-        name: "Event 2",
+        name: "Event 3",
         date: "2023-10-02",
-        location: "Location 2",
-        description: "Description 2",
+        location: "Location 3",
+        description: "Description 3",
     },
 ]);
 

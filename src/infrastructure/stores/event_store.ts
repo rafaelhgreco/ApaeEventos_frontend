@@ -7,7 +7,7 @@ interface EventState {
     loading: boolean;
     error: string | null;
     fetchEvents: () => Promise<void>;
-    fetchEventById: (id: string) => Promise<void>;
+    fetchEventById: (id: number) => Promise<void>;
 }
 
 export const useEventStore = create<EventState>((set, get) => ({
@@ -28,7 +28,7 @@ export const useEventStore = create<EventState>((set, get) => ({
         }
     },
 
-    fetchEventById: async (id: string) => {
+    fetchEventById: async (id: number) => {
         set({ loading: true, error: null });
         try {
             const response = await apiClient.get<Event>(`/events/${id}`);

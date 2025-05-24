@@ -14,7 +14,7 @@ export class EventController {
         return events;
     }
 
-    async findById(id: string) {
+    async findById(id: number) {
         const event = await this.eventFindByIdUseCase.execute(id);
         return event;
     }
