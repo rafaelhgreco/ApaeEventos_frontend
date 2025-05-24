@@ -2,8 +2,8 @@ import "dotenv/config";
 
 export default {
     expo: {
-        name: "MeuApp",
-        slug: "meu-app",
+        name: "Apae Eventos",
+        slug: "apae-eventos",
         version: "1.0.0",
         extra: {
             firebaseApiKey: process.env.FIREBASE_API_KEY,
