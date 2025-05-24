@@ -1,14 +1,9 @@
+import { Event } from "@/src/domain/events";
 import { paddings } from "@/styles/themes";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import React from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-interface Event {
-    id: number;
-    name: string;
-    date: Date;
-    location: string;
-}
 
 export const EventItem: React.FC<{ event: Event }> = ({ event }) => {
     return (
@@ -20,7 +15,7 @@ export const EventItem: React.FC<{ event: Event }> = ({ event }) => {
                     locale: ptBR,
                 })}
             </Text>
-            <Text style={styles.eventLocal}>Local: {event.location}</Text>
+            <Text style={styles.eventLocal}>Local: {event.local}</Text>
         </View>
     );
 };
