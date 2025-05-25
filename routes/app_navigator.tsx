@@ -2,7 +2,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import TabTwoScreen from "../app/(tabs)/explore";
-import ManagementScreen from "../app/management";
+// import ManagementScreen from "../app/management";
+import HomeScreen from "@/app/(tabs)";
 import RegisterScreen from "../app/register";
 import TesteScreen from "../app/teste";
 
@@ -12,6 +13,11 @@ const AppNavigator = () => {
     return (
         <NavigationContainer>
             <Stack.Navigator initialRouteName="Home">
+                <Stack.Screen
+                    name="Home"
+                    component={HomeScreen}
+                    options={{ title: "Home" }}
+                />
                 <Stack.Screen
                     name="TesteScreen"
                     component={TesteScreen}
@@ -26,11 +32,11 @@ const AppNavigator = () => {
                     component={TabTwoScreen}
                     options={{ title: "TabTwoScreen" }}
                 />
-                <Stack.Screen
+                {/* <Stack.Screen
                     name="Management"
                     component={ManagementScreen}
                     options={{ title: "Management" }}
-                />
+                /> */}
             </Stack.Navigator>
         </NavigationContainer>
     );
