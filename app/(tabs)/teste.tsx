@@ -9,10 +9,9 @@ import {
     TextInput,
     View,
 } from "react-native";
-import { getFirebaseAuth } from "../../firebase/firebase"; // Ajuste o caminho se necessário
-
+import { getFirebaseAuth } from "../../firebase/firebase";
 export default function TesteScreen() {
-    const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null); // Tipagem para o usuário do Firebase
+    const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false); // Estado para controlar o carregamento
@@ -46,7 +45,6 @@ export default function TesteScreen() {
             setPassword("");
         } catch (err: any) {
             console.error("Erro ao criar conta:", err);
-            // Mapeie códigos de erro do Firebase para mensagens amigáveis
             let errorMessage = "Erro ao criar conta.";
             if (err.code === "auth/email-already-in-use") {
                 errorMessage = "Este e-mail já está em uso.";
@@ -55,7 +53,7 @@ export default function TesteScreen() {
             } else if (err.code === "auth/weak-password") {
                 errorMessage = "A senha é muito fraca (mínimo 6 caracteres).";
             } else {
-                errorMessage = err.message; // Mensagem genérica do erro
+                errorMessage = err.message;
             }
             setError(errorMessage);
         } finally {
@@ -161,7 +159,7 @@ export default function TesteScreen() {
                             title={loading ? "Cadastrando..." : "Criar Conta"}
                             onPress={handleSignUp}
                             disabled={loading}
-                            color="#28a745" // Cor para o botão de criar conta
+                            color="#28a745"
                         />
                     </View>
 
