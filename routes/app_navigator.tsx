@@ -1,9 +1,9 @@
+import HomeScreen from "@/app/(tabs)";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import TabTwoScreen from "../app/(tabs)/explore";
-// import ManagementScreen from "../app/management";
-import HomeScreen from "@/app/(tabs)";
+import ManagementScreen from "../app/management";
 import RegisterScreen from "../app/register";
 import TesteScreen from "../app/teste";
 
@@ -32,11 +32,11 @@ const AppNavigator = () => {
                     component={TabTwoScreen}
                     options={{ title: "TabTwoScreen" }}
                 />
-                {/* <Stack.Screen
+                <Stack.Screen
                     name="Management"
                     component={ManagementScreen}
                     options={{ title: "Management" }}
-                /> */}
+                />
             </Stack.Navigator>
         </NavigationContainer>
     );

@@ -48,7 +48,7 @@ export default function HomeScreen() {
             );
             Alert.alert("Sucesso", "Login realizado com sucesso!");
             setFormData({ email: "", password: "" });
-            router.push("/explore");
+            router.push("/management");
         } catch (err: any) {
             if (
                 err.code === "auth/invalid-email" ||
