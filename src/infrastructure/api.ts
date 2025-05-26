@@ -1,62 +1,83 @@
-// import axios from "axios";
-// import MockAdapter from "axios-mock-adapter";
-// import { env } from "../../config/env";
+// services/apiClient.ts
+import axios from "axios";
+import { env } from "../../config/env";
 
-// const apiClient = axios.create({
-//     baseURL: env.API_BASE_URL,
-//     timeout: 10000,
-// });
+const apiClient = axios.create({
+    baseURL: env.API_BASE_URL,
+    timeout: 10000,
+});
 
-// const mock = new MockAdapter(apiClient, { delayResponse: 1000 });
+if (__DEV__) {
+    apiClient.interceptors.request.use((config) => {
+        // Simula GET /events
+        if (config.method === "get" && config.url === "/events") {
+            config.adapter = () =>
+                Promise.resolve({
+                    data: [
+                        {
+                            id: 1,
+                            name: "Event 1",
+                            date: "2023-10-01",
+                            local: "Location 1",
+                            description: "Description 1",
+                        },
+                        {
+                            id: 2,
+                            name: "Event 2",
+                            date: "2023-10-02",
+                            local: "Location 2",
+                            description: "Description 2",
+                        },
+                        {
+                            id: 3,
+                            name: "Event 3",
+                            date: "2023-10-02",
+                            local: "Location 3",
+                            description: "Description 3",
+                        },
+                    ],
+                    status: 200,
+                    statusText: "OK",
+                    headers: {},
+                    config,
+                });
+        }
 
-// mock.onGet("/events").reply(200, [
-//     {
-//         id: "1",
-//         name: "Event 1",
-//         date: "2023-10-01",
-//         local: "Location 1",
-//         description: "Description 1",
-//     },
-//     {
-//         id: "2",
-//         name: "Event 2",
-//         date: "2023-10-02",
-//         local: "Location 2",
-//         description: "Description 2",
-//     },
-//     {
-//         id: "3",
-//         name: "Event 3",
-//         date: "2023-10-02",
-//         local: "Location 3",
-//         description: "Description 3",
-//     },
-// ]);
+        // Simula GET /events/:id
+        if (config.method === "get" && config.url?.startsWith("/events/")) {
+            const id = Number(config.url.split("/").pop());
 
-// mock.onGet(/\/events\/\d+/).reply((config) => {
-//     const id = config.url?.split("/").pop();
-//     const eventsMock = [
-//         {
-//             id: "1",
-//             name: "Event 1",
-//             date: "2023-10-01",
-//             local: "Location 1",
-//             description: "Description 1",
-//         },
-//         {
-//             id: "2",
-//             name: "Event 2",
-//             date: "2023-10-02",
-//             local: "Location 2",
-//             description: "Description 2",
-//         },
-//     ];
-//     const event = eventsMock.find((event) => event.id === id);
-//     if (event) {
-//         return [200, event];
-//     }
+            const eventsMock = [
+                {
+                    id: 1,
+                    name: "Event 1",
+                    date: "2023-10-01",
+                    local: "Location 1",
+                    description: "Description 1",
+                },
+                {
+                    id: 2,
+                    name: "Event 2",
+                    date: "2023-10-02",
+                    local: "Location 2",
+                    description: "Description 2",
+                },
+            ];
 
-//     return [404, { message: "Event not found" }];
-// });
+            const event = eventsMock.find((event) => event.id === id);
 
-// export { apiClient, mock };
+            config.adapter = () =>
+                Promise.resolve({
+                    data: event || { message: "Event not found" },
+                    status: event ? 200 : 404,
+                    statusText: event ? "OK" : "Not Found",
+                    headers: {},
+                    config,
+                });
+        }
+
+        return config;
+    });
+}
+
+export { apiClient };

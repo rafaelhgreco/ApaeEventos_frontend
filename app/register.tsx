@@ -51,19 +51,28 @@ export default function RegisterScreen() {
             setFormData({ email: "", password: "" });
             router.push("/");
         } catch (err: any) {
-            console.error("Erro ao criar conta:", err);
-            // Mapeie códigos de erro do Firebase para mensagens amigáveis
-            let errorMessage = "Erro ao criar conta.";
             if (err.code === "auth/email-already-in-use") {
-                errorMessage = "Este e-mail já está em uso.";
+                Alert.alert(
+                    "E-mail já cadastrado",
+                    "O e-mail informado já está em uso. Por favor, tente outro."
+                );
+                return;
             } else if (err.code === "auth/invalid-email") {
-                errorMessage = "Formato de e-mail inválido.";
+                Alert.alert(
+                    "E-mail inválido",
+                    "O e-mail informado não é válido. Por favor, verifique e tente novamente."
+                );
+                return;
             } else if (err.code === "auth/weak-password") {
-                errorMessage = "A senha é muito fraca (mínimo 6 caracteres).";
+                Alert.alert(
+                    "Senha fraca",
+                    "A senha informada é muito fraca. Por favor, escolha uma senha mais forte."
+                );
+                return;
             } else {
-                errorMessage = err.message; // Mensagem genérica do erro
+                Alert.alert("Erro ao criar conta", "Tente novamente!");
+                return;
             }
-            setError(errorMessage);
         } finally {
             setLoading(false);
         }

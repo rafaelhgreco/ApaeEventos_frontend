@@ -48,24 +48,29 @@ export default function HomeScreen() {
             );
             Alert.alert("Sucesso", "Login realizado com sucesso!");
             setFormData({ email: "", password: "" });
-            router.push("/explore");
+            router.push("/management");
         } catch (err: any) {
-            console.error("Erro ao fazer login:", err);
-            let errorMessage = "Erro ao fazer login.";
-            if (err.code === "auth/invalid-email") {
-                errorMessage = "Formato de e-mail inválido.";
+            if (
+                err.code === "auth/invalid-email" ||
+                err.code === "auth/wrong-password"
+            ) {
+                Alert.alert(
+                    "E-mail ou senha inválidos",
+                    "Por favor, verifique seu e-mail e senha e tente novamente."
+                );
+                return;
             } else if (err.code === "auth/user-not-found") {
-                errorMessage =
-                    "Usuário não encontrado. Verifique e-mail e senha.";
-            } else if (err.code === "auth/wrong-password") {
-                errorMessage = "Senha incorreta. Tente novamente.";
-            } else if (err.code === "auth/too-many-requests") {
-                errorMessage =
-                    "Muitas tentativas falhas. Tente novamente mais tarde.";
+                Alert.alert(
+                    "Usuário não encontrado",
+                    "Nenhum usuário encontrado com o e-mail informado. Por favor, verifique e tente novamente."
+                );
             } else {
-                errorMessage = err.message;
+                Alert.alert(
+                    "Erro ao fazer login",
+                    "Ocorreu um erro ao tentar fazer login. Verifique se já tem um cadastro."
+                );
+                return;
             }
-            setError(errorMessage);
         } finally {
             setLoading(false);
         }
