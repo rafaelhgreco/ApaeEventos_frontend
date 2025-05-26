@@ -6,7 +6,7 @@ import { border, colors } from "@/styles/themes";
 import { Link } from "expo-router";
 import React, { useEffect } from "react";
 import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
-import SubmitButton from "../ATOMIC/atoms/submit_button";
+import Button from "../ATOMIC/atoms/button";
 import { EventItem } from "./event_item";
 
 export default function EventsCard() {
@@ -45,29 +45,47 @@ export default function EventsCard() {
                 </View>
             </View>
             <View style={styles.actionsBox}>
-                <Text style={styles.title}>Ações</Text>
+                <Text style={styles.title}>Ações 👇</Text>
                 <View style={styles.buttonRow}>
                     <View style={styles.buttonContainer}>
-                        <SubmitButton
-                            label="Novo evento"
-                            onClick={handleClick}
+                        <Button
+                            label="Cadastrar Evento"
+                            variant="primary"
+                            onPress={handleClick}
+                            containerStyle={[styles.button, styles.buttonEvent]}
                         />
                     </View>
+
                     <View style={styles.buttonContainer}>
-                        <SubmitButton
+                        <Button
                             label="Validar Ingresso"
-                            onClick={handleClick}
+                            variant="primary"
+                            onPress={handleClick}
+                            containerStyle={styles.button}
                         />
                     </View>
-                </View>
-                <View style={styles.buttonRow}>
+
                     <View style={styles.buttonContainer}>
-                        <SubmitButton label="Dashboard" onClick={handleClick} />
+                        <Button
+                            label="Dashboard"
+                            variant="primary"
+                            onPress={handleClick}
+                            containerStyle={[
+                                styles.button,
+                                styles.buttonDashboard,
+                            ]}
+                        />
                     </View>
+
                     <View style={styles.buttonContainer}>
-                        <SubmitButton
-                            label="Relatorios"
-                            onClick={handleClick}
+                        <Button
+                            label="Relatórios"
+                            variant="primary"
+                            onPress={handleClick}
+                            containerStyle={[
+                                styles.button,
+                                styles.buttonReports,
+                            ]}
                         />
                     </View>
                 </View>
@@ -90,25 +108,36 @@ const styles = StyleSheet.create({
         marginTop: 10,
         flex: 1,
         padding: 20,
-        backgroundColor: "#fff",
         width: 350,
-        maxHeight: 195,
+        maxHeight: 250,
         borderRadius: border.radiusLarge,
     },
     buttonRow: {
         flexDirection: "row",
+        flexWrap: "wrap",
         justifyContent: "space-between",
-        padding: 10,
     },
     buttonContainer: {
-        width: "48%", // Largura com espaço entre os botões
-        height: "100%", // Altura total da linha
+        width: "48%",
+        marginBottom: 10,
+        minHeight: 100,
     },
     button: {
-        padding: 10,
+        width: "100%",
+        height: 100,
         borderRadius: border.radiusMedium,
-        width: 110,
+        justifyContent: "center",
         alignItems: "center",
+        paddingHorizontal: 10,
+    },
+    buttonEvent: {
+        backgroundColor: "green",
+    },
+    buttonDashboard: {
+        backgroundColor: "orange",
+    },
+    buttonReports: {
+        backgroundColor: "gray",
     },
     title: {
         fontSize: 18,

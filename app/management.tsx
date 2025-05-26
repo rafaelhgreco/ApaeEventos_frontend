@@ -37,8 +37,9 @@ const styles = StyleSheet.create({
         color: "#FFFFF8",
     },
     text: {
-        fontSize: 16,
+        fontSize: 20,
         color: colors.primary,
-        marginBottom: 10,
+        marginBottom: 20,
+        fontWeight: "semibold",
     },
 });
