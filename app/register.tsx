@@ -16,6 +16,7 @@ import * as Themes from "../styles/themes";
 export default function RegisterScreen() {
     const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
     const [formData, setFormData] = useState({
+        nome: "",
         email: "",
         password: "",
     });
@@ -51,34 +52,33 @@ export default function RegisterScreen() {
 
             const uid = userCredential.user.uid;
 
-            // Cria documento na coleção "users" com a role
+            // Documento completo conforme seu exemplo
             await firestore().collection("users").doc(uid).set({
+                uid: uid,
+                nome: formData.nome, // Certifique-se que o campo 'nome' existe no formData
                 email: formData.email,
-                role: "organizador", // ou "admin"
-                createdAt: firestore.FieldValue.serverTimestamp(),
+                role: "admin", // ou "organizador", dependendo da lógica do app
+                createdAt: new Date().toISOString(), // ou use firestore.FieldValue.serverTimestamp()
             });
 
             Alert.alert("Sucesso", "Conta criada com sucesso!");
-            setFormData({ email: "", password: "" });
+            setFormData({ email: "", password: "", nome: "" });
             router.push("/");
         } catch (err: any) {
             if (err.code === "auth/email-already-in-use") {
                 Alert.alert(
                     "E-mail já cadastrado",
-                    "O e-mail informado já está em uso. Por favor, tente outro."
+                    "O e-mail informado já está em uso."
                 );
             } else if (err.code === "auth/invalid-email") {
                 Alert.alert(
                     "E-mail inválido",
-                    "O e-mail informado não é válido. Por favor, verifique e tente novamente."
+                    "O e-mail informado não é válido."
                 );
             } else if (err.code === "auth/weak-password") {
-                Alert.alert(
-                    "Senha fraca",
-                    "A senha informada é muito fraca. Por favor, escolha uma senha mais forte."
-                );
+                Alert.alert("Senha fraca", "Escolha uma senha mais forte.");
             } else {
-                Alert.alert("Erro ao criar conta", "Tente novamente!");
+                Alert.alert("Erro ao criar conta", "Tente novamente.");
             }
         } finally {
             setLoading(false);
@@ -90,10 +90,23 @@ export default function RegisterScreen() {
     };
 
     const handleReset = () => {
-        setFormData({ email: "", password: "" });
+        setFormData({ email: "", password: "", nome: "" });
     };
 
     const formFields: FormField[] = [
+        {
+            type: "input",
+            key: "nome",
+            props: {
+                label: "Nome Completo",
+                placeholder: "Digite seu nome completo",
+                value: formData.nome,
+                onChangeText: handleInputChange("nome"),
+                leftIcon: (
+                    <Icon name="person-outline" color="#007AFF" size={20} />
+                ),
+            },
+        },
         {
             type: "input",
             key: "email",
