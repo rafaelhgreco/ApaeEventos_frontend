@@ -4,12 +4,11 @@ import React, { useState } from "react";
 
 export default function NewEventScreen() {
     const [formData, setFormData] = useState({
-        eventName: "",
-        eventDate: new Date(),
-        eventStartTime: new Date(),
-        eventEndTime: new Date(),
-        eventLocation: "",
-        eventMaxAttendees: "",
+        nome: "",
+        data: new Date(),
+        local: "",
+        capacidade: "",
+        bannerUrl: "",
     });
 
     const handleInputChange = (field: string) => (value: string) => {
@@ -33,70 +32,58 @@ export default function NewEventScreen() {
 
     const formFields: FormField[] = [
         {
-            key: "eventName",
+            key: "nome",
             type: "input",
             props: {
                 label: "Nome do Evento *",
                 placeholder: "Digite o nome do evento",
-                value: formData.eventName,
-                onChangeText: handleInputChange("eventName"),
+                value: formData.nome,
+                onChangeText: handleInputChange("nome"),
             },
         },
         {
-            key: "eventDate",
-            type: "date",
-            props: {
-                label: "Data do Evento *",
-                placeholder: "XX/XX/XXXX",
-                value: formData.eventDate,
-                mode: "date",
-                onChange: handleDateChange("eventDate"),
-            },
-        },
-        {
-            key: "eventStartTime",
-            type: "time",
-            props: {
-                keyboardType: "numeric",
-                label: "Hora de Início *",
-                placeholder: "HH:MM",
-                value: formData.eventStartTime,
-                mode: "time",
-                onChange: handleDateChange("eventStartTime"),
-            },
-        },
-        {
-            key: "eventEndTime",
-            type: "time",
-            props: {
-                label: "Hora de Término *",
-                placeholder: "HH:MM",
-                value: formData.eventEndTime,
-                mode: "time",
-                onChange: handleDateChange("eventEndTime"),
-            },
-        },
-        {
-            key: "eventLocation",
+            key: "local",
             type: "input",
             props: {
                 label: "Local do Evento *",
                 placeholder: "Digite o local do evento",
-                value: formData.eventLocation,
-                onChangeText: handleInputChange("eventLocation"),
+                value: formData.local,
+                onChangeText: handleInputChange("local"),
             },
         },
         {
-            key: "eventMaxAttendees",
-            type: "input",
+            key: "data",
+            type: "date",
             props: {
-                keyboardType: "numeric",
-                label: "Máximo de Participantes *",
-                placeholder: "Digite a capacidade máxima (número)",
-                value: formData.eventMaxAttendees,
-                onChangeText: handleInputChange("eventMaxAttendees"),
+                label: "Data do Evento *",
+                placeholder: "XX/XX/XXXX",
+                value: formData.data,
+                mode: "date",
+                onChange: handleDateChange("data"),
             },
         },
+        {
+            key: "capacidade",
+            type: "number",
+            props: {
+                label: "Número Máximo de Participantes *",
+                placeholder: "Digite o número máximo de participantes",
+                value: formData.capacidade,
+                onChangeText: handleInputChange("capacidade"),
+                keyboardType: "numeric",
+            },
+        },
+        {
+            key: "bannerUrl",
+            type: "input",
+            props: {
+                label: "Banner URL *",
+                placeholder: "banner url",
+                value: formData.bannerUrl,
+                onChangeText: handleInputChange("bannerUrl"),
+            }, // para testes ajustar depois
+        },
+
         {
             key: "submitButton",
             type: "button",
