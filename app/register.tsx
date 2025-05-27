@@ -6,6 +6,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { getFirebaseAuth } from "@/firebase/firebase";
 import { FormField } from "@/types/molecules";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -41,12 +42,22 @@ export default function RegisterScreen() {
 
     const handleSignUp = async () => {
         setLoading(true);
-        setError(null); // Limpa erros anteriores
+        setError(null);
         try {
-            await auth.createUserWithEmailAndPassword(
+            const userCredential = await auth.createUserWithEmailAndPassword(
                 formData.email,
                 formData.password
             );
+
+            const uid = userCredential.user.uid;
+
+            // Cria documento na coleção "users" com a role
+            await firestore().collection("users").doc(uid).set({
+                email: formData.email,
+                role: "organizador", // ou "admin"
+                createdAt: firestore.FieldValue.serverTimestamp(),
+            });
+
             Alert.alert("Sucesso", "Conta criada com sucesso!");
             setFormData({ email: "", password: "" });
             router.push("/");
@@ -56,22 +67,18 @@ export default function RegisterScreen() {
                     "E-mail já cadastrado",
                     "O e-mail informado já está em uso. Por favor, tente outro."
                 );
-                return;
             } else if (err.code === "auth/invalid-email") {
                 Alert.alert(
                     "E-mail inválido",
                     "O e-mail informado não é válido. Por favor, verifique e tente novamente."
                 );
-                return;
             } else if (err.code === "auth/weak-password") {
                 Alert.alert(
                     "Senha fraca",
                     "A senha informada é muito fraca. Por favor, escolha uma senha mais forte."
                 );
-                return;
             } else {
                 Alert.alert("Erro ao criar conta", "Tente novamente!");
-                return;
             }
         } finally {
             setLoading(false);
