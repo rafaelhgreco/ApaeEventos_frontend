@@ -26,3 +26,10 @@ export interface ButtonProps extends Omit<TouchableOpacityProps, "style"> {
     containerStyle?: object;
     textStyle?: object;
 }
+
+export interface DateFieldProps {
+    value: Date;
+    mode: "date" | "time" | "datetime";
+    onChange: (event: any, date?: Date) => void;
+    label?: string;
+}

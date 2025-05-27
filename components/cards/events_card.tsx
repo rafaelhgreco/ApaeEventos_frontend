@@ -3,7 +3,7 @@
 // import { useEventStore } from "@/src/infrastructure/stores/event_store";
 import { useEventStore } from "@/src/infrastructure/stores/event_store";
 import { border, colors } from "@/styles/themes";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
 import Button from "../ATOMIC/atoms/button";
@@ -11,6 +11,7 @@ import { EventItem } from "./event_item";
 
 export default function EventsCard() {
     const { events, loading, fetchEvents } = useEventStore();
+    const router = useRouter();
 
     useEffect(() => {
         fetchEvents();
@@ -24,9 +25,13 @@ export default function EventsCard() {
         );
     }
 
+    function handleCreateNewEvent(): void {
+        router.push("/new_event");
+    }
+
     function handleClick(): void {
-        console.log("Cadastrar Evento");
-        // Implementar a lógica para cadastrar um evento
+        // Placeholder for future actions
+        console.log("Button clicked!");
     }
 
     return (
@@ -51,7 +56,7 @@ export default function EventsCard() {
                         <Button
                             label="Cadastrar Evento"
                             variant="primary"
-                            onPress={handleClick}
+                            onPress={handleCreateNewEvent}
                             containerStyle={[styles.button, styles.buttonEvent]}
                         />
                     </View>

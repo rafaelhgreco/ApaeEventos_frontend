@@ -1,9 +1,9 @@
 import { ViewProps } from "react-native";
-import { ButtonProps, InputProps } from "./atoms";
+import { ButtonProps, DateFieldProps, InputProps } from "./atoms";
 
 export interface FormField {
-    type: "input" | "button";
-    props: InputProps | ButtonProps;
+    type: "input" | "button" | "date" | "time" | "number";
+    props: InputProps | ButtonProps | DateFieldProps;
     key: string;
 }
 
@@ -12,4 +12,6 @@ export interface GenericFormProps extends ViewProps {
     containerStyle?: object;
     title?: string;
     titleStyle?: object;
+    showDatePicker?: Record<string, boolean>;
+    toggleDatePicker?: (key: string, visible: boolean) => void;
 }
