@@ -1,7 +1,7 @@
 import GenericForm from "@/components/ATOMIC/molecules/form";
+import { createEvent } from "@/services/event_services";
 import { FormField } from "@/types/molecules";
 import auth from "@react-native-firebase/auth";
-import axios from "axios";
 import React, { useState } from "react";
 import { Alert } from "react-native";
 
@@ -41,8 +41,7 @@ export default function NewEventScreen() {
                 return;
             }
 
-            const response = await axios.post(
-                "http://35.247.231.143:3000/events",
+            await createEvent(
                 {
                     nome: formData.nome,
                     data: formData.data,
@@ -50,15 +49,10 @@ export default function NewEventScreen() {
                     capacidade: Number(formData.capacidade),
                     bannerUrl: formData.bannerUrl,
                 },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
+                token
             );
 
             Alert.alert("Sucesso", "Evento cadastrado com sucesso!");
-            console.log("Resposta do backend:", response.data);
 
             setFormData({
                 nome: "",
@@ -113,7 +107,6 @@ export default function NewEventScreen() {
                 placeholder: "Digite o número máximo de participantes",
                 value: formData.capacidade,
                 onChangeText: handleInputChange("capacidade"),
-                keyboardType: "numeric",
             },
         },
         {

@@ -1,15 +1,9 @@
-import DateTimePicker from "@react-native-community/datetimepicker";
 import React from "react";
-import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { ButtonProps, DateFieldProps, InputProps } from "../../../types/atoms";
 import { FormField, GenericFormProps } from "../../../types/molecules";
 import Button from "../atoms/button";
+import DateTimeField from "../atoms/data_time_field";
 import Input from "../atoms/input";
 
 const GenericForm: React.FC<GenericFormProps> = ({
@@ -32,43 +26,17 @@ const GenericForm: React.FC<GenericFormProps> = ({
                     <Button key={field.key} {...(field.props as ButtonProps)} />
                 );
             case "date":
-            case "time": {
-                const { value, mode, onChange, label } =
-                    field.props as DateFieldProps;
-
-                const formattedValue =
-                    mode === "date"
-                        ? value.toLocaleDateString()
-                        : value.toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                          });
-
+            case "time":
                 return (
-                    <View key={field.key} style={{ marginBottom: 16 }}>
-                        {label && <Text style={styles.label}>{label}</Text>}
-                        <TouchableOpacity
-                            style={styles.dateField}
-                            onPress={() => toggleDatePicker(field.key, true)}
-                        >
-                            <Text style={{ color: "green", fontSize: 15 }}>
-                                {formattedValue}
-                            </Text>
-                        </TouchableOpacity>
-                        {showDatePicker[field.key] && (
-                            <DateTimePicker
-                                value={value || new Date()}
-                                mode={mode}
-                                display="default"
-                                onChange={(event, selectedDate) => {
-                                    toggleDatePicker(field.key, false);
-                                    onChange(event, selectedDate);
-                                }}
-                            />
-                        )}
-                    </View>
+                    <DateTimeField
+                        key={field.key}
+                        {...(field.props as DateFieldProps)}
+                        isVisible={!!showDatePicker[field.key]}
+                        onToggle={(visible) =>
+                            toggleDatePicker(field.key, visible)
+                        }
+                    />
                 );
-            }
             case "number":
                 return (
                     <Input

@@ -55,10 +55,10 @@ export default function RegisterScreen() {
             // Documento completo conforme seu exemplo
             await firestore().collection("users").doc(uid).set({
                 uid: uid,
-                nome: formData.nome, // Certifique-se que o campo 'nome' existe no formData
+                nome: formData.nome,
                 email: formData.email,
-                role: "admin", // ou "organizador", dependendo da lógica do app
-                createdAt: new Date().toISOString(), // ou use firestore.FieldValue.serverTimestamp()
+                role: "admin",
+                createdAt: new Date().toISOString(),
             });
 
             Alert.alert("Sucesso", "Conta criada com sucesso!");
