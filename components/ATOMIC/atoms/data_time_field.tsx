@@ -16,13 +16,16 @@ const DateTimeField: React.FC<Props> = ({
     isVisible,
     onToggle,
 }) => {
-    const formattedValue =
-        mode === "date"
+    const formattedValue = value
+        ? mode === "date"
             ? value.toLocaleDateString()
             : value.toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
-              });
+              })
+        : mode === "date"
+        ? "Selecione a data"
+        : "Selecione o horário";
 
     return (
         <View style={{ marginBottom: 16 }}>
