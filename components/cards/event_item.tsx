@@ -1,5 +1,5 @@
+import { paddings } from "@/app/styles/themes";
 import { Event } from "@/src/domain/events";
-import { paddings } from "@/styles/themes";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import React from "react";
@@ -40,15 +40,12 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 18,
         fontWeight: "bold",
-        color: "#333",
         marginBottom: 10,
     },
     scrollView: {
         flex: 1,
     },
     eventItem: {
-        borderBottomWidth: 1,
-        borderBottomColor: "#ddd",
         padding: paddings.small,
     },
     eventName: {

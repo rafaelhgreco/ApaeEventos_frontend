@@ -11,7 +11,7 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text } from "react-native";
-import * as Themes from "../../styles/themes";
+import * as Themes from "../styles/themes";
 export default function HomeScreen() {
     const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
     const [formData, setFormData] = useState({
