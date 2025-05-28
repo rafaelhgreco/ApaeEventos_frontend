@@ -40,15 +40,12 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 18,
         fontWeight: "bold",
-        color: "#333",
         marginBottom: 10,
     },
     scrollView: {
         flex: 1,
     },
     eventItem: {
-        borderBottomWidth: 1,
-        borderBottomColor: "#ddd",
         padding: paddings.small,
     },
     eventName: {

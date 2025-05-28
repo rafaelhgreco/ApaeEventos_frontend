@@ -64,11 +64,13 @@ export default function EventsCard() {
                 <Text style={styles.title}>Próximos Eventos</Text>
                 <ScrollView style={styles.scrollView}>
                     {events.map((event) => (
-                        <EventItem key={event.id} event={event} />
+                        <View style={styles.eventItem} key={event.id}>
+                            <EventItem key={event.id} event={event} />
+                        </View>
                     ))}
                 </ScrollView>
                 <View>
-                    <Link href="/explore" style={styles.linkBox}>
+                    <Link href="/list_all_events" style={styles.linkBox}>
                         <Text style={styles.link}>Ver todos os eventos</Text>
                     </Link>
                 </View>
@@ -186,5 +188,10 @@ const styles = StyleSheet.create({
     linkBox: {
         padding: 10,
         alignSelf: "flex-end",
+    },
+    eventItem: {
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: "#ddd",
     },
 });
