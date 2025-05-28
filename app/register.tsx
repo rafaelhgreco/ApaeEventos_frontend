@@ -52,12 +52,11 @@ export default function RegisterScreen() {
 
             const uid = userCredential.user.uid;
 
-            // Documento completo conforme seu exemplo
             await firestore().collection("users").doc(uid).set({
                 uid: uid,
                 nome: formData.nome,
                 email: formData.email,
-                role: "admin",
+                role: "admin", // sempre cria como admin teria que ajustar
                 createdAt: new Date().toISOString(),
             });
 
