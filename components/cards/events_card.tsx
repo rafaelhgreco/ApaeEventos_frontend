@@ -1,20 +1,54 @@
-// import { useEventStore } from "@/stores/event_store";
-
-// import { useEventStore } from "@/src/infrastructure/stores/event_store";
-import { useEventStore } from "@/src/infrastructure/stores/event_store";
+import { getUserEvents } from "@/services/event_services";
 import { border, colors } from "@/styles/themes";
-import { Link } from "expo-router";
-import React, { useEffect } from "react";
-import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+import auth from "@react-native-firebase/auth";
+import { Link, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import {
+    Alert,
+    Dimensions,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
+import { Event } from "../../src/domain/events";
 import Button from "../ATOMIC/atoms/button";
 import { EventItem } from "./event_item";
 
 export default function EventsCard() {
-    const { events, loading, fetchEvents } = useEventStore();
+    const [events, setEvents] = useState<Event[]>([]);
+    const [loading, setLoading] = useState(true);
+    const router = useRouter();
+
+    const fetchUserEvents = async () => {
+        try {
+            const token = await auth().currentUser?.getIdToken();
+            if (!token) {
+                Alert.alert("Erro", "Usuário não autenticado.");
+                return;
+            }
+
+            const eventos = await getUserEvents(token);
+            setEvents(eventos);
+        } catch (error) {
+            console.error("Erro ao buscar eventos:", error);
+            Alert.alert("Erro", "Não foi possível carregar os eventos.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        fetchEvents();
-    }, [fetchEvents]);
+        fetchUserEvents();
+    }, []);
+
+    function handleCreateNewEvent(): void {
+        router.push("/new_event");
+    }
+
+    function handleClick(): void {
+        console.log("Button clicked!");
+    }
 
     if (loading) {
         return (
@@ -22,11 +56,6 @@ export default function EventsCard() {
                 <Text>Carregando eventos...</Text>
             </View>
         );
-    }
-
-    function handleClick(): void {
-        console.log("Cadastrar Evento");
-        // Implementar a lógica para cadastrar um evento
     }
 
     return (
@@ -51,7 +80,7 @@ export default function EventsCard() {
                         <Button
                             label="Cadastrar Evento"
                             variant="primary"
-                            onPress={handleClick}
+                            onPress={handleCreateNewEvent}
                             containerStyle={[styles.button, styles.buttonEvent]}
                         />
                     </View>

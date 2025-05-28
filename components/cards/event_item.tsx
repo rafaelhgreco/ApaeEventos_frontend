@@ -8,10 +8,10 @@ import { Dimensions, StyleSheet, Text, View } from "react-native";
 export const EventItem: React.FC<{ event: Event }> = ({ event }) => {
     return (
         <View style={styles.eventItem}>
-            <Text style={styles.eventName}>{event.name}</Text>
+            <Text style={styles.eventName}>{event.nome}</Text>
             <Text style={styles.eventData}>
                 Data:{" "}
-                {format(event.date, "dd 'de' MMMM 'de' yyyy, HH:mm", {
+                {format(event.data, "dd 'de' MMMM 'de' yyyy, HH:mm", {
                     locale: ptBR,
                 })}
             </Text>

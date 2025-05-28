@@ -1,4 +1,5 @@
 import HomeScreen from "@/app/(tabs)";
+import NewEventScreen from "@/app/new_event";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
@@ -36,6 +37,11 @@ const AppNavigator = () => {
                     name="Management"
                     component={ManagementScreen}
                     options={{ title: "Management" }}
+                />
+                <Stack.Screen
+                    name="NewEvent"
+                    component={NewEventScreen}
+                    options={{ title: "NewEvent" }}
                 />
             </Stack.Navigator>
         </NavigationContainer>

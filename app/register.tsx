@@ -6,6 +6,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { getFirebaseAuth } from "@/firebase/firebase";
 import { FormField } from "@/types/molecules";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -15,6 +16,7 @@ import * as Themes from "../styles/themes";
 export default function RegisterScreen() {
     const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
     const [formData, setFormData] = useState({
+        nome: "",
         email: "",
         password: "",
     });
@@ -41,37 +43,41 @@ export default function RegisterScreen() {
 
     const handleSignUp = async () => {
         setLoading(true);
-        setError(null); // Limpa erros anteriores
+        setError(null);
         try {
-            await auth.createUserWithEmailAndPassword(
+            const userCredential = await auth.createUserWithEmailAndPassword(
                 formData.email,
                 formData.password
             );
+
+            const uid = userCredential.user.uid;
+
+            await firestore().collection("users").doc(uid).set({
+                uid: uid,
+                nome: formData.nome,
+                email: formData.email,
+                role: "admin", // sempre cria como admin teria que ajustar
+                createdAt: new Date().toISOString(),
+            });
+
             Alert.alert("Sucesso", "Conta criada com sucesso!");
-            setFormData({ email: "", password: "" });
+            setFormData({ email: "", password: "", nome: "" });
             router.push("/");
         } catch (err: any) {
             if (err.code === "auth/email-already-in-use") {
                 Alert.alert(
                     "E-mail já cadastrado",
-                    "O e-mail informado já está em uso. Por favor, tente outro."
+                    "O e-mail informado já está em uso."
                 );
-                return;
             } else if (err.code === "auth/invalid-email") {
                 Alert.alert(
                     "E-mail inválido",
-                    "O e-mail informado não é válido. Por favor, verifique e tente novamente."
+                    "O e-mail informado não é válido."
                 );
-                return;
             } else if (err.code === "auth/weak-password") {
-                Alert.alert(
-                    "Senha fraca",
-                    "A senha informada é muito fraca. Por favor, escolha uma senha mais forte."
-                );
-                return;
+                Alert.alert("Senha fraca", "Escolha uma senha mais forte.");
             } else {
-                Alert.alert("Erro ao criar conta", "Tente novamente!");
-                return;
+                Alert.alert("Erro ao criar conta", "Tente novamente.");
             }
         } finally {
             setLoading(false);
@@ -83,10 +89,23 @@ export default function RegisterScreen() {
     };
 
     const handleReset = () => {
-        setFormData({ email: "", password: "" });
+        setFormData({ email: "", password: "", nome: "" });
     };
 
     const formFields: FormField[] = [
+        {
+            type: "input",
+            key: "nome",
+            props: {
+                label: "Nome Completo",
+                placeholder: "Digite seu nome completo",
+                value: formData.nome,
+                onChangeText: handleInputChange("nome"),
+                leftIcon: (
+                    <Icon name="person-outline" color="#007AFF" size={20} />
+                ),
+            },
+        },
         {
             type: "input",
             key: "email",
