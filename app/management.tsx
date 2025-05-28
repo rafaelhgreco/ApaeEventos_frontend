@@ -1,5 +1,5 @@
+import { colors, paddings } from "@/app/styles/themes";
 import EventsCard from "@/components/cards/events_card";
-import { colors, paddings } from "@/styles/themes";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 

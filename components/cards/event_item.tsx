@@ -1,5 +1,5 @@
+import { paddings } from "@/app/styles/themes";
 import { Event } from "@/src/domain/events";
-import { paddings } from "@/styles/themes";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import React from "react";

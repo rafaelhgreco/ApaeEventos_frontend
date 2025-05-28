@@ -1,5 +1,5 @@
+import { border, colors } from "@/app/styles/themes";
 import { getUserEvents } from "@/services/event_services";
-import { border, colors } from "@/styles/themes";
 import auth from "@react-native-firebase/auth";
 import { Link, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
