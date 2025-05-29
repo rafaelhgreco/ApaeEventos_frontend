@@ -1,39 +1,29 @@
-import { getUserEvents } from "@/services/event_services";
 import auth from "@react-native-firebase/auth";
 import { Link, useFocusEffect, useRouter } from "expo-router";
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { Alert, ScrollView, Text, View } from "react-native";
-import { Event } from "../../src/domain/events";
+import { useEvents } from "../../hooks/useEvents";
 import Button from "../ATOMIC/atoms/button";
 import { styles } from "./event_card.style";
 import { EventItem } from "./event_item";
 
 export default function EventsCard() {
-    const [events, setEvents] = useState<Event[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { events, fetchEvents, loading, error } = useEvents();
     const router = useRouter();
-
-    const fetchUserEvents = async () => {
-        try {
-            const token = await auth().currentUser?.getIdToken();
-            if (!token) {
-                Alert.alert("Erro", "Usuário não autenticado.");
-                return;
-            }
-
-            const eventos = await getUserEvents(token);
-            setEvents(eventos);
-        } catch (error) {
-            console.error("Erro ao buscar eventos:", error);
-            Alert.alert("Erro", "Não foi possível carregar os eventos.");
-        } finally {
-            setLoading(false);
-        }
-    };
 
     useFocusEffect(
         useCallback(() => {
-            fetchUserEvents();
+            const loadEvents = async () => {
+                const token = await auth().currentUser?.getIdToken();
+                if (!token) {
+                    Alert.alert("Erro", "Usuário não autenticado.");
+                    return;
+                }
+
+                await fetchEvents(token);
+            };
+
+            loadEvents();
         }, [])
     );
 
@@ -49,6 +39,14 @@ export default function EventsCard() {
         return (
             <View>
                 <Text>Carregando eventos...</Text>
+            </View>
+        );
+    }
+
+    if (error) {
+        return (
+            <View>
+                <Text>Erro ao carregar eventos: {error}</Text>
             </View>
         );
     }
@@ -70,6 +68,7 @@ export default function EventsCard() {
                     </Link>
                 </View>
             </View>
+
             <View style={styles.actionsBox}>
                 <Text style={styles.title}>Ações 👇</Text>
                 <View style={styles.buttonRow}>
