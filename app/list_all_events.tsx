@@ -1,9 +1,9 @@
 import SearchInput from "@/components/ATOMIC/atoms/search_input";
 import { EventItem } from "@/components/cards/event_item";
-import { getUserEvents } from "@/services/event_services";
+import { useEvents } from "@/hooks/useEvents";
 import auth from "@react-native-firebase/auth";
-import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback, useState } from "react";
 import {
     ActivityIndicator,
     Alert,
@@ -12,7 +12,6 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import { Event } from "../src/domain/events";
 import { styles } from "./styles/list_all_events.style";
 
 type RootStackParamList = {
@@ -20,33 +19,25 @@ type RootStackParamList = {
 };
 
 export default function EventsPage() {
-    const [events, setEvents] = useState<Event[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [search, setSearch] = useState("");
     const router = useRouter();
+    const { events, fetchEvents, loading, error } = useEvents();
 
-    const fetchUserEvents = async () => {
-        try {
-            const token = await auth().currentUser?.getIdToken();
-            if (!token) {
-                Alert.alert("Erro", "Usuário não autenticado.");
-                return;
-            }
+    useFocusEffect(
+        useCallback(() => {
+            const loadEvents = async () => {
+                const token = await auth().currentUser?.getIdToken();
+                if (!token) {
+                    Alert.alert("Erro", "Usuário não autenticado.");
+                    return;
+                }
 
-            const eventos = await getUserEvents(token);
-            setEvents(eventos);
-        } catch (error) {
-            console.error("Erro ao buscar eventos:", error);
-            Alert.alert("Erro", "Não foi possível carregar os eventos.");
-        } finally {
-            setLoading(false);
-        }
-    };
+                await fetchEvents(token);
+            };
 
-    useEffect(() => {
-        fetchUserEvents();
-    }, []);
+            loadEvents();
+        }, [])
+    );
 
     const filteredEvents = events.filter((event) =>
         event.nome.toLowerCase().includes(search.toLowerCase())

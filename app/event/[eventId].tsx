@@ -29,17 +29,15 @@ export default function EventDetailsPage() {
                 return;
             }
 
-            const eventos = await getUserEvents(token);
-            const eventoEncontrado = eventos.find(
-                (e: { id: string }) => e.id === id
-            );
+            const events = await getUserEvents(token);
+            const findEvent = events.find((e: { id: string }) => e.id === id);
 
-            if (!eventoEncontrado) {
+            if (!findEvent) {
                 setError("Evento não encontrado.");
                 return;
             }
 
-            setEvent(eventoEncontrado);
+            setEvent(findEvent);
         } catch (error) {
             console.error("Erro ao buscar evento:", error);
             Alert.alert("Erro", "Não foi possível carregar os dados.");

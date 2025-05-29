@@ -1,42 +1,30 @@
 import { create } from "zustand";
+import { getUserEvents } from "../../../services/event_services";
 import { Event } from "../../domain/events";
-import { apiClient } from "../api"; // Importe a instância do apiClient
 
 interface EventState {
     events: Event[];
+    selectedEvent: Event | null;
     loading: boolean;
     error: string | null;
-    fetchEvents: () => Promise<void>;
-    fetchEventById: (id: number) => Promise<void>;
+    fetchEvents: (token: string) => Promise<void>;
 }
 
-export const useEventStore = create<EventState>((set, get) => ({
+export const useEventStore = create<EventState>((set) => ({
     events: [],
+    selectedEvent: null,
     loading: false,
     error: null,
 
-    fetchEvents: async () => {
+    fetchEvents: async (token: string) => {
         set({ loading: true, error: null });
         try {
-            const response = await apiClient.get<Event[]>("/events");
-            set({ events: response.data, loading: false });
+            const events = await getUserEvents(token);
+            set({ events, loading: false });
         } catch (error: any) {
             set({
                 loading: false,
-                error: error.message || "Failed to fetch events",
-            });
-        }
-    },
-
-    fetchEventById: async (id: number) => {
-        set({ loading: true, error: null });
-        try {
-            const response = await apiClient.get<Event>(`/events/${id}`);
-            set({ events: [response.data], loading: false });
-        } catch (error: any) {
-            set({
-                loading: false,
-                error: error.response?.data.message || "Failed to fetch event",
+                error: error.message || "Erro ao buscar eventos",
             });
         }
     },
