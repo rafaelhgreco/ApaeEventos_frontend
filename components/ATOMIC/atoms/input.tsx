@@ -1,7 +1,26 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
-import { InputProps } from "../../../types/atoms";
+import {
+    StyleProp,
+    Text,
+    TextInput,
+    TextInputProps,
+    TextStyle,
+    View,
+    ViewStyle,
+} from "react-native";
 import Icon from "../atoms/icon";
+import { inputContainerStyle, styles } from "./input.style"; // importe seu styles com StyleSheet
+
+interface InputProps extends TextInputProps {
+    label?: string;
+    error?: string;
+    containerStyle?: StyleProp<ViewStyle>;
+    inputStyle?: StyleProp<TextStyle>;
+    leftIcon?: React.ReactNode;
+    rightIcon?: React.ReactNode;
+    isPassword?: boolean;
+    secureTextEntry?: boolean;
+}
 
 const Input: React.FC<InputProps> = ({
     label,
@@ -31,54 +50,36 @@ const Input: React.FC<InputProps> = ({
                 size={20}
                 color="#666"
                 onPress={togglePasswordVisibility}
-                containerStyle={styles.passwordIcon}
+                containerStyle={{ marginLeft: 8 }}
             />
         );
     };
 
     const renderLeftIcon = () => {
         if (!leftIcon) return null;
-        return <View style={styles.leftIcon}>{leftIcon}</View>;
+        return <View style={{ marginRight: 8 }}>{leftIcon}</View>;
     };
 
     const renderRightIcon = () => {
-        // Se é um campo de senha, prioriza o ícone de mostrar/ocultar
         if (isPassword) {
             return renderPasswordIcon();
         }
-
         if (!rightIcon) return null;
-        return <View style={styles.rightIcon}>{rightIcon}</View>;
-    };
-
-    const getInputContainerStyle = () => {
-        return [
-            styles.inputContainer,
-            error ? styles.inputContainerError : null,
-        ];
-    };
-
-    const getInputStyle = () => {
-        let baseStyle = [styles.input];
-        if (leftIcon)
-            baseStyle.push({ ...styles.input, ...styles.inputWithLeftIcon });
-        if (rightIcon || isPassword)
-            baseStyle.push({ ...styles.input, ...styles.inputWithRightIcon });
-        return baseStyle;
+        return <View style={{ marginLeft: 8 }}>{rightIcon}</View>;
     };
 
     return (
         <View style={[styles.container, containerStyle]}>
             {label && <Text style={styles.label}>{label}</Text>}
 
-            <View style={getInputContainerStyle()}>
+            <View style={[inputContainerStyle(!!error) as ViewStyle]}>
                 {renderLeftIcon()}
 
                 <TextInput
-                    style={[getInputStyle(), inputStyle]}
-                    placeholderTextColor="#999"
-                    secureTextEntry={isSecureEntry}
                     {...textInputProps}
+                    style={[styles.inputIcon, inputStyle]}
+                    secureTextEntry={isSecureEntry}
+                    placeholderTextColor="#999"
                 />
 
                 {renderRightIcon()}
@@ -88,56 +89,5 @@ const Input: React.FC<InputProps> = ({
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        marginBottom: 16,
-    },
-    label: {
-        fontSize: 16,
-        fontWeight: "500",
-        color: "#333",
-        marginBottom: 8,
-    },
-    inputContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        borderWidth: 1,
-        borderColor: "#ddd",
-        borderRadius: 8,
-        backgroundColor: "#fff",
-        paddingHorizontal: 16,
-        minHeight: 48,
-    },
-    inputContainerError: {
-        borderColor: "#e74c3c",
-    },
-    input: {
-        flex: 1,
-        fontSize: 16,
-        color: "#333",
-        paddingVertical: 12,
-    },
-    inputWithLeftIcon: {
-        marginLeft: 8,
-    },
-    inputWithRightIcon: {
-        marginRight: 8,
-    },
-    leftIcon: {
-        marginRight: 4,
-    },
-    rightIcon: {
-        marginLeft: 4,
-    },
-    passwordIcon: {
-        marginLeft: 4,
-    },
-    errorText: {
-        color: "#e74c3c",
-        fontSize: 14,
-        marginTop: 4,
-    },
-});
 
 export default Input;

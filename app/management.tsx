@@ -1,7 +1,7 @@
-import { colors, paddings } from "@/app/styles/themes";
 import EventsCard from "@/components/cards/events_card";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
+import { styles } from "./styles/management.style";
 
 export default function ManagementScreen() {
     return (
@@ -15,31 +15,3 @@ export default function ManagementScreen() {
         </>
     );
 }
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: "flex-start",
-        alignItems: "center",
-        padding: paddings.extraLarge,
-    },
-
-    error: {
-        fontSize: 16,
-        color: "red",
-        textAlign: "center",
-    },
-    greetingContainer: {
-        marginTop: 20,
-    },
-    greeting: {
-        fontSize: 20,
-        fontWeight: "bold",
-        color: "#FFFFF8",
-    },
-    text: {
-        fontSize: 20,
-        color: colors.primary,
-        marginBottom: 20,
-        fontWeight: "semibold",
-    },
-});

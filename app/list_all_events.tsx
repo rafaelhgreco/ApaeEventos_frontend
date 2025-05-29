@@ -8,12 +8,12 @@ import {
     ActivityIndicator,
     Alert,
     FlatList,
-    StyleSheet,
     Text,
     TouchableOpacity,
     View,
 } from "react-native";
 import { Event } from "../src/domain/events";
+import { styles } from "./styles/list_all_events.style";
 
 type RootStackParamList = {
     EventDetails: { eventId: number };
@@ -85,27 +85,3 @@ export default function EventsPage() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#f9f9f9",
-    },
-    error: {
-        color: "red",
-        fontSize: 16,
-        textAlign: "center",
-        marginTop: 40,
-    },
-    card: {
-        backgroundColor: "#fff",
-        padding: 16,
-        borderRadius: 12,
-        marginBottom: 12,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-});

@@ -1,12 +1,12 @@
 import React from "react";
 import {
     ActivityIndicator,
-    StyleSheet,
     Text,
     TouchableOpacity,
     ViewStyle,
 } from "react-native";
 import { ButtonProps } from "../../../types/atoms";
+import { styles } from "./button.style"; // Adjust the import path as necessary
 
 const Button: React.FC<ButtonProps> = ({
     label,
@@ -56,72 +56,5 @@ const Button: React.FC<ButtonProps> = ({
         </TouchableOpacity>
     );
 };
-
-const styles = StyleSheet.create({
-    button: {
-        borderRadius: 8,
-        alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "row",
-    },
-
-    // Variants
-    button_primary: {
-        backgroundColor: "#007AFF",
-    },
-    button_secondary: {
-        backgroundColor: "#6c757d",
-    },
-    button_outline: {
-        backgroundColor: "transparent",
-        borderWidth: 1,
-        borderColor: "#007AFF",
-    },
-
-    // Sizes
-    button_small: {
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        minHeight: 32,
-    },
-    button_medium: {
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        minHeight: 44,
-    },
-    button_large: {
-        paddingHorizontal: 20,
-        paddingVertical: 16,
-        minHeight: 52,
-    },
-
-    buttonDisabled: {
-        opacity: 0.6,
-    },
-
-    // Text styles
-    buttonText: {
-        fontWeight: "600",
-        fontSize: 16,
-    },
-    buttonText_primary: {
-        color: "#fff",
-    },
-    buttonText_secondary: {
-        color: "#fff",
-    },
-    buttonText_outline: {
-        color: "#007AFF",
-    },
-    buttonText_small: {
-        fontSize: 14,
-    },
-    buttonText_medium: {
-        fontSize: 16,
-    },
-    buttonText_large: {
-        fontSize: 18,
-    },
-});
 
 export default Button;

@@ -3,15 +3,13 @@ import GenericForm from "@/components/ATOMIC/molecules/form";
 import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import { getFirebaseAuth } from "@/firebase/firebase";
 import { FormField } from "@/types/molecules";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
-import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, StyleSheet, Text } from "react-native";
-import * as Themes from "../styles/themes";
+import { Alert, Image, Text, View } from "react-native";
+import { styles } from "../styles/index.style";
 export default function HomeScreen() {
     const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
     const [formData, setFormData] = useState({
@@ -161,52 +159,26 @@ export default function HomeScreen() {
             headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
             headerImage={
                 <Image
-                    source={require("@/assets/images/partial-react-logo.png")}
                     style={styles.reactLogo}
+                    source={require("@/assets/images/partial-react-logo.png")}
                 />
             }
         >
-            <ThemedView style={styles.titleContainer}>
+            <View style={styles.titleContainer}>
                 <ThemedText type="title">Apae Eventos</ThemedText>
                 <HelloWave />
-            </ThemedView>
-            <ThemedView>
+            </View>
+
+            <View style={styles.stepContainer}>
                 <Text>Olá, seja bem-vindo(a)!</Text>
-            </ThemedView>
-            <ThemedView>
+            </View>
+
+            <View style={styles.loginForm}>
                 <GenericForm
                     title="Faça login na sua conta"
                     fields={formFields}
-                    style={styles.loginForm}
                 />
-            </ThemedView>
+            </View>
         </ParallaxScrollView>
     );
 }
-
-const styles = StyleSheet.create({
-    titleContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 8,
-    },
-    stepContainer: {
-        gap: 8,
-        marginBottom: 8,
-    },
-    reactLogo: {
-        height: 178,
-        width: 290,
-        bottom: 0,
-        left: 0,
-        position: "absolute",
-    },
-    loginForm: {
-        flex: 1,
-        justifyContent: "center",
-        padding: 16,
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: Themes.border.radiusMedium,
-    },
-});

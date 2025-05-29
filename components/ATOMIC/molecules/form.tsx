@@ -1,10 +1,11 @@
 import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { ButtonProps, DateFieldProps, InputProps } from "../../../types/atoms";
 import { FormField, GenericFormProps } from "../../../types/molecules";
 import Button from "../atoms/button";
 import DateTimeField from "../atoms/data_time_field";
 import Input from "../atoms/input";
+import { styles } from "./form.style";
 
 const GenericForm: React.FC<GenericFormProps> = ({
     fields,
@@ -59,33 +60,5 @@ const GenericForm: React.FC<GenericFormProps> = ({
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        color: "#333",
-        marginBottom: 24,
-        textAlign: "center",
-    },
-    label: {
-        fontWeight: "bold",
-        fontSize: 16,
-        marginBottom: 4,
-        color: "#333",
-    },
-    dateField: {
-        borderWidth: 1,
-        borderColor: "#ddd",
-        padding: 12,
-        borderRadius: 8,
-        justifyContent: "center",
-        backgroundColor: "#ffffff",
-    },
-});
 
 export default GenericForm;
