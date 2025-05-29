@@ -1,7 +1,8 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { DateFieldProps } from "../../../types/atoms";
+import { styles } from "./data_time_field.style";
 
 interface Props extends DateFieldProps {
     isVisible: boolean;
@@ -52,22 +53,5 @@ const DateTimeField: React.FC<Props> = ({
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    label: {
-        fontWeight: "bold",
-        fontSize: 16,
-        marginBottom: 4,
-        color: "#333",
-    },
-    dateField: {
-        borderWidth: 1,
-        borderColor: "#ddd",
-        padding: 12,
-        borderRadius: 8,
-        justifyContent: "center",
-        backgroundColor: "#ffffff",
-    },
-});
 
 export default DateTimeField;

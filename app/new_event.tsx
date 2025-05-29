@@ -134,7 +134,11 @@ export default function NewEventScreen() {
             fields={formFields}
             title="Criar novo evento"
             containerStyle={{ padding: 16 }}
-            titleStyle={{ fontSize: 24, fontWeight: "bold", marginBottom: 16 }}
+            titleStyle={{
+                fontSize: 24,
+                fontWeight: "bold",
+                marginBottom: 16,
+            }}
             showDatePicker={showDatePicker}
             toggleDatePicker={toggleDatePicker}
         />

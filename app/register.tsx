@@ -10,8 +10,8 @@ import firestore from "@react-native-firebase/firestore";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, StyleSheet, Text } from "react-native";
-import * as Themes from "./styles/themes";
+import { Alert, Text } from "react-native";
+import { styles } from "./styles/register.style";
 
 export default function RegisterScreen() {
     const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
@@ -184,30 +184,3 @@ export default function RegisterScreen() {
         </ParallaxScrollView>
     );
 }
-
-const styles = StyleSheet.create({
-    titleContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 8,
-    },
-    stepContainer: {
-        gap: 8,
-        marginBottom: 8,
-    },
-    reactLogo: {
-        height: 178,
-        width: 290,
-        bottom: 0,
-        left: 0,
-        position: "absolute",
-    },
-    registerForm: {
-        flex: 1,
-        justifyContent: "center",
-        padding: 16,
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: Themes.border.radiusMedium,
-    },
-});
