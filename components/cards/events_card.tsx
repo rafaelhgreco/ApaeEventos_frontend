@@ -1,7 +1,7 @@
 import { getUserEvents } from "@/services/event_services";
 import auth from "@react-native-firebase/auth";
-import { Link, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { Link, useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback, useState } from "react";
 import { Alert, ScrollView, Text, View } from "react-native";
 import { Event } from "../../src/domain/events";
 import Button from "../ATOMIC/atoms/button";
@@ -31,9 +31,11 @@ export default function EventsCard() {
         }
     };
 
-    useEffect(() => {
-        fetchUserEvents();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            fetchUserEvents();
+        }, [])
+    );
 
     function handleCreateNewEvent(): void {
         router.push("/new_event");

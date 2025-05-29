@@ -2,6 +2,7 @@ import GenericForm from "@/components/ATOMIC/molecules/form";
 import { createEvent } from "@/services/event_services";
 import { FormField } from "@/types/molecules";
 import auth from "@react-native-firebase/auth";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import { Alert } from "react-native";
 
@@ -13,6 +14,7 @@ export default function NewEventScreen() {
         capacidade: "",
         bannerUrl: "",
     });
+    const [loading, setLoading] = useState<boolean>(false);
 
     const handleInputChange = (field: string) => (value: string) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
@@ -34,6 +36,7 @@ export default function NewEventScreen() {
     };
 
     const submitForm = async () => {
+        setLoading(true);
         try {
             const token = await auth().currentUser?.getIdToken();
             if (!token) {
@@ -64,6 +67,9 @@ export default function NewEventScreen() {
         } catch (error) {
             console.error("Erro ao cadastrar evento:", error);
             Alert.alert("Erro", "Falha ao cadastrar evento.");
+        } finally {
+            setLoading(false);
+            router.back();
         }
     };
 
@@ -126,6 +132,7 @@ export default function NewEventScreen() {
             props: {
                 label: "Cadastrar Evento",
                 onPress: submitForm,
+                loading: loading,
             },
         },
     ];
