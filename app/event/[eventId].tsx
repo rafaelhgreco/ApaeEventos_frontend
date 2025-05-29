@@ -2,9 +2,10 @@ import { getUserEvents } from "@/services/event_services";
 import auth from "@react-native-firebase/auth";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Text, View } from "react-native";
 import Button from "../../components/ATOMIC/atoms/button";
 import { Event } from "../../src/domain/events";
+import styles from "../styles/eventId.style";
 
 export default function EventDetailsPage() {
     const { eventId } = useLocalSearchParams();
@@ -79,42 +80,3 @@ export default function EventDetailsPage() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 50,
-        backgroundColor: "#fffff8",
-    },
-    box: {
-        padding: 20,
-        backgroundColor: "#fff",
-        borderRadius: 10,
-        marginBottom: 20,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 8,
-    },
-    subtitle: {
-        fontSize: 18,
-        color: "#555",
-        marginBottom: 4,
-    },
-    date: {
-        fontSize: 16,
-        color: "#777",
-        marginBottom: 12,
-    },
-    description: {
-        fontSize: 16,
-        lineHeight: 22,
-    },
-    error: {
-        color: "red",
-        textAlign: "center",
-        marginTop: 50,
-        fontSize: 16,
-    },
-});

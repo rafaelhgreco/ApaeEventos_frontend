@@ -10,6 +10,12 @@ export const styles = StyleSheet.create({
         maxHeight: 250,
         backgroundColor: "#fff",
         borderRadius: border.radiusLarge,
+        marginBottom: 24,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 4,
     },
     actionsBox: {
         marginTop: 10,

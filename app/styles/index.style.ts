@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { border, colors, paddings } from "../styles/themes";
+import { border, paddings } from "../styles/themes";
 
 export const styles = StyleSheet.create({
     titleContainer: {
@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
         justifyContent: "center",
         padding: paddings.large,
         borderWidth: 1,
-        borderColor: colors.text,
+        borderColor: "#ccc",
         borderRadius: border.radiusMedium,
     },
 });
