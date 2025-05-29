@@ -2,6 +2,8 @@ import HomeScreen from "@/app/(tabs)";
 import EventDetailsPage from "@/app/event/[eventId]";
 import EventsPage from "@/app/list_all_events";
 import NewEventScreen from "@/app/new_event";
+import ReportScreen from "@/app/report";
+import TicketsScreen from "@/app/ticket";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
@@ -62,6 +64,16 @@ const AppNavigator = () => {
                     name="EventDetails"
                     component={EventDetailsPage}
                     options={{ title: "Detalhes do Evento" }}
+                />
+                <Stack.Screen
+                    name="Tickets"
+                    component={TicketsScreen}
+                    options={{ title: "Ingressos" }}
+                />
+                <Stack.Screen
+                    name="Report"
+                    component={ReportScreen}
+                    options={{ title: "Relatórios" }}
                 />
             </Stack.Navigator>
         </NavigationContainer>

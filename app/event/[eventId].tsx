@@ -1,6 +1,6 @@
 import { getUserEvents } from "@/services/event_services";
 import auth from "@react-native-firebase/auth";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Text, View } from "react-native";
 import Button from "../../components/ATOMIC/atoms/button";
@@ -56,11 +56,13 @@ export default function EventDetailsPage() {
         );
 
     function handleManageTickets() {
-        // Implementar lógica para gerenciar ingressos
-        Alert.alert(
-            "Gerenciar ingressos",
-            "Funcionalidade em desenvolvimento."
-        );
+        if (!event) return;
+        router.push(`/ticket?eventId=${event.id}`);
+    }
+
+    function handleClick() {
+        if (!event) return;
+        router.push("/report");
     }
 
     const formattedDate = new Date(event.data).toLocaleDateString("pt-BR");
@@ -72,11 +74,20 @@ export default function EventDetailsPage() {
                 <Text style={styles.subtitle}>📍 {event.local}</Text>
                 <Text style={styles.date}>🗓️ {formattedDate}</Text>
             </View>
-            <Button
-                label="Gerenciar ingressos"
-                variant="secondary"
-                onPress={handleManageTickets}
-            />
+            <View style={styles.buttonBox}>
+                <Button
+                    label="Criar novo ingresso"
+                    variant="secondary"
+                    onPress={handleManageTickets}
+                />
+            </View>
+            <View style={styles.buttonBox}>
+                <Button
+                    label="Ver todos os ingressos"
+                    variant="outline"
+                    onPress={handleClick}
+                />
+            </View>
         </View>
     );
 }
