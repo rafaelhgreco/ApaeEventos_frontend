@@ -4,7 +4,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 32,
-        backgroundColor: "#f5f8fc", // azul claro suave
+        backgroundColor: "#f5f8fc",
     },
     box: {
         padding: 24,
@@ -46,6 +46,10 @@ const styles = StyleSheet.create({
         marginTop: 40,
         fontSize: 16,
         fontWeight: "500",
+    },
+    buttonBox: {
+        padding: 16,
+        gap: 16,
     },
 });
 
