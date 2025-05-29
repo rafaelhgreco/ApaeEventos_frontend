@@ -23,28 +23,6 @@ export default function EventsPage() {
     const router = useRouter();
     const { events, fetchEvents, loading, error } = useEvents();
 
-    // const fetchUserEvents = async () => {
-    //     try {
-    //         const token = await auth().currentUser?.getIdToken();
-    //         if (!token) {
-    //             Alert.alert("Erro", "Usuário não autenticado.");
-    //             return;
-    //         }
-
-    //         const eventos = await getUserEvents(token);
-    //         setEvents(eventos);
-    //     } catch (error) {
-    //         console.error("Erro ao buscar eventos:", error);
-    //         Alert.alert("Erro", "Não foi possível carregar os eventos.");
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     fetchUserEvents();
-    // }, []);
-
     useFocusEffect(
         useCallback(() => {
             const loadEvents = async () => {
