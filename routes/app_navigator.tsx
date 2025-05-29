@@ -3,6 +3,7 @@ import EventDetailsPage from "@/app/event/[eventId]";
 import EventsPage from "@/app/list_all_events";
 import NewEventScreen from "@/app/new_event";
 import ReportScreen from "@/app/report";
+import ReadQrCodeScreen from "@/app/scan_qrcode";
 import TicketsScreen from "@/app/ticket";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -74,6 +75,11 @@ const AppNavigator = () => {
                     name="Report"
                     component={ReportScreen}
                     options={{ title: "Relatórios" }}
+                />
+                <Stack.Screen
+                    name="Ticket Validate"
+                    component={ReadQrCodeScreen}
+                    options={{ title: "Validar Ingressos" }}
                 />
             </Stack.Navigator>
         </NavigationContainer>

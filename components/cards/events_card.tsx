@@ -31,6 +31,10 @@ export default function EventsCard() {
         router.push("/new_event");
     }
 
+    function handleValidateTicket(): void {
+        router.push("/scan_qrcode");
+    }
+
     function handleClick(): void {
         console.log("Button clicked!");
     }
@@ -85,7 +89,7 @@ export default function EventsCard() {
                         <Button
                             label="Validar Ingresso"
                             variant="primary"
-                            onPress={handleClick}
+                            onPress={handleValidateTicket}
                             containerStyle={styles.button}
                         />
                     </View>
