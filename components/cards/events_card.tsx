@@ -118,6 +118,14 @@ export default function EventsCard() {
                         />
                     </View>
                 </View>
+                <View style={{ marginTop: 20 }}>
+                    <Text style={styles.title}>Gerenciar usuários</Text>
+                    <Button
+                        label="Cadastrar um novo usuário"
+                        onPress={() => router.push("/register")}
+                        variant="outline"
+                    ></Button>
+                </View>
             </View>
         </View>
     );

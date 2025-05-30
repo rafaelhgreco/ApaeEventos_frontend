@@ -2,7 +2,7 @@ import { ViewProps } from "react-native";
 import { ButtonProps, DateFieldProps, InputProps } from "./atoms";
 
 export interface FormField {
-    type: "input" | "button" | "date" | "time" | "number";
+    type: "input" | "button" | "date" | "time" | "number" | "select";
     props: InputProps | ButtonProps | DateFieldProps;
     key: string;
 }

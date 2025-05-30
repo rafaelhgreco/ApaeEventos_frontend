@@ -27,6 +27,11 @@ export const styles = StyleSheet.create({
         marginBottom: 20,
         fontWeight: "600", // 'semibold' não é um valor válido em RN, usar '600' ou 'bold'
     },
+    buttonContainer: {
+        justifyContent: "flex-end",
+        alignItems: "flex-end",
+        padding: paddings.extraLarge,
+    },
 });
 
 export default styles;

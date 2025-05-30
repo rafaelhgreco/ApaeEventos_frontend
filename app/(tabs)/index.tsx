@@ -6,10 +6,12 @@ import { ThemedText } from "@/components/ThemedText";
 import { getFirebaseAuth } from "@/firebase/firebase";
 import { FormField } from "@/types/molecules";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Image, Text, View } from "react-native";
 import { styles } from "../styles/index.style";
+
 export default function HomeScreen() {
     const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
     const [formData, setFormData] = useState({
@@ -38,15 +40,35 @@ export default function HomeScreen() {
 
     const handleSignIn = async () => {
         setLoading(true);
-        setError(null); // Limpa erros anteriores
+        setError(null);
         try {
             await auth.signInWithEmailAndPassword(
                 formData.email,
                 formData.password
             );
+            const currentUser = auth.currentUser;
+
+            if (currentUser) {
+                const userDoc = await firestore()
+                    .collection("users")
+                    .doc(currentUser.uid)
+                    .get();
+
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    const role = userData?.role;
+
+                    if (role === "atendente") {
+                        router.push("/scan_qrcode");
+                    } else {
+                        router.push("/management");
+                    }
+                } else {
+                    Alert.alert("Erro", "Função do usuário não encontrada.");
+                }
+            }
             Alert.alert("Sucesso", "Login realizado com sucesso!");
             setFormData({ email: "", password: "" });
-            router.push("/management");
         } catch (err: any) {
             if (
                 err.code === "auth/invalid-email" ||
@@ -79,7 +101,7 @@ export default function HomeScreen() {
     };
 
     const handleRegister = () => {
-        router.push("/register");
+        router.push("/explore");
     };
 
     const handleReset = () => {
@@ -134,7 +156,7 @@ export default function HomeScreen() {
             type: "button",
             key: "submitSingUp",
             props: {
-                label: "Realizar Cadastro",
+                label: "Solicitar uma Conta",
                 onPress: handleRegister,
                 variant: "primary",
                 containerStyle: {

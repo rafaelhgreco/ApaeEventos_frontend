@@ -19,6 +19,7 @@ export default function RegisterScreen() {
         nome: "",
         email: "",
         password: "",
+        role: "",
     });
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -56,12 +57,17 @@ export default function RegisterScreen() {
                 uid: uid,
                 nome: formData.nome,
                 email: formData.email,
-                role: "admin", // sempre cria como admin teria que ajustar
+                role: formData.role,
                 createdAt: new Date().toISOString(),
             });
 
             Alert.alert("Sucesso", "Conta criada com sucesso!");
-            setFormData({ email: "", password: "", nome: "" });
+            setFormData({
+                email: "",
+                password: "",
+                nome: "",
+                role: "",
+            });
             router.push("/");
         } catch (err: any) {
             if (err.code === "auth/email-already-in-use") {
@@ -89,7 +95,7 @@ export default function RegisterScreen() {
     };
 
     const handleReset = () => {
-        setFormData({ email: "", password: "", nome: "" });
+        setFormData({ email: "", password: "", nome: "", role: "" });
     };
 
     const formFields: FormField[] = [
@@ -133,6 +139,19 @@ export default function RegisterScreen() {
                         color="#007AFF"
                         size={20}
                     />
+                ),
+            },
+        },
+        {
+            type: "input",
+            key: "role",
+            props: {
+                label: "Função",
+                placeholder: "ex: Atendende",
+                value: formData.role,
+                onChangeText: handleInputChange("role"),
+                leftIcon: (
+                    <Icon name="briefcase-outline" color="#007AFF" size={20} />
                 ),
             },
         },
