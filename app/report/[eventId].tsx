@@ -14,7 +14,6 @@ export default function ReportScreen() {
 
     useEffect(() => {
         const fetchReport = async () => {
-            console.log("Iniciando fetch do relatório...");
             try {
                 if (!eventId) {
                     console.warn("eventId não definido.");
@@ -24,23 +23,19 @@ export default function ReportScreen() {
                 }
 
                 const id = Array.isArray(eventId) ? eventId[0] : eventId;
-                console.log("ID do evento ajustado:", id);
 
                 const user = getFirebaseAuth().currentUser;
                 const token = await user?.getIdToken();
 
                 if (!token) {
-                    console.warn("Usuário não autenticado.");
                     setError("Usuário não autenticado.");
                     setLoading(false);
                     return;
                 }
 
                 const data = await getEventReport(id, token);
-                console.log("Dados do relatório:", data);
                 setReport(data);
             } catch (error) {
-                console.error("Erro ao carregar relatório:", error);
                 setError("Erro ao carregar relatório.");
             } finally {
                 setLoading(false);
