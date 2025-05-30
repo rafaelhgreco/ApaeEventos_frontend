@@ -59,7 +59,7 @@ export default function HomeScreen() {
                     const role = userData?.role;
 
                     if (role === "atendente") {
-                        router.push("/scan_qrcode");
+                        router.push("/qrcode");
                     } else {
                         router.push("/management");
                     }
