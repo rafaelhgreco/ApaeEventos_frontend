@@ -60,7 +60,7 @@ export default function EventDetailsPage() {
 
     function handleClick() {
         if (!event) return;
-        router.push("/report");
+        router.push(`/report/${event.id}`);
     }
 
     const formattedDate = new Date(event.data).toLocaleDateString("pt-BR");

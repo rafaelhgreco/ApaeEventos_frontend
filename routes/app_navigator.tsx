@@ -2,7 +2,7 @@ import HomeScreen from "@/app/(tabs)";
 import EventDetailsPage from "@/app/event/[eventId]";
 import EventsPage from "@/app/list_all_events";
 import NewEventScreen from "@/app/new_event";
-import ReportScreen from "@/app/report";
+import ReportScreen from "@/app/report/[eventId]";
 import ReadQrCodeScreen from "@/app/scan_qrcode";
 import TicketsScreen from "@/app/ticket";
 import { NavigationContainer } from "@react-navigation/native";
