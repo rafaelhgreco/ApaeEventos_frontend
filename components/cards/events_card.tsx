@@ -32,7 +32,7 @@ export default function EventsCard() {
     }
 
     function handleValidateTicket(): void {
-        router.push("/scan_qrcode");
+        router.push("/qrcode");
     }
 
     function handleClick(): void {

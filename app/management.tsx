@@ -5,6 +5,7 @@ import type { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { useNavigation, useRouter } from "expo-router";
 import React, { useLayoutEffect, useState } from "react";
 import { Alert, Text, View } from "react-native";
+import Animated from "react-native-reanimated";
 import { styles } from "./styles/management.style";
 
 export default function ManagementScreen() {
@@ -42,14 +43,15 @@ export default function ManagementScreen() {
             setLoading(false);
         }
     };
+
     return (
-        <>
+        <Animated.ScrollView contentContainerStyle={styles.container}>
             <View style={styles.container}>
                 <Text style={styles.text}>
                     Bem-vindo ao Gerenciador de Eventos
                 </Text>
                 <EventsCard />
             </View>
-        </>
+        </Animated.ScrollView>
     );
 }

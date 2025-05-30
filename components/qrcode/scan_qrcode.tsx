@@ -1,13 +1,12 @@
 import Button from "@/components/ATOMIC/atoms/button";
 import { ThemedView } from "@/components/ThemedView";
-import { getAuth } from "@react-native-firebase/auth";
-import axios from "axios";
+import { validateQRCode } from "@/services/qr_code_services";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useRef, useState } from "react";
 import { Alert, Modal, View } from "react-native";
-import styles from "./styles/scan_qrcode.style";
+import styles from "../../app/styles/scan_qrcode.style";
 
-export default function ReadQrCodeScreen() {
+export default function ReadQrCode() {
     const [modalIsVisible, setModalIsVisible] = useState(false);
     const [permission, requestPermission] = useCameraPermissions();
     const qrCodeLock = useRef(false);
@@ -31,38 +30,19 @@ export default function ReadQrCodeScreen() {
         qrCodeLock.current = true;
 
         try {
-            const currentUser = getAuth().currentUser;
-            if (!currentUser) {
-                return Alert.alert("Erro", "Usuário não autenticado");
-            }
+            const result = await validateQRCode(data);
 
-            const token = await currentUser.getIdToken();
-
-            const response = await axios.post(
-                `http://35.247.231.143:3000/scan/${data}`,
-                {},
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
-            if (response.status === 200 && response.data.success) {
+            if (result.success) {
                 Alert.alert("Sucesso", "Ingresso validado com sucesso!");
             } else {
                 Alert.alert(
                     "Atenção",
-                    response.data.message ||
-                        "Não foi possível validar o ingresso."
+                    result.message || "Não foi possível validar o ingresso."
                 );
             }
         } catch (error: any) {
             console.error(error);
-            Alert.alert(
-                "Erro",
-                error?.response?.data?.message || "Falha ao validar ingresso"
-            );
+            Alert.alert("Erro", error.message || "Falha ao validar ingresso");
         }
     }
 
@@ -91,7 +71,4 @@ export default function ReadQrCodeScreen() {
             </Modal>
         </ThemedView>
     );
-}
-function auth() {
-    throw new Error("Function not implemented.");
 }
