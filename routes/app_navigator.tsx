@@ -11,7 +11,6 @@ import React from "react";
 import TabTwoScreen from "../app/(tabs)/explore";
 import ManagementScreen from "../app/management";
 import RegisterScreen from "../app/register";
-import TesteScreen from "../app/teste";
 
 const Stack = createNativeStackNavigator();
 
@@ -30,11 +29,6 @@ const AppNavigator = () => {
                     name="Home"
                     component={HomeScreen}
                     options={{ title: "Página Inicial" }}
-                />
-                <Stack.Screen
-                    name="TesteScreen"
-                    component={TesteScreen}
-                    options={{ title: "Teste" }}
                 />
                 <Stack.Screen
                     name="RegisterScreen"
