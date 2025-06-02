@@ -1,22 +1,22 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { Collapsible } from "@/components/Collapsible";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
+import { Image } from "react-native";
 
 export default function TabTwoScreen() {
     return (
         <ParallaxScrollView
             headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
             headerImage={
-                <IconSymbol
-                    size={310}
-                    color="#808080"
-                    name="chevron.left.forwardslash.chevron.right"
-                    style={styles.headerImage}
-                />
+                <View style={styles.container}> 
+                                    <Image
+                                    style={styles.reactLogo}
+                                    source={require("@/assets/images/logo_apae.png")}
+                                />
+                                </View>
             }
         >
             <ThemedView style={styles.titleContainer}>
@@ -52,4 +52,14 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         gap: 8,
     },
+     container: {
+    flex: 1,
+    justifyContent: 'center', 
+    alignItems: 'center',     
+    backgroundColor: '#001122', 
+  },
+  reactLogo: {
+    width: 518,
+    height: 316,
+  },
 });
