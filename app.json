@@ -1,23 +1,32 @@
 {
   "expo": {
     "name": "ApaeEventos",
-    "slug": "ApaeEventos",
+    "slug": "apae-eventos",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "apaeeventos",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "extra": {
+      "eas": {
+        "projectId": "b5941c7a-ff26-495c-9a3d-23dc1bf716ea"
+      },
+      "apiUrl": "http://35.247.231.143:3000"
+    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "package_name": "apae.android"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#ffffff",
+        "googleServicesFile": "./google-services.json",
+        "package_name": "apae.android"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.ApaeEventos"
+      "package_name": "apae.android"
     },
     "web": {
       "bundler": "metro",
@@ -26,6 +35,9 @@
     },
     "plugins": [
       "expo-router",
+      "expo-build-properties",
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
       [
         "expo-splash-screen",
         {
@@ -38,6 +50,7 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "owner": "rafaelhgreco"
   }
 }
