@@ -47,14 +47,6 @@ export default function EventsCard() {
         );
     }
 
-    if (events.length === 0) {
-        return (
-            <View>
-                <Text>Nenhum evento encontrado.</Text>
-            </View>
-        );
-    }
-
     if (error) {
         return (
             <View>
@@ -68,11 +60,17 @@ export default function EventsCard() {
             <View style={styles.container}>
                 <Text style={styles.title}>Próximos Eventos</Text>
                 <ScrollView style={styles.scrollView}>
-                    {events.map((event) => (
-                        <View style={styles.eventItem} key={event.id}>
-                            <EventItem key={event.id} event={event} />
-                        </View>
-                    ))}
+                    {events.length === 0 ? (
+                        <Text style={styles.title}>
+                            Nenhum evento encontrado
+                        </Text>
+                    ) : (
+                        events.map((event) => (
+                            <View style={styles.eventItem} key={event.id}>
+                                <EventItem event={event} />
+                            </View>
+                        ))
+                    )}
                 </ScrollView>
                 <View>
                     <Link href="/list_all_events" style={styles.linkBox}>

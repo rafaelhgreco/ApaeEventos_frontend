@@ -43,6 +43,21 @@ export const styles = StyleSheet.create({
         alignItems: "center",
         paddingHorizontal: 10,
     },
+    mainButton: {
+        borderRadius: border.radiusMedium,
+        padding: 10,
+        marginTop: 10,
+    },
+    buttonContainerCreate: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 20,
+        width: 350,
+        maxHeight: 250,
+        borderRadius: border.radiusLarge,
+    },
+
     buttonEvent: {
         backgroundColor: "green",
     },
