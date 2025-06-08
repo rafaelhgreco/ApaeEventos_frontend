@@ -4,8 +4,7 @@ import { getFirebaseAuth } from "@/firebase/firebase";
 import type { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { useNavigation, useRouter } from "expo-router";
 import React, { useLayoutEffect, useState } from "react";
-import { Alert, Text, View } from "react-native";
-import Animated from "react-native-reanimated";
+import { Alert, Animated, Dimensions, Text, View } from "react-native";
 import { styles } from "./styles/management.style";
 
 export default function ManagementScreen() {
@@ -13,6 +12,7 @@ export default function ManagementScreen() {
     const router = useRouter();
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const { height } = Dimensions.get("window");
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -45,8 +45,13 @@ export default function ManagementScreen() {
     };
 
     return (
-        <Animated.ScrollView contentContainerStyle={styles.container}>
-            <View style={styles.container}>
+        <Animated.ScrollView
+            contentContainerStyle={[
+                styles.scrollContent,
+                { minHeight: height + 100 },
+            ]}
+        >
+            <View style={styles.innerContainer}>
                 <Text style={styles.text}>
                     Bem-vindo ao Gerenciador de Eventos
                 </Text>
