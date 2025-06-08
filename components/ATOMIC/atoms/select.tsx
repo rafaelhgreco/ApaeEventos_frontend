@@ -12,6 +12,7 @@ const Select: React.FC<SelectProps> = ({
             <Picker
                 selectedValue={selectedValue}
                 onValueChange={(itemValue) => onValueChange(itemValue)}
+                style={styles.text}
             >
                 {options.map((option) => (
                     <Picker.Item
@@ -32,6 +33,10 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginVertical: 10,
         backgroundColor: "#FFF",
+    },
+    text: {
+        fontSize: 16,
+        color: "#333",
     },
 });
 

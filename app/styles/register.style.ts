@@ -29,4 +29,10 @@ export const styles = StyleSheet.create({
         borderColor: "#ddd",
         borderRadius: border.radiusMedium,
     },
+    title: {
+        fontSize: 32,
+        fontWeight: "bold",
+        color: "black",
+        marginBottom: 16,
+    },
 });
