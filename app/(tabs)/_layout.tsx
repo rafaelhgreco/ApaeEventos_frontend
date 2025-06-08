@@ -30,9 +30,16 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="index"
                 options={{
-                    title: "Home",
+                    title: "Início",
+                    tabBarLabelStyle: {
+                        color: "#2c3e50",
+                    },
                     tabBarIcon: ({ color }) => (
-                        <IconSymbol size={28} name="house.fill" color={color} />
+                        <IconSymbol
+                            size={28}
+                            name="house.fill"
+                            color="#2c3e50"
+                        />
                     ),
                 }}
             />
@@ -40,11 +47,14 @@ export default function TabLayout() {
                 name="explore"
                 options={{
                     title: "Solicitar Conta",
+                    tabBarLabelStyle: {
+                        color: "#2c3e50",
+                    },
                     tabBarIcon: ({ color }) => (
                         <IconSymbol
                             size={28}
                             name="paperplane.fill"
-                            color={color}
+                            color="#2c3e50"
                         />
                     ),
                 }}

@@ -2,9 +2,8 @@ import { StyleSheet, View } from "react-native";
 
 import { Collapsible } from "@/components/Collapsible";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { Image } from "react-native";
+import { Image, Text } from "react-native";
 
 export default function TabTwoScreen() {
     return (
@@ -20,22 +19,18 @@ export default function TabTwoScreen() {
             }
         >
             <ThemedView style={styles.titleContainer}>
-                <ThemedText type="title">
+                <Text style={styles.title}>
                     Solicitar uma Conta ao Administrador
-                </ThemedText>
+                </Text>
             </ThemedView>
-            <ThemedText>
+            <Text style={styles.text}>
                 Para solicitar sua conta, envie um email para um dos
                 administradores, com seus dados( Nome, Email, Telefone e Função)
                 e aguarde a criação da conta. Você receberá um email de
                 confirmação quando a conta for criada.
-            </ThemedText>
-            <Collapsible title="E-mail dos administradores">
-                <ThemedText>
-                    <ThemedText type="defaultSemiBold">
-                        renanteixeira338@gmail.com
-                    </ThemedText>{" "}
-                </ThemedText>
+            </Text>
+            <Collapsible title="Administradores">
+                <Text style={styles.text}>renanteixeira338@gmail.com</Text>
             </Collapsible>
         </ParallaxScrollView>
     );
@@ -61,5 +56,16 @@ const styles = StyleSheet.create({
     reactLogo: {
         width: 518,
         height: 316,
+    },
+    title: {
+        fontSize: 32,
+        fontWeight: "bold",
+        color: "black",
+        marginBottom: 16,
+    },
+    text: {
+        fontSize: 16,
+        color: "#333",
+        marginBottom: 8,
     },
 });

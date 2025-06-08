@@ -1,7 +1,6 @@
 import Icon from "@/components/ATOMIC/atoms/icon";
 import GenericForm from "@/components/ATOMIC/molecules/form";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { getFirebaseAuth } from "@/firebase/firebase";
 import { FormField } from "@/types/molecules";
@@ -197,7 +196,7 @@ export default function RegisterScreen() {
             }
         >
             <ThemedView style={styles.titleContainer}>
-                <ThemedText type="title">Realizar Cadastro</ThemedText>
+                <Text style={styles.title}>Realizar Cadastro</Text>
             </ThemedView>
             <ThemedView>
                 <Text>Digite os dados abaixo.</Text>

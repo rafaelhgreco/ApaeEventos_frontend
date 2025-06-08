@@ -2,7 +2,6 @@ import Icon from "@/components/ATOMIC/atoms/icon";
 import GenericForm from "@/components/ATOMIC/molecules/form";
 import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
 import { getFirebaseAuth } from "@/firebase/firebase";
 import { FormField } from "@/types/molecules";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
@@ -180,17 +179,16 @@ export default function HomeScreen() {
         <ParallaxScrollView
             headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
             headerImage={
-                <View style={styles.container}> 
+                <View style={styles.container}>
                     <Image
-                    style={styles.reactLogo}
-                    source={require("@/assets/images/logo_apae.png")}
-                />
+                        style={styles.reactLogo}
+                        source={require("@/assets/images/logo_apae.png")}
+                    />
                 </View>
-                
             }
         >
             <View style={styles.titleContainer}>
-                <ThemedText type="title">Apae Eventos</ThemedText>
+                <Text style={styles.title}>Apae Eventos</Text>
                 <HelloWave />
             </View>
 

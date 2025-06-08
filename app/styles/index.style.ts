@@ -5,10 +5,9 @@ export const styles = StyleSheet.create({
     titleContainer: {
         flexDirection: "row",
         alignItems: "center",
-        gap: paddings.medium, 
+        gap: paddings.medium,
     },
     stepContainer: {
-        
         marginBottom: paddings.medium,
     },
     loginForm: {
@@ -19,14 +18,20 @@ export const styles = StyleSheet.create({
         borderColor: "#ccc",
         borderRadius: border.radiusMedium,
     },
-  container: {
-    flex: 1,
-    justifyContent: 'center', 
-    alignItems: 'center',     
-    backgroundColor: '#001122', 
-  },
-  reactLogo: {
-    width: 518,
-    height: 316,
-  },
+    container: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#001122",
+    },
+    reactLogo: {
+        width: 518,
+        height: 316,
+    },
+    title: {
+        fontSize: 32,
+        fontWeight: "bold",
+        color: "black",
+        marginBottom: 16,
+    },
 });
