@@ -47,10 +47,7 @@ export default function ManagementScreen() {
 
     return (
         <Animated.ScrollView
-            contentContainerStyle={[
-                styles.scrollContent,
-                { minHeight: height + 100 },
-            ]}
+            contentContainerStyle={[styles.scrollContent, { flexGrow: 1 }]}
         >
             <View style={styles.innerContainer}>
                 <Text style={styles.text}>

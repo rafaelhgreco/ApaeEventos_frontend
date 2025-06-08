@@ -150,16 +150,16 @@ export default function RegisterScreen() {
             },
         },
         {
-            type: "input",
+            type: "select",
             key: "role",
             props: {
-                label: "Função",
-                placeholder: "ex: Atendende",
-                value: formData.role,
-                onChangeText: handleInputChange("role"),
-                leftIcon: (
-                    <Icon name="briefcase-outline" color="#007AFF" size={20} />
-                ),
+                title: "Função",
+                options: [
+                    { label: "Atendente", value: "Atendente" },
+                    { label: "Organizador", value: "Organizador" },
+                ],
+                selectedValue: formData.role,
+                onValueChange: handleInputChange("role"),
             },
         },
         {
@@ -198,7 +198,7 @@ export default function RegisterScreen() {
                 <ThemedText type="title">Realizar Cadastro</ThemedText>
             </ThemedView>
             <ThemedView>
-                <Text>Digite seus dados abaixo.</Text>
+                <Text>Digite os dados abaixo.</Text>
             </ThemedView>
             <ThemedView>
                 <GenericForm

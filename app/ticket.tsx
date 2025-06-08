@@ -74,14 +74,16 @@ export default function TicketsScreen() {
 
     const formFields: FormField[] = [
         {
-            type: "input",
+            type: "select",
             key: "tipo",
             props: {
-                label: "Tipo (Normal, VIP, etc.)",
-                placeholder: "Digite o tipo de ingresso",
-                value: formData.tipo,
-                onChangeText: handleInputChange("tipo"),
-                autoCapitalize: "none",
+                options: [
+                    { label: "Meia", value: "Meia" },
+                    { label: "Inteira", value: "Inteira" },
+                    { label: "VIP", value: "VIP" },
+                ],
+                selectedValue: formData.tipo,
+                onValueChange: handleInputChange("tipo"),
             },
         },
         {
