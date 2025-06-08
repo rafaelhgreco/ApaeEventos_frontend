@@ -1,10 +1,17 @@
 import ReadQrCode from "@/components/qrcode/scan_qrcode";
 import ValidateQRCode from "@/components/qrcode/validate_qrcode";
-import React from "react";
+import { useNavigation } from "expo-router";
+import React, { useLayoutEffect } from "react";
 import { Text, View } from "react-native";
 import { styles } from "./styles/qrcode.styles";
 
 export default function QrCodeScreen() {
+    const navigation = useNavigation();
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            title: "Gerenciar Ingressos",
+        });
+    }, [navigation]);
     return (
         <View>
             <Text style={styles.title}>Gerenciador de Ingressos</Text>

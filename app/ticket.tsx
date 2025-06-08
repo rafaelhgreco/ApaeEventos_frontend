@@ -2,8 +2,9 @@ import GenericForm from "@/components/ATOMIC/molecules/form";
 import { createTicket } from "@/services/ticket_services";
 import { FormField } from "@/types/molecules";
 import auth from "@react-native-firebase/auth";
+import { useNavigation } from "expo-router";
 import { useSearchParams } from "expo-router/build/hooks";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Alert } from "react-native";
 import { styles } from "./styles/register.style";
 
@@ -17,6 +18,12 @@ export default function TicketsScreen() {
 
     const searchParams = useSearchParams();
     const eventId = searchParams.get("eventId");
+    const navigation = useNavigation();
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            title: "Criar Novo Ingresso",
+        });
+    }, [navigation]);
 
     useEffect(() => {
         if (eventId) {
@@ -113,7 +120,7 @@ export default function TicketsScreen() {
 
     return (
         <GenericForm
-            title="Criar Novo Ingresso"
+            title="Selecione os dados do ingresso"
             fields={formFields}
             style={styles.registerForm}
         />

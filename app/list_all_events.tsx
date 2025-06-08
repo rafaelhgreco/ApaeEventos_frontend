@@ -2,8 +2,8 @@ import SearchInput from "@/components/ATOMIC/atoms/search_input";
 import { EventItem } from "@/components/cards/event_item";
 import { useEvents } from "@/hooks/useEvents";
 import auth from "@react-native-firebase/auth";
-import { useFocusEffect, useRouter } from "expo-router";
-import React, { useCallback, useState } from "react";
+import { useFocusEffect, useNavigation, useRouter } from "expo-router";
+import React, { useCallback, useLayoutEffect, useState } from "react";
 import {
     ActivityIndicator,
     Alert,
@@ -20,8 +20,15 @@ type RootStackParamList = {
 
 export default function EventsPage() {
     const [search, setSearch] = useState("");
+    const navigation = useNavigation();
     const router = useRouter();
     const { events, fetchEvents, loading, error } = useEvents();
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            title: "Todos os eventos",
+        });
+    }, [navigation]);
 
     useFocusEffect(
         useCallback(() => {

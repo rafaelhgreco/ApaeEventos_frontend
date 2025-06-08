@@ -8,8 +8,8 @@ import { FormField } from "@/types/molecules";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import { Image } from "expo-image";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useNavigation, useRouter } from "expo-router";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Alert, Text } from "react-native";
 import { styles } from "./styles/register.style";
 
@@ -27,6 +27,13 @@ export default function RegisterScreen() {
     const auth: FirebaseAuthTypes.Module = getFirebaseAuth();
 
     const router = useRouter();
+
+    const navigation = useNavigation();
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            title: "Criar novo usuário",
+        });
+    }, [navigation]);
 
     useEffect(() => {
         const subscriber = auth.onAuthStateChanged((currentUser) => {

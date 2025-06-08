@@ -16,6 +16,7 @@ export default function ManagementScreen() {
 
     useLayoutEffect(() => {
         navigation.setOptions({
+            title: "Gerenciador de Eventos",
             headerRight: () => (
                 <Button
                     label="Logout"
