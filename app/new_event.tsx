@@ -2,8 +2,8 @@ import GenericForm from "@/components/ATOMIC/molecules/form";
 import { createEvent } from "@/services/event_services";
 import { FormField } from "@/types/molecules";
 import auth from "@react-native-firebase/auth";
-import { router } from "expo-router";
-import React, { useState } from "react";
+import { router, useNavigation } from "expo-router";
+import React, { useLayoutEffect, useState } from "react";
 import { Alert } from "react-native";
 
 export default function NewEventScreen() {
@@ -15,6 +15,13 @@ export default function NewEventScreen() {
         bannerUrl: "",
     });
     const [loading, setLoading] = useState<boolean>(false);
+    const navigation = useNavigation();
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            title: "Criar novo evento",
+        });
+    }, [navigation]);
 
     const handleInputChange = (field: string) => (value: string) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
@@ -139,7 +146,7 @@ export default function NewEventScreen() {
     return (
         <GenericForm
             fields={formFields}
-            title="Criar novo evento"
+            title="Digite os dados do novo evento"
             containerStyle={{ padding: 16 }}
             titleStyle={{
                 fontSize: 24,

@@ -1,10 +1,16 @@
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
-import { ButtonProps, DateFieldProps, InputProps } from "../../../types/atoms";
+import {
+    ButtonProps,
+    DateFieldProps,
+    InputProps,
+    SelectProps,
+} from "../../../types/atoms";
 import { FormField, GenericFormProps } from "../../../types/molecules";
 import Button from "../atoms/button";
 import DateTimeField from "../atoms/data_time_field";
 import Input from "../atoms/input";
+import Select from "../atoms/select";
 import { styles } from "./form.style";
 
 const GenericForm: React.FC<GenericFormProps> = ({
@@ -25,6 +31,10 @@ const GenericForm: React.FC<GenericFormProps> = ({
             case "button":
                 return (
                     <Button key={field.key} {...(field.props as ButtonProps)} />
+                );
+            case "select":
+                return (
+                    <Select key={field.key} {...(field.props as SelectProps)} />
                 );
             case "date":
             case "time":

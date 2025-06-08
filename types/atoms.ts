@@ -18,6 +18,13 @@ export interface InputProps extends Omit<TextInputProps, "style"> {
     isPassword?: boolean;
 }
 
+export interface SelectProps extends Omit<TouchableOpacityProps, "style"> {
+    title: string;
+    options: Array<{ label: string; value: string }>;
+    selectedValue?: string;
+    onValueChange: (value: string) => void;
+}
+
 export interface ButtonProps extends Omit<TouchableOpacityProps, "style"> {
     label: string;
     variant?: "primary" | "secondary" | "outline";

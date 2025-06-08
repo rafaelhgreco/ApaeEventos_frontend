@@ -11,7 +11,7 @@ export const EventItem: React.FC<{ event: Event }> = ({ event }) => {
             <Text style={styles.eventName}>{event.nome}</Text>
             <Text style={styles.eventData}>
                 Data:{" "}
-                {format(event.data, "dd 'de' MMMM 'de' yyyy, HH:mm", {
+                {format(event.data, "dd 'de' MMMM 'de' yyyy", {
                     locale: ptBR,
                 })}
             </Text>
