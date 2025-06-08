@@ -1,6 +1,6 @@
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import { getFirebaseAuth } from "../../firebase/firebase"; // Adjust the import path as necessary
 import { getEventReport, ReportData } from "../../services/report_services";
@@ -11,6 +11,12 @@ export default function ReportScreen() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const { eventId } = useLocalSearchParams();
+    const navigation = useNavigation();
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            title: "Relatório do Evento",
+        });
+    }, [navigation]);
 
     useEffect(() => {
         const fetchReport = async () => {
@@ -63,7 +69,7 @@ export default function ReportScreen() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>📊 Relatório do Evento</Text>
+            <Text style={styles.title}>📊 Dados do evento</Text>
             <View style={styles.card}>
                 <Text style={styles.label}>Total de Ingressos</Text>
                 <Text style={styles.value}>{report.total}</Text>

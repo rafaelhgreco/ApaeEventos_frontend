@@ -1,7 +1,7 @@
 import { getUserEvents } from "@/services/event_services";
 import auth from "@react-native-firebase/auth";
-import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { ActivityIndicator, Alert, Text, View } from "react-native";
 import Button from "../../components/ATOMIC/atoms/button";
 import { Event } from "../../src/domain/events";
@@ -12,6 +12,13 @@ export default function EventDetailsPage() {
     const [event, setEvent] = useState<Event | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const navigation = useNavigation();
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            title: "Detalhes do evento",
+        });
+    }, [navigation]);
 
     useEffect(() => {
         if (!eventId) return;

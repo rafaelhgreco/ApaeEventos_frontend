@@ -8,9 +8,9 @@ import { FormField } from "@/types/molecules";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import { Image } from "expo-image";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { Alert, Text } from "react-native";
+import { useNavigation, useRouter } from "expo-router";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { Alert, Text, View } from "react-native";
 import { styles } from "./styles/register.style";
 
 export default function RegisterScreen() {
@@ -27,6 +27,13 @@ export default function RegisterScreen() {
     const auth: FirebaseAuthTypes.Module = getFirebaseAuth();
 
     const router = useRouter();
+
+    const navigation = useNavigation();
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            title: "Criar novo usuário",
+        });
+    }, [navigation]);
 
     useEffect(() => {
         const subscriber = auth.onAuthStateChanged((currentUser) => {
@@ -143,16 +150,16 @@ export default function RegisterScreen() {
             },
         },
         {
-            type: "input",
+            type: "select",
             key: "role",
             props: {
-                label: "Função",
-                placeholder: "ex: Atendende",
-                value: formData.role,
-                onChangeText: handleInputChange("role"),
-                leftIcon: (
-                    <Icon name="briefcase-outline" color="#007AFF" size={20} />
-                ),
+                title: "Função",
+                options: [
+                    { label: "Atendente", value: "Atendente" },
+                    { label: "Organizador", value: "Organizador" },
+                ],
+                selectedValue: formData.role,
+                onValueChange: handleInputChange("role"),
             },
         },
         {
@@ -181,17 +188,19 @@ export default function RegisterScreen() {
         <ParallaxScrollView
             headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
             headerImage={
-                <Image
-                    source={require("@/assets/images/partial-react-logo.png")}
-                    style={styles.reactLogo}
-                />
+                <View style={styles.container}>
+                    <Image
+                        source={require("@/assets/images/logo_apae.png")}
+                        style={styles.reactLogo}
+                    />
+                </View>
             }
         >
             <ThemedView style={styles.titleContainer}>
                 <ThemedText type="title">Realizar Cadastro</ThemedText>
             </ThemedView>
             <ThemedView>
-                <Text>Digite seus dados abaixo.</Text>
+                <Text>Digite os dados abaixo.</Text>
             </ThemedView>
             <ThemedView>
                 <GenericForm

@@ -47,6 +47,14 @@ export default function EventsCard() {
         );
     }
 
+    if (events.length === 0) {
+        return (
+            <View>
+                <Text>Nenhum evento encontrado.</Text>
+            </View>
+        );
+    }
+
     if (error) {
         return (
             <View>
@@ -108,23 +116,15 @@ export default function EventsCard() {
 
                     <View style={styles.buttonContainer}>
                         <Button
-                            label="Relatórios"
+                            label="Registrar Usuário"
                             variant="primary"
-                            onPress={handleClick}
+                            onPress={() => router.push("/register")}
                             containerStyle={[
                                 styles.button,
                                 styles.buttonReports,
                             ]}
                         />
                     </View>
-                </View>
-                <View style={{ marginTop: 20 }}>
-                    <Text style={styles.title}>Gerenciar usuários</Text>
-                    <Button
-                        label="Cadastrar um novo usuário"
-                        onPress={() => router.push("/register")}
-                        variant="outline"
-                    ></Button>
                 </View>
             </View>
         </View>

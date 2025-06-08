@@ -12,18 +12,21 @@ export const styles = StyleSheet.create({
         marginBottom: 8,
     },
     reactLogo: {
-        height: 178,
-        width: 290,
-        position: "absolute",
-        bottom: 0,
-        left: 0,
+        width: 518,
+        height: 316,
+    },
+    container: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#001122",
     },
     registerForm: {
         flex: 1,
         justifyContent: "center",
         padding: 16,
         borderWidth: 1,
-        borderColor: "#ccc",
+        borderColor: "#ddd",
         borderRadius: border.radiusMedium,
     },
 });
