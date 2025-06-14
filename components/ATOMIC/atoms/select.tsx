@@ -32,11 +32,11 @@ const styles = StyleSheet.create({
         borderColor: "#ddd",
         borderRadius: 5,
         marginVertical: 10,
-        backgroundColor: "#FFF",
     },
     text: {
         fontSize: 16,
         color: "#333",
+        backgroundColor: "#fff",
     },
 });
 

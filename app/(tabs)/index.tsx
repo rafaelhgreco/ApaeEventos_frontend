@@ -1,14 +1,14 @@
 import Icon from "@/components/ATOMIC/atoms/icon";
 import GenericForm from "@/components/ATOMIC/molecules/form";
-import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
+import { ThemedView } from "@/components/ThemedView";
 import { getFirebaseAuth } from "@/firebase/firebase";
 import { FormField } from "@/types/molecules";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Image, Text, View } from "react-native";
+import { Alert, Image, View } from "react-native";
 import { styles } from "../styles/index.style";
 
 export default function HomeScreen() {
@@ -112,7 +112,6 @@ export default function HomeScreen() {
             type: "input",
             key: "email",
             props: {
-                label: "E-mail",
                 placeholder: "Digite seu e-mail",
                 value: formData.email,
                 onChangeText: handleInputChange("email"),
@@ -124,7 +123,6 @@ export default function HomeScreen() {
             type: "input",
             key: "password",
             props: {
-                label: "Senha",
                 placeholder: "Digite sua senha",
                 value: formData.password,
                 onChangeText: handleInputChange("password"),
@@ -187,21 +185,11 @@ export default function HomeScreen() {
                 </View>
             }
         >
-            <View style={styles.titleContainer}>
-                <Text style={styles.title}>Apae Eventos</Text>
-                <HelloWave />
-            </View>
-
-            <View style={styles.stepContainer}>
-                <Text>Olá, seja bem-vindo(a)!</Text>
-            </View>
-
-            <View style={styles.loginForm}>
-                <GenericForm
-                    title="Faça login na sua conta"
-                    fields={formFields}
-                />
-            </View>
+            <ThemedView>
+                <View style={styles.loginForm}>
+                    <GenericForm title="Login" fields={formFields} />
+                </View>
+            </ThemedView>
         </ParallaxScrollView>
     );
 }

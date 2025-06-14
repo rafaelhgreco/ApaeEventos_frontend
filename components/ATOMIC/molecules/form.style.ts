@@ -7,10 +7,10 @@ export const styles = StyleSheet.create({
         padding: paddings.large,
     },
     title: {
-        fontSize: 24,
-        fontWeight: "bold",
+        fontSize: 32,
+        fontWeight: "600",
         color: colors.text,
         marginBottom: paddings.extraLarge,
-        textAlign: "center",
+        textAlign: "left",
     },
 });

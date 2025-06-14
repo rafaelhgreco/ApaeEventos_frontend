@@ -18,7 +18,7 @@ export const styles = StyleSheet.create({
         borderWidth: borderWidth.thin,
         borderColor: colors.borderLight,
         padding: paddings.large,
-        borderRadius: border.radiusMedium,
+        borderRadius: border.radiusLarge,
         justifyContent: "center",
         backgroundColor: colors.backgroundLight,
     },
