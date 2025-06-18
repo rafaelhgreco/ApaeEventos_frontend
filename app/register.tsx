@@ -9,7 +9,7 @@ import firestore from "@react-native-firebase/firestore";
 import { Image } from "expo-image";
 import { useNavigation, useRouter } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
-import { Alert, Text, View } from "react-native";
+import { Alert, View } from "react-native";
 import { styles } from "./styles/register.style";
 
 export default function RegisterScreen() {
@@ -195,12 +195,6 @@ export default function RegisterScreen() {
                 </View>
             }
         >
-            <ThemedView style={styles.titleContainer}>
-                <Text style={styles.title}>Realizar Cadastro</Text>
-            </ThemedView>
-            <ThemedView>
-                <Text>Digite os dados abaixo.</Text>
-            </ThemedView>
             <ThemedView>
                 <GenericForm
                     title="Cadastro de Usuário"
