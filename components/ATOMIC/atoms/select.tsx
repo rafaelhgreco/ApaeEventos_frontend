@@ -2,6 +2,7 @@ import { SelectProps } from "@/types/atoms";
 import { Picker } from "@react-native-picker/picker";
 import React from "react";
 import { StyleSheet, View } from "react-native";
+import { colors } from "../../../app/styles/themes";
 const Select: React.FC<SelectProps> = ({
     options,
     selectedValue,
@@ -29,9 +30,15 @@ const Select: React.FC<SelectProps> = ({
 const styles = StyleSheet.create({
     pickerContainer: {
         borderWidth: 1,
-        borderColor: "#ddd",
-        borderRadius: 5,
         marginVertical: 10,
+        backgroundColor: colors.backgroundLight,
+        borderColor: colors.borderLight,
+        shadowColor: colors.primary,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 10,
+        elevation: 1.7,
+        overflow: "visible",
     },
     text: {
         fontSize: 16,
