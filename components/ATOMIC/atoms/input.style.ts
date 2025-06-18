@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
-        elevation: 3,
+        elevation: 1.7,
         overflow: "visible",
     },
     inputInnerContainer: {
@@ -43,6 +43,6 @@ export const styles = StyleSheet.create({
         borderRadius: border.radiusLarge,
         paddingHorizontal: paddings.large,
         minHeight: 48,
-        backgroundColor: "transparent", // importante!
+        backgroundColor: "transparent",
     },
 });
