@@ -54,7 +54,7 @@
     "react-native-webview": "13.13.5",
     "text-encoding-polyfill": "^0.6.7",
     "victory-native": "^41.17.4",
-    "zustand": "^5.0.5"
+    "zustand": "^5.0.5",
     "expo-image-picker": "~16.1.4"
   },
   "devDependencies": {
