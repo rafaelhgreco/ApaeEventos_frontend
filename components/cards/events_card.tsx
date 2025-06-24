@@ -35,8 +35,8 @@ export default function EventsCard() {
         router.push("/qrcode");
     }
 
-    function handleClick(): void {
-        console.log("Button clicked!");
+    function handleDashboard(): void {
+        router.push("/dashboard");
     }
 
     if (loading) {
@@ -104,7 +104,7 @@ export default function EventsCard() {
                         <Button
                             label="Dashboard"
                             variant="primary"
-                            onPress={handleClick}
+                            onPress={handleDashboard}
                             containerStyle={[
                                 styles.button,
                                 styles.buttonDashboard,
