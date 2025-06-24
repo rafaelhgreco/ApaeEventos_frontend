@@ -20,7 +20,7 @@ export default function ManagementScreen() {
             headerRight: () => (
                 <Button
                     label="Logout"
-                    variant="outline"
+                    variant="primary"
                     size="small"
                     onPress={handleSignOut}
                     loading={loading}

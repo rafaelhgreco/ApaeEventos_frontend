@@ -16,22 +16,33 @@ export const styles = StyleSheet.create({
         fontSize: font.sizeMedium,
         color: colors.text,
         paddingVertical: 12,
-        // marginLeft and marginRight should be set dynamically in the component
     },
     errorText: {
         color: colors.error,
         fontSize: font.sizeSmall,
         marginTop: paddings.small,
     },
-});
-
-export const inputContainerStyle = (hasError: boolean) => ({
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: hasError ? colors.error : colors.borderLight,
-    borderRadius: border.radiusMedium,
-    backgroundColor: colors.backgroundLight,
-    paddingHorizontal: paddings.large,
-    minHeight: 48,
+    shadowWrapper: {
+        borderRadius: border.radiusLarge,
+        backgroundColor: colors.backgroundLight,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 1.7,
+        overflow: "visible",
+    },
+    inputInnerContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        borderColor: colors.borderLight,
+        borderWidth: 1,
+        borderRadius: border.radiusLarge,
+        paddingHorizontal: paddings.large,
+        minHeight: 48,
+        backgroundColor: "transparent",
+    },
 });

@@ -74,7 +74,7 @@ export default function EventsCard() {
                 </ScrollView>
                 <View>
                     <Link href="/list_all_events" style={styles.linkBox}>
-                        <Text style={styles.link}>Ver todos os eventos</Text>
+                        <Text style={styles.link}>Ver todos os eventos 👉</Text>
                     </Link>
                 </View>
             </View>
