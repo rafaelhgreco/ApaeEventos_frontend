@@ -1,7 +1,6 @@
 import GenericForm from "@/components/ATOMIC/molecules/form";
 import { createTicket } from "@/services/ticket_services";
 import { FormField } from "@/types/molecules";
-import auth from "@react-native-firebase/auth";
 import { useNavigation } from "expo-router";
 import { useSearchParams } from "expo-router/build/hooks";
 import { useEffect, useLayoutEffect, useState } from "react";
@@ -34,7 +33,7 @@ export default function TicketsScreen() {
     const submitForm = async () => {
         setLoading(true);
         try {
-            const token = await auth().currentUser?.getIdToken();
+            const token = "await auth().currentUser?.getIdToken();";
             if (!token) {
                 Alert.alert("Erro", "Usuário não autenticado.");
                 return;
@@ -77,6 +76,7 @@ export default function TicketsScreen() {
             type: "select",
             key: "tipo",
             props: {
+                label: "Tipo de ingresso",
                 options: [
                     { label: "Meia", value: "Meia" },
                     { label: "Inteira", value: "Inteira" },

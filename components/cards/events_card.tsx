@@ -1,4 +1,3 @@
-import auth from "@react-native-firebase/auth";
 import { Link, useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback } from "react";
 import { Alert, ScrollView, Text, View } from "react-native";
@@ -14,7 +13,7 @@ export default function EventsCard() {
     useFocusEffect(
         useCallback(() => {
             const loadEvents = async () => {
-                const token = await auth().currentUser?.getIdToken();
+                const token = "await auth().currentUser?.getIdToken();";
                 if (!token) {
                     Alert.alert("Erro", "Usuário não autenticado.");
                     return;
