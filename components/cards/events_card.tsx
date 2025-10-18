@@ -1,6 +1,6 @@
 import { Link, useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback } from "react";
-import { Alert, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
 import { useEvents } from "../../hooks/useEvents";
 import Button from "../ATOMIC/atoms/button";
 import { styles } from "./event_card.style";
@@ -38,28 +38,14 @@ export default function EventsCard() {
         router.push("/dashboard");
     }
 
-    if (loading) {
-        return (
-            <View>
-                <Text>Carregando eventos...</Text>
-            </View>
-        );
-    }
-
-    if (error) {
-        return (
-            <View>
-                <Text>Erro ao carregar eventos: {error}</Text>
-            </View>
-        );
-    }
-
     return (
         <View>
             <View style={styles.container}>
                 <Text style={styles.title}>Próximos Eventos</Text>
                 <ScrollView style={styles.scrollView}>
-                    {events.length === 0 ? (
+                    {loading ? (
+                        <ActivityIndicator size="large" />
+                    ) : events.length === 0 ? (
                         <Text style={styles.title}>
                             Nenhum evento encontrado
                         </Text>
@@ -71,7 +57,7 @@ export default function EventsCard() {
                         ))
                     )}
                 </ScrollView>
-                <View>
+                <View style={styles.linkContainer}>
                     <Link href="/list_all_events" style={styles.linkBox}>
                         <Text style={styles.link}>Ver todos os eventos 👉</Text>
                     </Link>
@@ -79,47 +65,45 @@ export default function EventsCard() {
             </View>
 
             <View style={styles.actionsBox}>
-                <Text style={styles.title}>Ações 👇</Text>
-                <View style={styles.buttonRow}>
-                    <View style={styles.buttonContainer}>
+                <Text style={styles.title}>Ações Rápidas</Text>
+                <View style={styles.actionsGrid}>
+                    <View style={styles.actionCard}>
                         <Button
                             label="Cadastrar Evento"
                             variant="primary"
                             onPress={handleCreateNewEvent}
-                            containerStyle={[styles.button, styles.buttonEvent]}
+                            containerStyle={styles.actionButton}
+                            textStyle={styles.actionButtonText}
                         />
                     </View>
 
-                    <View style={styles.buttonContainer}>
+                    <View style={styles.actionCard}>
                         <Button
                             label="Validar Ingresso"
                             variant="primary"
                             onPress={handleValidateTicket}
-                            containerStyle={styles.button}
+                            containerStyle={styles.actionButton}
+                            textStyle={styles.actionButtonText}
                         />
                     </View>
 
-                    <View style={styles.buttonContainer}>
+                    <View style={styles.actionCard}>
                         <Button
                             label="Dashboard"
                             variant="primary"
                             onPress={handleDashboard}
-                            containerStyle={[
-                                styles.button,
-                                styles.buttonDashboard,
-                            ]}
+                            containerStyle={styles.actionButton}
+                            textStyle={styles.actionButtonText}
                         />
                     </View>
 
-                    <View style={styles.buttonContainer}>
+                    <View style={styles.actionCard}>
                         <Button
                             label="Registrar Usuário"
                             variant="primary"
                             onPress={() => router.push("/register")}
-                            containerStyle={[
-                                styles.button,
-                                styles.buttonReports,
-                            ]}
+                            containerStyle={styles.actionButton}
+                            textStyle={styles.actionButtonText}
                         />
                     </View>
                 </View>

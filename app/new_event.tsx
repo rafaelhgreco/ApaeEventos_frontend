@@ -1,7 +1,7 @@
 import GenericForm from "@/components/ATOMIC/molecules/form";
 import { FormField } from "@/types/molecules";
-import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { useNavigation, useRouter } from "expo-router";
+import React, { useLayoutEffect, useState } from "react";
 import { Alert, Button, Image, ScrollView, View } from "react-native";
 
 export default function NewEventScreen() {
@@ -19,6 +19,12 @@ export default function NewEventScreen() {
     }>({});
 
     const router = useRouter();
+    const navigation = useNavigation();
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            title: "Criar Evento",
+        });
+    }, [navigation]);
 
     const toggleDatePicker = (key: string, visible: boolean) => {
         setShowDatePicker((prev) => ({ ...prev, [key]: visible }));

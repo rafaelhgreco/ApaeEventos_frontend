@@ -12,6 +12,7 @@ export const colors = {
     warning: "#ffc107",
     borderLight: "#ddd",
     backgroundLight: "#fff",
+    shadow: "#181818",
 };
 
 export const paddings = {

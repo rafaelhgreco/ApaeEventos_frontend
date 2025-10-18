@@ -1,5 +1,5 @@
 import { Dimensions, StyleSheet } from "react-native";
-import { border, colors } from "../../app/styles/themes"; // ajuste o caminho conforme sua estrutura
+import { border, colors } from "../../app/styles/themes";
 
 export const styles = StyleSheet.create({
     container: {
@@ -7,7 +7,7 @@ export const styles = StyleSheet.create({
         padding: 20,
         height: Dimensions.get("window").height * 0.3,
         width: 350,
-        maxHeight: 250,
+
         backgroundColor: "#fff",
         borderRadius: border.radiusLarge,
         marginBottom: 24,
@@ -18,68 +18,85 @@ export const styles = StyleSheet.create({
         elevation: 4,
     },
     actionsBox: {
-        marginTop: 10,
         flex: 1,
-        padding: 20,
+        padding: 24,
         width: 350,
-        maxHeight: 250,
+        maxHeight: 300,
+        backgroundColor: "#FFFFFF",
         borderRadius: border.radiusLarge,
+        marginBottom: 24,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 4,
     },
-    buttonRow: {
+    actionsGrid: {
         flexDirection: "row",
         flexWrap: "wrap",
+        gap: 12,
         justifyContent: "space-between",
     },
-    buttonContainer: {
+    actionCard: {
         width: "48%",
-        marginBottom: 10,
-        minHeight: 100,
+        aspectRatio: 1.2,
+        backgroundColor: "#F8F9FA",
+        borderRadius: border.radiusMedium,
+        padding: 2,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
+        elevation: 2,
     },
-    button: {
+    actionButton: {
         width: "100%",
-        height: 100,
+        height: "70%",
         borderRadius: border.radiusMedium,
         justifyContent: "center",
         alignItems: "center",
-        paddingHorizontal: 10,
-        shadowColor: colors.primary,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 10,
-        elevation: 1.7,
-        overflow: "visible",
-    },
-    buttonEvent: {
-        backgroundColor: "green",
-    },
-    buttonDashboard: {
-        backgroundColor: "orange",
-    },
-    buttonReports: {
-        backgroundColor: "gray",
+        backgroundColor: colors.primary,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.15,
+        shadowRadius: 6,
+        elevation: 1,
     },
     title: {
         fontSize: 18,
         fontWeight: "bold",
         color: colors.primary,
-        marginBottom: 10,
+        marginBottom: 16,
     },
     scrollView: {
         flex: 1,
     },
     link: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: "bold",
         color: "green",
-        textDecorationLine: "underline",
     },
     linkBox: {
         padding: 10,
-        alignSelf: "flex-end",
+        alignSelf: "center",
     },
     eventItem: {
         padding: 10,
         borderBottomWidth: 1,
         borderBottomColor: "#ddd",
+    },
+    linkContainer: {
+        borderColor: "green",
+        borderWidth: 1,
+        borderRadius: 10,
+        width: "80%",
+        alignSelf: "center",
+    },
+    actionButtonText: {
+        fontSize: 17,
+        fontWeight: "600",
+        color: "#FFFFFF",
+        letterSpacing: 0.5,
+        textAlign: "center",
     },
 });
