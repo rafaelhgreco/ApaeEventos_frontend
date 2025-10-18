@@ -1,6 +1,5 @@
+import { API_BASE_URL } from "@env";
 import axios from "axios";
-
-const API_BASE_URL = "http://35.247.231.143:3000";
 
 export async function validateQRCode(
     data: string

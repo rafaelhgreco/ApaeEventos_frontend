@@ -1,6 +1,5 @@
+import { API_BASE_URL } from "@env";
 import axios from "axios";
-
-const API_URL = "http://35.247.231.143:3000";
 
 export interface EventData {
     nome: string;
@@ -11,7 +10,7 @@ export interface EventData {
 }
 
 export const getUserEvents = async (token: string) => {
-    const response = await axios.get(`${API_URL}/events`, {
+    const response = await axios.get(`${API_BASE_URL}/events`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
@@ -22,7 +21,7 @@ export const getUserEvents = async (token: string) => {
 
 export const createEvent = async (event: EventData, token: string) => {
     const response = await axios.post(
-        `${API_URL}/events`,
+        `${API_BASE_URL}/events`,
         {
             nome: event.nome,
             data: event.data,

@@ -2,7 +2,7 @@ import Button from "@/components/ATOMIC/atoms/button";
 import EventsCard from "@/components/cards/events_card";
 import { useNavigation, useRouter } from "expo-router";
 import React, { useLayoutEffect, useState } from "react";
-import { Alert, Animated, Dimensions, Text, View } from "react-native";
+import { Alert, Animated, Dimensions, View } from "react-native";
 import { styles } from "./styles/management.style";
 
 export default function ManagementScreen() {
@@ -38,9 +38,6 @@ export default function ManagementScreen() {
             contentContainerStyle={[styles.scrollContent, { flexGrow: 1 }]}
         >
             <View style={styles.innerContainer}>
-                <Text style={styles.text}>
-                    Bem-vindo ao Gerenciador de Eventos
-                </Text>
                 <EventsCard />
             </View>
         </Animated.ScrollView>
