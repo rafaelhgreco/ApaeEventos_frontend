@@ -1,12 +1,10 @@
 import SearchInput from "@/components/ATOMIC/atoms/search_input";
 import { EventItem } from "@/components/cards/event_item";
 import { useEvents } from "@/hooks/useEvents";
-import auth from "@react-native-firebase/auth";
-import { useFocusEffect, useNavigation, useRouter } from "expo-router";
-import React, { useCallback, useLayoutEffect, useState } from "react";
+import { useNavigation, useRouter } from "expo-router";
+import React, { useLayoutEffect, useState } from "react";
 import {
     ActivityIndicator,
-    Alert,
     FlatList,
     Text,
     TouchableOpacity,
@@ -29,22 +27,6 @@ export default function EventsPage() {
             title: "Todos os eventos",
         });
     }, [navigation]);
-
-    useFocusEffect(
-        useCallback(() => {
-            const loadEvents = async () => {
-                const token = await auth().currentUser?.getIdToken();
-                if (!token) {
-                    Alert.alert("Erro", "Usuário não autenticado.");
-                    return;
-                }
-
-                await fetchEvents(token);
-            };
-
-            loadEvents();
-        }, [])
-    );
 
     const filteredEvents = events.filter((event) =>
         event.nome.toLowerCase().includes(search.toLowerCase())
