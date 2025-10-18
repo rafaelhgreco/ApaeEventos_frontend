@@ -9,7 +9,7 @@ import {
     ViewStyle,
 } from "react-native";
 import Icon from "../atoms/icon";
-import { inputContainerStyle, styles } from "./input.style"; // importe seu styles com StyleSheet
+import { styles } from "./input.style"; // importe seu styles com StyleSheet
 
 interface InputProps extends TextInputProps {
     label?: string;
@@ -72,17 +72,19 @@ const Input: React.FC<InputProps> = ({
         <View style={[styles.container, containerStyle]}>
             {label && <Text style={styles.label}>{label}</Text>}
 
-            <View style={[inputContainerStyle(!!error) as ViewStyle]}>
-                {renderLeftIcon()}
+            <View style={[styles.shadowWrapper]}>
+                <View style={[styles.inputInnerContainer]}>
+                    {renderLeftIcon()}
 
-                <TextInput
-                    {...textInputProps}
-                    style={[styles.inputIcon, inputStyle]}
-                    secureTextEntry={isSecureEntry}
-                    placeholderTextColor="#999"
-                />
+                    <TextInput
+                        {...textInputProps}
+                        style={[styles.inputIcon, inputStyle]}
+                        secureTextEntry={isSecureEntry}
+                        placeholderTextColor="#999"
+                    />
 
-                {renderRightIcon()}
+                    {renderRightIcon()}
+                </View>
             </View>
 
             {error && <Text style={styles.errorText}>{error}</Text>}

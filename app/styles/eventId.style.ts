@@ -1,15 +1,16 @@
 import { StyleSheet } from "react-native";
+import { border, colors, font } from "../../app/styles/themes";
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 32,
-        backgroundColor: "#f5f8fc",
+        backgroundColor: colors.background,
     },
     box: {
         padding: 24,
-        backgroundColor: "#ffffff",
-        borderRadius: 16,
+        backgroundColor: colors.backgroundLight,
+        borderRadius: border.radiusLarge,
         marginBottom: 24,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
@@ -20,31 +21,31 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 28,
         fontWeight: "700",
-        color: "#1f2937", // cinza escuro moderno
+        color: "#1f2937",
         marginBottom: 12,
     },
     subtitle: {
         fontSize: 20,
         fontWeight: "600",
-        color: "#3b82f6", // azul vivo
+        color: "#3b82f6",
         marginBottom: 6,
     },
     date: {
-        fontSize: 16,
-        color: "#6b7280", // cinza médio
+        fontSize: font.sizeLarge,
+        color: "#6b7280",
         fontStyle: "italic",
         marginBottom: 16,
     },
     description: {
-        fontSize: 16,
+        fontSize: font.sizeLarge,
         lineHeight: 24,
-        color: "#374151", // texto principal
+        color: "#374151",
     },
     error: {
-        color: "#dc2626", // vermelho forte
+        color: "#dc2626",
         textAlign: "center",
         marginTop: 40,
-        fontSize: 16,
+        fontSize: font.sizeLarge,
         fontWeight: "500",
     },
     buttonBox: {

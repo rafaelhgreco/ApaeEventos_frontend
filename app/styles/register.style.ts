@@ -1,5 +1,4 @@
 import { StyleSheet } from "react-native";
-import { border } from "./themes";
 
 export const styles = StyleSheet.create({
     titleContainer: {
@@ -25,9 +24,6 @@ export const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         padding: 16,
-        borderWidth: 1,
-        borderColor: "#ddd",
-        borderRadius: border.radiusMedium,
     },
     title: {
         fontSize: 32,

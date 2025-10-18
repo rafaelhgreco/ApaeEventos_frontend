@@ -1,4 +1,5 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { format } from "date-fns"; // Importe a função format do date-fns
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { DateFieldProps } from "../../../types/atoms";
@@ -17,9 +18,10 @@ const DateTimeField: React.FC<Props> = ({
     isVisible,
     onToggle,
 }) => {
+    // Lógica para formatar o valor exibido
     const formattedValue = value
         ? mode === "date"
-            ? value.toLocaleDateString()
+            ? format(value, "dd/MM/yyyy") // Usa date-fns para formatar a data
             : value.toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
@@ -35,7 +37,9 @@ const DateTimeField: React.FC<Props> = ({
                 style={styles.dateField}
                 onPress={() => onToggle(true)}
             >
-                <Text style={{ color: "green", fontSize: 15 }}>
+                <Text style={styles.dateText}>
+                    {" "}
+                    {/* Usa o estilo dateText criado */}
                     {formattedValue}
                 </Text>
             </TouchableOpacity>

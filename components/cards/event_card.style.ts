@@ -42,6 +42,12 @@ export const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         paddingHorizontal: 10,
+        shadowColor: colors.primary,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 10,
+        elevation: 1.7,
+        overflow: "visible",
     },
     buttonEvent: {
         backgroundColor: "green",
