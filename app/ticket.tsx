@@ -1,11 +1,8 @@
 import GenericForm from "@/components/ATOMIC/molecules/form";
-import { createTicket } from "@/services/ticket_services";
 import { FormField } from "@/types/molecules";
-import auth from "@react-native-firebase/auth";
 import { useNavigation } from "expo-router";
 import { useSearchParams } from "expo-router/build/hooks";
 import { useEffect, useLayoutEffect, useState } from "react";
-import { Alert } from "react-native";
 import { styles } from "./styles/register.style";
 
 export default function TicketsScreen() {
@@ -33,35 +30,7 @@ export default function TicketsScreen() {
 
     const submitForm = async () => {
         setLoading(true);
-        try {
-            const token = await auth().currentUser?.getIdToken();
-            if (!token) {
-                Alert.alert("Erro", "Usuário não autenticado.");
-                return;
-            }
-
-            await createTicket(
-                {
-                    eventId: formData.eventId,
-                    tipo: formData.tipo,
-                    email: formData.email,
-                },
-                token
-            );
-
-            Alert.alert("Sucesso", "Ticket Criado!");
-
-            setFormData({
-                eventId: "",
-                tipo: "",
-                email: "",
-            });
-        } catch (error) {
-            console.error("Erro ao cadastrar evento:", error);
-            Alert.alert("Erro", "Falha ao cadastrar ticket.");
-        } finally {
-            setLoading(false);
-        }
+        console.log(formData);
     };
 
     const handleInputChange = (field: string) => (value: string) => {
@@ -77,6 +46,7 @@ export default function TicketsScreen() {
             type: "select",
             key: "tipo",
             props: {
+                label: "Tipo",
                 options: [
                     { label: "Meia", value: "Meia" },
                     { label: "Inteira", value: "Inteira" },

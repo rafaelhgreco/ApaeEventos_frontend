@@ -1,7 +1,6 @@
-import auth from "@react-native-firebase/auth";
-import { Link, useFocusEffect, useRouter } from "expo-router";
-import React, { useCallback } from "react";
-import { Alert, ScrollView, Text, View } from "react-native";
+import { Link, useRouter } from "expo-router";
+import React from "react";
+import { ScrollView, Text, View } from "react-native";
 import { useEvents } from "../../hooks/useEvents";
 import Button from "../ATOMIC/atoms/button";
 import { styles } from "./event_card.style";
@@ -10,22 +9,6 @@ import { EventItem } from "./event_item";
 export default function EventsCard() {
     const { events, fetchEvents, loading, error } = useEvents();
     const router = useRouter();
-
-    useFocusEffect(
-        useCallback(() => {
-            const loadEvents = async () => {
-                const token = await auth().currentUser?.getIdToken();
-                if (!token) {
-                    Alert.alert("Erro", "Usuário não autenticado.");
-                    return;
-                }
-
-                await fetchEvents(token);
-            };
-
-            loadEvents();
-        }, [])
-    );
 
     function handleCreateNewEvent(): void {
         router.push("/new_event");

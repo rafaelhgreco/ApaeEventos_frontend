@@ -1,7 +1,6 @@
 import GenericForm from "@/components/ATOMIC/molecules/form";
 import { createEvent } from "@/services/event_services";
 import { FormField } from "@/types/molecules";
-import auth from "@react-native-firebase/auth";
 import { router, useNavigation } from "expo-router";
 import React, { useLayoutEffect, useState } from "react";
 import { Alert } from "react-native";
@@ -45,7 +44,7 @@ export default function NewEventScreen() {
     const submitForm = async () => {
         setLoading(true);
         try {
-            const token = await auth().currentUser?.getIdToken();
+            const token = "123"; // adicionar novo token
             if (!token) {
                 Alert.alert("Erro", "Usuário não autenticado.");
                 return;

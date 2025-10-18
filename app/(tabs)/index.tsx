@@ -2,17 +2,13 @@ import Icon from "@/components/ATOMIC/atoms/icon";
 import GenericForm from "@/components/ATOMIC/molecules/form";
 import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { getFirebaseAuth } from "@/firebase/firebase";
 import { FormField } from "@/types/molecules";
-import { FirebaseAuthTypes } from "@react-native-firebase/auth";
-import firestore from "@react-native-firebase/firestore";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { Alert, Image, Text, View } from "react-native";
+import { useState } from "react";
+import { Image, Text, View } from "react-native";
 import { styles } from "../styles/index.style";
 
 export default function HomeScreen() {
-    const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -21,90 +17,23 @@ export default function HomeScreen() {
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
-    const auth: FirebaseAuthTypes.Module = getFirebaseAuth();
-
-    useEffect(() => {
-        const subscriber = auth.onAuthStateChanged((currentUser) => {
-            setUser(currentUser);
-            if (currentUser) {
-                console.log("Usuário logado:", currentUser.email);
-            } else {
-                console.log("Nenhum usuário logado.");
-            }
-            setLoading(false);
-        });
-
-        return subscriber;
-    }, []);
-
-    const handleSignIn = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            await auth.signInWithEmailAndPassword(
-                formData.email,
-                formData.password
-            );
-            const currentUser = auth.currentUser;
-
-            if (currentUser) {
-                const userDoc = await firestore()
-                    .collection("users")
-                    .doc(currentUser.uid)
-                    .get();
-
-                if (userDoc.exists()) {
-                    const userData = userDoc.data();
-                    const role = userData?.role;
-
-                    if (role === "atendente") {
-                        router.push("/qrcode");
-                    } else {
-                        router.push("/management");
-                    }
-                } else {
-                    Alert.alert("Erro", "Função do usuário não encontrada.");
-                }
-            }
-            Alert.alert("Sucesso", "Login realizado com sucesso!");
-            setFormData({ email: "", password: "" });
-        } catch (err: any) {
-            if (
-                err.code === "auth/invalid-email" ||
-                err.code === "auth/wrong-password"
-            ) {
-                Alert.alert(
-                    "E-mail ou senha inválidos",
-                    "Por favor, verifique seu e-mail e senha e tente novamente."
-                );
-                return;
-            } else if (err.code === "auth/user-not-found") {
-                Alert.alert(
-                    "Usuário não encontrado",
-                    "Nenhum usuário encontrado com o e-mail informado. Por favor, verifique e tente novamente."
-                );
-            } else {
-                Alert.alert(
-                    "Erro ao fazer login",
-                    "Ocorreu um erro ao tentar fazer login. Verifique se já tem um cadastro."
-                );
-                return;
-            }
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleInputChange = (field: string) => (value: string) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
     };
 
+    const handleSignIn = async () => {
+        // setLoading(true);
+        // setError(null);
+        router.push("/management");
+    };
+
     const handleRegister = () => {
-        router.push("/explore");
+        router.push("/register");
     };
 
     const handleReset = () => {
         setFormData({ email: "", password: "" });
+        setError(null);
     };
 
     const formFields: FormField[] = [
@@ -118,6 +47,7 @@ export default function HomeScreen() {
                 onChangeText: handleInputChange("email"),
                 keyboardType: "email-address",
                 autoCapitalize: "none",
+                editable: !loading,
             },
         },
         {
@@ -129,6 +59,7 @@ export default function HomeScreen() {
                 value: formData.password,
                 onChangeText: handleInputChange("password"),
                 isPassword: true,
+                editable: !loading,
                 leftIcon: (
                     <Icon
                         name="lock-closed-outline"
@@ -142,9 +73,10 @@ export default function HomeScreen() {
             type: "button",
             key: "submitSignIn",
             props: {
-                label: "Iniciar sessão",
+                label: loading ? "Entrando..." : "Iniciar sessão",
                 onPress: handleSignIn,
                 variant: "primary",
+                disabled: loading,
                 containerStyle: {
                     marginTop: 16,
                     backgroundColor: "#FF9800",
@@ -158,6 +90,7 @@ export default function HomeScreen() {
                 label: "Solicitar uma Conta",
                 onPress: handleRegister,
                 variant: "primary",
+                disabled: loading,
                 containerStyle: {
                     marginTop: 16,
                 },
@@ -170,6 +103,7 @@ export default function HomeScreen() {
                 label: "Limpar",
                 onPress: handleReset,
                 variant: "outline",
+                disabled: loading,
                 containerStyle: { marginTop: 8 },
             },
         },

@@ -1,5 +1,4 @@
 import { getUserEvents } from "@/services/event_services";
-import auth from "@react-native-firebase/auth";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { ActivityIndicator, Alert, Text, View } from "react-native";
@@ -30,7 +29,7 @@ export default function EventDetailsPage() {
 
     const fetchUserEvents = async (id: string) => {
         try {
-            const token = await auth().currentUser?.getIdToken();
+            const token = "123";
             if (!token) {
                 Alert.alert("Erro", "Usuário não autenticado.");
                 return;

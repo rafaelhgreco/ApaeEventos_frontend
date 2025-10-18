@@ -2,7 +2,6 @@ import { useLocalSearchParams, useNavigation } from "expo-router";
 
 import { useEffect, useLayoutEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
-import { getFirebaseAuth } from "../../firebase/firebase"; // Adjust the import path as necessary
 import { getEventReport, ReportData } from "../../services/report_services";
 import { styles } from "./event_id.style";
 
@@ -30,8 +29,8 @@ export default function ReportScreen() {
 
                 const id = Array.isArray(eventId) ? eventId[0] : eventId;
 
-                const user = getFirebaseAuth().currentUser;
-                const token = await user?.getIdToken();
+                const user = "user1";
+                const token = "123";
 
                 if (!token) {
                     setError("Usuário não autenticado.");
