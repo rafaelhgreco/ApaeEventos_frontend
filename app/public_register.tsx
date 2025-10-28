@@ -73,7 +73,12 @@ export default function RegisterScreen() {
         "Sucesso",
         "Conta criada com sucesso! Verifique seu e-mail para confirmar."
       );
-      router.replace("/");
+
+      // ✅ Redireciona automaticamente para tela de confirmação
+      router.push({
+        pathname: "../confirm_register",
+        params: { email: formData.email.trim() },
+      });
     } catch (err: any) {
       console.error("Erro no cadastro Cognito:", err);
       Alert.alert(

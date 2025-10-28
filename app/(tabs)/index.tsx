@@ -18,6 +18,7 @@ export default function HomeScreen() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  // 🧩 LOGIN
   const handleSignIn = async () => {
     setLoading(true);
     setError(null);
@@ -38,12 +39,17 @@ export default function HomeScreen() {
     }
   };
 
+  // 🧩 NAVEGAÇÃO ENTRE TELAS
   const handleInputChange = (field: string) => (value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleRegister = () => {
-    router.push("/public_register"); // ✅ envia para tela correta
+    router.push("/public_register"); // ✅ envia para tela de cadastro
+  };
+
+  const handleConfirmAccount = () => {
+    router.push("../confirm_register"); // ✅ envia para tela de confirmação
   };
 
   const handleReset = () => {
@@ -51,6 +57,7 @@ export default function HomeScreen() {
     setError(null);
   };
 
+  // 🧱 CAMPOS DO FORMULÁRIO
   const formFields: FormField[] = [
     {
       type: "input",
@@ -91,11 +98,25 @@ export default function HomeScreen() {
       type: "button",
       key: "submitSignUp",
       props: {
-        label: "Fazer Cadastro", // 🔁 renomeado
-        onPress: handleRegister, // 🔁 rota correta
+        label: "Fazer Cadastro",
+        onPress: handleRegister,
         variant: "primary",
+        containerStyle: { marginTop: 16 },
+      },
+    },
+    {
+      type: "button",
+      key: "confirmAccount",
+      props: {
+        label: "Confirmar Conta",
+        onPress: handleConfirmAccount,
+        variant: "outline",
         containerStyle: {
-          marginTop: 16,
+          marginTop: 8,
+          borderColor: "#007AFF",
+        },
+        textStyle: {
+          color: "#007AFF",
         },
       },
     },
@@ -111,6 +132,7 @@ export default function HomeScreen() {
     },
   ];
 
+  // 🧭 INTERFACE
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
