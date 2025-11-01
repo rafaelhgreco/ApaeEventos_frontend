@@ -18,11 +18,6 @@ export const userPool = new CognitoUserPool(poolData);
 
 /**
  * 🔐 REGISTRO de usuário (público ou administrativo)
- * @param nome Nome completo do usuário
- * @param email E-mail do usuário
- * @param password Senha
- * @param telefone Telefone (formato +55DDDNÚMERO)
- * @param role Grupo (admin, staff, default)
  */
 export function signUp(
   nome: string,
@@ -36,7 +31,7 @@ export function signUp(
     new CognitoUserAttribute({ Name: "email", Value: email }),
   ];
 
-  // 🔢 Telefone é obrigatório no schema do Cognito
+  // 🔢 Telefone obrigatório no schema do Cognito
   if (telefone) {
     attributeList.push(
       new CognitoUserAttribute({ Name: "phone_number", Value: telefone })
@@ -47,7 +42,7 @@ export function signUp(
     );
   }
 
-  // 👥 Role customizada (opcional)
+  // 👥 Atributo customizado (opcional)
   if (role) {
     attributeList.push(
       new CognitoUserAttribute({ Name: "custom:role", Value: role })
@@ -71,7 +66,7 @@ export function signUp(
 }
 
 /**
- * ✅ Confirmação do código de verificação enviado por e-mail
+ * ✅ Confirmação do código enviado por e-mail
  */
 export function confirmSignUp(email: string, code: string): Promise<string> {
   const user = new CognitoUser({ Username: email, Pool: userPool });
@@ -90,7 +85,7 @@ export function confirmSignUp(email: string, code: string): Promise<string> {
 }
 
 /**
- * 🔐 Login do usuário
+ * 🔐 Login de usuário
  */
 export function signIn(
   email: string,
@@ -117,7 +112,38 @@ export function signIn(
 }
 
 /**
- * 🔓 Logout manual do usuário autenticado
+ * 🧠 Obtém a role (custom:role) do usuário logado
+ */
+export function getUserRole(): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const user = userPool.getCurrentUser();
+    if (!user) {
+      reject("Nenhum usuário autenticado.");
+      return;
+    }
+
+    user.getSession((err: any) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      user.getUserAttributes((attrErr, attributes) => {
+        if (attrErr) {
+          reject(attrErr);
+        } else {
+          const roleAttr = attributes?.find(
+            (a) => a.Name === "custom:role"
+          )?.Value;
+          resolve(roleAttr || "default");
+        }
+      });
+    });
+  });
+}
+
+/**
+ * 🔓 Logout manual
  */
 export function signOut(email: string) {
   const user = new CognitoUser({ Username: email, Pool: userPool });
@@ -126,7 +152,7 @@ export function signOut(email: string) {
 }
 
 /**
- * 👤 Retorna sessão do usuário autenticado
+ * 👤 Sessão atual
  */
 export function getCurrentUserSession(): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -148,7 +174,7 @@ export function getCurrentUserSession(): Promise<any> {
 }
 
 /**
- * 🧠 Retorna atributos do usuário autenticado (incluindo custom:role)
+ * 🧠 Retorna todos os atributos do usuário autenticado
  */
 export function getCurrentUserAttributes(): Promise<Record<string, string>> {
   return new Promise((resolve, reject) => {
@@ -177,8 +203,3 @@ export function getCurrentUserAttributes(): Promise<Record<string, string>> {
     });
   });
 }
-
-// 🪶 Debug opcional
-console.log("✅ Cognito configurado com sucesso:");
-console.log("UserPoolId:", COGNITO_USER_POOL_ID);
-console.log("ClientId:", COGNITO_CLIENT_ID);

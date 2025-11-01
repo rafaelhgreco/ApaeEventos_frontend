@@ -2,7 +2,7 @@ import Icon from "@/components/ATOMIC/atoms/icon";
 import GenericForm from "@/components/ATOMIC/molecules/form";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedView } from "@/components/ThemedView";
-import { signIn } from "@/lib/cognito";
+import { getUserRole, signIn } from "@/lib/cognito";
 import { FormField } from "@/types/molecules";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -26,10 +26,22 @@ export default function HomeScreen() {
     try {
       const result = await signIn(formData.email, formData.password);
       const token = result.session.getIdToken().getJwtToken();
-
       console.log("Token JWT:", token);
-      Alert.alert("Sucesso", "Login realizado com sucesso!");
-      router.push("/management"); // ✅ só navega após login real
+
+      // 🔍 Obtém a role do usuário logado
+      const role = await getUserRole();
+      console.log("Função do usuário:", role);
+
+      Alert.alert("Sucesso", `Login realizado com sucesso! (${role})`);
+
+      // 🚀 Redireciona com base no grupo
+      if (role === "admin") {
+        router.replace("/management");
+      } else if (role === "staff") {
+        router.replace("/management");
+      } else {
+        router.replace("/management");
+      }
     } catch (err: any) {
       console.error("Erro no login Cognito:", err);
       setError(err.message);
@@ -39,17 +51,17 @@ export default function HomeScreen() {
     }
   };
 
-  // 🧩 NAVEGAÇÃO ENTRE TELAS
+  // 🧭 OUTRAS FUNÇÕES
   const handleInputChange = (field: string) => (value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleRegister = () => {
-    router.push("/public_register"); // ✅ envia para tela de cadastro
+    router.push("/public_register");
   };
 
   const handleConfirmAccount = () => {
-    router.push("../confirm_register"); // ✅ envia para tela de confirmação
+    router.push("../confirm_register");
   };
 
   const handleReset = () => {
@@ -148,8 +160,6 @@ export default function HomeScreen() {
       <ThemedView>
         <View style={styles.loginForm}>
           <GenericForm title="Login" fields={formFields} />
-
-          {/* Exibe mensagem de erro, se existir */}
           {error && (
             <Text
               style={{
