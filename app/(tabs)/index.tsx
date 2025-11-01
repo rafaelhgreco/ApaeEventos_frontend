@@ -148,6 +148,16 @@ export default function HomeScreen() {
                 containerStyle: { marginTop: 8 },
             },
         },
+        {
+            type: "button",
+            key: "teste",
+            props: {
+                label: "teste-pagamento",
+                onPress: () => router.push("/payment"),
+                variant: "outline",
+                containerStyle: { marginTop: 8 },
+            },
+        },
     ];
 
     // 🧭 INTERFACE
