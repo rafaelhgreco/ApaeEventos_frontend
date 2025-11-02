@@ -338,7 +338,7 @@ export default function EventDetailsPage() {
             <Button
               label="Ver todos os ingressos"
               variant="outline"
-              onPress={() => router.push(`/report/${event.id}`)}
+              onPress={() => router.push(`/my_tickets`)}
             />
           </View>
 
