@@ -1,3 +1,4 @@
+import { getIdToken } from "@/lib/cognito";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
@@ -27,9 +28,9 @@ export default function ReportScreen() {
                 }
 
                 const id = Array.isArray(eventId) ? eventId[0] : eventId;
+                const numericId = parseInt(id, 10);
 
-                const user = "getFirebaseAuth().currentUser;";
-                const token = "await user?.getIdToken();";
+                const token = await getIdToken();
 
                 if (!token) {
                     setError("Usuário não autenticado.");
@@ -37,7 +38,7 @@ export default function ReportScreen() {
                     return;
                 }
 
-                const data = await getEventReport(id, token);
+                const data = await getEventReport(numericId, token);
                 setReport(data);
             } catch (error) {
                 setError("Erro ao carregar relatório.");

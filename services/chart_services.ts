@@ -2,7 +2,7 @@ import { API_BASE_URL } from "@env";
 import axios from "axios";
 
 interface EventData {
-    id: string;
+    id: number;
     nome: string;
     data: string;
     local: string;
@@ -23,7 +23,7 @@ export const getUserEvents = async (token: string): Promise<EventData[]> => {
 };
 
 export const getEventReport = async (
-    eventId: string,
+    eventId: number,
     token: string
 ): Promise<ReportData> => {
     const response = await axios.get(`${API_BASE_URL}/report/${eventId}`, {

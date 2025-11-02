@@ -30,6 +30,7 @@ export default function ManagementScreen() {
     const handleSignOut = async () => {
         setLoading(true);
         setError(null);
+        router.push("/");
         Alert.alert("Sucesso", "Logout realizado com sucesso!");
     };
 

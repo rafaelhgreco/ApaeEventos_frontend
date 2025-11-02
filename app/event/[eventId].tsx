@@ -1,3 +1,4 @@
+import { getIdToken } from "@/lib/cognito";
 import { getUserEvents } from "@/services/event_services";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
@@ -23,19 +24,22 @@ export default function EventDetailsPage() {
         if (!eventId) return;
 
         const id = Array.isArray(eventId) ? eventId[0] : eventId;
-        fetchUserEvents(id);
+        const numericId = parseInt(id, 10);
+        fetchUserEvents(numericId);
     }, [eventId]);
 
-    const fetchUserEvents = async (id: string) => {
+    const fetchUserEvents = async (id: number) => {
+        console.log("Fetching event with ID:", id);
         try {
-            const token = "await auth().currentUser?.getIdToken();";
+            const token = await getIdToken();
+            const eventsData = await getUserEvents(token);
             if (!token) {
                 Alert.alert("Erro", "Usuário não autenticado.");
                 return;
             }
-
-            const events = await getUserEvents(token);
-            const findEvent = events.find((e: { id: string }) => e.id === id);
+            const findEvent = eventsData.find(
+                (e: { id: number }) => e.id === id
+            );
 
             if (!findEvent) {
                 setError("Evento não encontrado.");

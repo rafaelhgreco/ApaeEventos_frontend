@@ -2,7 +2,7 @@ import { API_BASE_URL } from "@env";
 import axios from "axios";
 
 export interface TicketData {
-    eventId: string;
+    eventId: number;
     tipo: string;
     email: string;
 }
