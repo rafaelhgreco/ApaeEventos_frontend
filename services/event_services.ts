@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 import { API_BASE_URL } from "@env";
 import axios from "axios";
 import { handleApiError } from "./auth_services";
@@ -7,11 +8,23 @@ import { handleApiError } from "./auth_services";
  */
 export interface EventData {
   nome: string;
-  data: Date;
+  data: string | Date;
   local: string;
   capacidade: number;
-  bannerUrl: string;
+  bannerUrl: string | null;
 }
+
+/**
+ * 🧠 Função auxiliar para normalizar data (corrige o fuso horário UTC)
+ * - Converte para formato 'YYYY-MM-DD' antes de enviar ou exibir
+ */
+const normalizeDate = (date: string | Date): string => {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
 /**
  * 🔹 Obtém todos os eventos disponíveis (qualquer usuário autenticado)
@@ -25,7 +38,13 @@ export const getUserEvents = async (token: string) => {
       },
     });
 
-    return response.data;
+    // 🔧 Corrige fuso da data recebida (YYYY-MM-DDTHH:mm:ssZ → YYYY-MM-DD)
+    const normalized = response.data.map((event: any) => ({
+      ...event,
+      data: event.data ? event.data.split("T")[0] : "",
+    }));
+
+    return normalized;
   } catch (error) {
     console.error("❌ Erro ao buscar eventos:", error);
     handleApiError(error);
@@ -39,8 +58,8 @@ export const createEvent = async (event: EventData, token: string) => {
   try {
     const payload = {
       nome: event.nome,
-      data: event.data,
       local: event.local,
+      data: normalizeDate(event.data),
       capacidade: event.capacidade,
       bannerUrl: event.bannerUrl,
     };
@@ -68,12 +87,18 @@ export const updateEvent = async (
   token: string
 ) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/events/${id}`, event, {
+    const payload = {
+      ...event,
+      data: event.data ? normalizeDate(event.data) : undefined,
+    };
+
+    const response = await axios.put(`${API_BASE_URL}/events/${id}`, payload, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
+
     return response.data;
   } catch (error) {
     console.error("❌ Erro ao atualizar evento:", error);
