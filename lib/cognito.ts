@@ -20,7 +20,7 @@ const poolData = {
 export const userPool = new CognitoUserPool(poolData);
 
 /**
- * 🔐 Cadastro de novo usuário (opcionalmente com role)
+ * 🔐 Cadastro de novo usuário
  */
 export function signUp(
   nome: string,
@@ -34,38 +34,30 @@ export function signUp(
     new CognitoUserAttribute({ Name: "email", Value: email }),
   ];
 
-  if (telefone) {
+  if (telefone)
     attributes.push(
       new CognitoUserAttribute({ Name: "phone_number", Value: telefone })
     );
-  }
-
-  if (role) {
+  if (role)
     attributes.push(
       new CognitoUserAttribute({ Name: "custom:role", Value: role })
     );
-  }
 
   return new Promise((resolve, reject) => {
     userPool.signUp(email, password, attributes, [], (err, result) => {
-      if (err) {
-        console.error("❌ Erro ao registrar usuário:", err);
-        reject(err);
-      } else {
-        console.log("✅ Usuário registrado:", result?.user?.getUsername());
-        resolve(result);
-      }
+      if (err) reject(err);
+      else resolve(result);
     });
   });
 }
 
 /**
- * 📨 Confirmação de cadastro via código de e-mail
+ * 📨 Confirmação de cadastro via código
  */
 export function confirmSignUp(email: string, code: string) {
   const user = new CognitoUser({ Username: email, Pool: userPool });
   return new Promise((resolve, reject) => {
-    user.confirmRegistration(code, true, (err?: Error, result?: any) => {
+    user.confirmRegistration(code, true, (err?: Error, result?: unknown) => {
       if (err) reject(err);
       else resolve(result);
     });
@@ -85,14 +77,8 @@ export function signIn(email: string, password: string) {
   return new Promise<{ session: CognitoUserSession; user: CognitoUser }>(
     (resolve, reject) => {
       user.authenticateUser(authDetails, {
-        onSuccess: (session: CognitoUserSession) => {
-          console.log("✅ Login bem-sucedido:", email);
-          resolve({ session, user });
-        },
-        onFailure: (err) => {
-          console.error("❌ Erro no login:", err);
-          reject(err);
-        },
+        onSuccess: (session: CognitoUserSession) => resolve({ session, user }),
+        onFailure: (err: Error) => reject(err),
       });
     }
   );
@@ -106,20 +92,21 @@ export function getUserRole(): Promise<string> {
     const user = userPool.getCurrentUser();
     if (!user) return reject("Nenhum usuário autenticado.");
 
-    user.getSession((err?: Error, session?: CognitoUserSession | null) => {
-      if (err || !session) return reject(err || "Sessão inválida.");
+    user.getSession(
+      (err: Error | null, session: CognitoUserSession | null) => {
+        if (err || !session) return reject(err || "Sessão inválida.");
 
-      user.getUserAttributes(
-        (attrErr?: Error, attributes?: CognitoUserAttribute[]) => {
-          if (attrErr) return reject(attrErr);
-
-          const role =
-            attributes?.find((a) => a.Name === "custom:role")?.Value ||
-            "default";
-          resolve(role);
-        }
-      );
-    });
+        user.getUserAttributes(
+          (attrErr: Error | undefined, attributes?: CognitoUserAttribute[]) => {
+            if (attrErr) return reject(attrErr);
+            const role =
+              attributes?.find((a) => a.Name === "custom:role")?.Value ||
+              "default";
+            resolve(role);
+          }
+        );
+      }
+    );
   });
 }
 
@@ -129,7 +116,6 @@ export function getUserRole(): Promise<string> {
 export function signOut(email: string) {
   const user = new CognitoUser({ Username: email, Pool: userPool });
   user.signOut();
-  console.log("🚪 Logout realizado:", email);
 }
 
 /**
@@ -140,16 +126,17 @@ export function getCurrentUserSession(): Promise<CognitoUserSession> {
     const user = userPool.getCurrentUser();
     if (!user) return reject("Nenhum usuário autenticado.");
 
-    user.getSession((err?: Error, session?: CognitoUserSession | null) => {
-      if (err) reject(err);
-      else if (session) resolve(session);
-      else reject("Sessão inválida.");
-    });
+    user.getSession(
+      (err: Error | null, session: CognitoUserSession | null) => {
+        if (err || !session) reject(err || "Sessão inválida.");
+        else resolve(session);
+      }
+    );
   });
 }
 
 /**
- * 🧩 Token ID JWT (usado no backend Express)
+ * 🧩 Token ID JWT
  */
 export async function getIdToken(): Promise<string> {
   const session = await getCurrentUserSession();
@@ -165,27 +152,24 @@ export async function getAccessToken(): Promise<string> {
 }
 
 /**
- * 🔍 Retorna todos os atributos Cognito do usuário logado
+ * 📧 Retorna o e-mail do usuário autenticado
  */
-export function getCurrentUserAttributes(): Promise<Record<string, string>> {
-  return new Promise((resolve, reject) => {
+export const getCurrentUserEmail = async (): Promise<string | null> => {
+  try {
     const user = userPool.getCurrentUser();
-    if (!user) return reject("Nenhum usuário autenticado.");
+    if (!user) return null;
 
-    user.getSession((err?: Error, session?: CognitoUserSession | null) => {
-      if (err || !session) return reject(err || "Sessão inválida.");
-
-      user.getUserAttributes(
-        (attrErr?: Error, attributes?: CognitoUserAttribute[]) => {
-          if (attrErr) return reject(attrErr);
-
-          const result: Record<string, string> = {};
-          attributes?.forEach((a) => {
-            result[a.Name] = a.Value;
-          });
-          resolve(result);
+    return new Promise((resolve, reject) => {
+      user.getSession(
+        (err: Error | null, session: CognitoUserSession | null) => {
+          if (err || !session) return resolve(null);
+          const idToken = session.getIdToken().decodePayload();
+          resolve(idToken.email || null);
         }
       );
     });
-  });
-}
+  } catch (error) {
+    console.error("❌ Erro ao obter e-mail do usuário:", error);
+    return null;
+  }
+};
