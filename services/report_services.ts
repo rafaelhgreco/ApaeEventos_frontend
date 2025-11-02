@@ -7,7 +7,7 @@ export interface ReportData {
 }
 
 export const getEventReport = async (
-    eventId: string,
+    eventId: number,
     token: string
 ): Promise<ReportData> => {
     const response = await axios.get(`${API_BASE_URL}/report/${eventId}`, {
