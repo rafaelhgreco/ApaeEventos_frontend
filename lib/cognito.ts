@@ -1,234 +1,191 @@
 import {
-    AuthenticationDetails,
-    CognitoUser,
-    CognitoUserAttribute,
-    CognitoUserPool,
-    CognitoUserSession,
+  EXPO_PUBLIC_COGNITO_CLIENT_ID,
+  EXPO_PUBLIC_COGNITO_USER_POOL_ID,
+// eslint-disable-next-line import/no-unresolved
+} from "@env";
+import {
+  AuthenticationDetails,
+  CognitoUser,
+  CognitoUserAttribute,
+  CognitoUserPool,
+  CognitoUserSession,
 } from "amazon-cognito-identity-js";
-import Constants from "expo-constants";
 
-const { COGNITO_USER_POOL_ID, COGNITO_CLIENT_ID } = Constants.manifest.extra;
-
-// 🧩 Configuração do User Pool
+// ⚙️ Configuração do User Pool
 const poolData = {
-    UserPoolId: COGNITO_USER_POOL_ID,
-    ClientId: COGNITO_CLIENT_ID,
+  UserPoolId: EXPO_PUBLIC_COGNITO_USER_POOL_ID!,
+  ClientId: EXPO_PUBLIC_COGNITO_CLIENT_ID!,
 };
 
 export const userPool = new CognitoUserPool(poolData);
 
 /**
- * 🔐 REGISTRO de usuário (público ou administrativo)
+ * 🔐 Cadastro de novo usuário (opcionalmente com role)
  */
 export function signUp(
-    nome: string,
-    email: string,
-    password: string,
-    telefone?: string,
-    role?: string
-): Promise<any> {
-    const attributeList = [
-        new CognitoUserAttribute({ Name: "name", Value: nome }),
-        new CognitoUserAttribute({ Name: "email", Value: email }),
-    ];
+  nome: string,
+  email: string,
+  password: string,
+  telefone?: string,
+  role?: string
+) {
+  const attributes = [
+    new CognitoUserAttribute({ Name: "name", Value: nome }),
+    new CognitoUserAttribute({ Name: "email", Value: email }),
+  ];
 
-    // 🔢 Telefone obrigatório no schema do Cognito
-    if (telefone) {
-        attributeList.push(
-            new CognitoUserAttribute({ Name: "phone_number", Value: telefone })
-        );
-    } else {
-        console.warn(
-            "⚠️ Telefone ausente — phone_number é obrigatório no Cognito!"
-        );
-    }
+  if (telefone) {
+    attributes.push(
+      new CognitoUserAttribute({ Name: "phone_number", Value: telefone })
+    );
+  }
 
-    // 👥 Atributo customizado (opcional)
-    if (role) {
-        attributeList.push(
-            new CognitoUserAttribute({ Name: "custom:role", Value: role })
-        );
-    }
+  if (role) {
+    attributes.push(
+      new CognitoUserAttribute({ Name: "custom:role", Value: role })
+    );
+  }
 
-    return new Promise((resolve, reject) => {
-        userPool.signUp(email, password, attributeList, [], (err, result) => {
-            if (err) {
-                console.error("❌ Erro ao registrar usuário:", err);
-                reject(err);
-            } else {
-                console.log(
-                    "✅ Usuário registrado com sucesso:",
-                    result?.user?.getUsername()
-                );
-                resolve(result);
-            }
-        });
+  return new Promise((resolve, reject) => {
+    userPool.signUp(email, password, attributes, [], (err, result) => {
+      if (err) {
+        console.error("❌ Erro ao registrar usuário:", err);
+        reject(err);
+      } else {
+        console.log("✅ Usuário registrado:", result?.user?.getUsername());
+        resolve(result);
+      }
     });
+  });
 }
 
 /**
- * ✅ Confirmação do código enviado por e-mail
+ * 📨 Confirmação de cadastro via código de e-mail
  */
-export function confirmSignUp(email: string, code: string): Promise<string> {
-    const user = new CognitoUser({ Username: email, Pool: userPool });
-
-    return new Promise((resolve, reject) => {
-        user.confirmRegistration(code, true, (err, result) => {
-            if (err) {
-                console.error("❌ Erro ao confirmar cadastro:", err);
-                reject(err);
-            } else {
-                console.log("✅ Cadastro confirmado com sucesso:", result);
-                resolve(result);
-            }
-        });
+export function confirmSignUp(email: string, code: string) {
+  const user = new CognitoUser({ Username: email, Pool: userPool });
+  return new Promise((resolve, reject) => {
+    user.confirmRegistration(code, true, (err?: Error, result?: any) => {
+      if (err) reject(err);
+      else resolve(result);
     });
+  });
 }
 
 /**
- * 🔐 Login de usuário
+ * 🔑 Login de usuário
  */
-export function signIn(
-    email: string,
-    password: string
-): Promise<{ session: any; user: CognitoUser }> {
-    const user = new CognitoUser({ Username: email, Pool: userPool });
-    const authDetails = new AuthenticationDetails({
-        Username: email,
-        Password: password,
-    });
+export function signIn(email: string, password: string) {
+  const user = new CognitoUser({ Username: email, Pool: userPool });
+  const authDetails = new AuthenticationDetails({
+    Username: email,
+    Password: password,
+  });
 
-    return new Promise((resolve, reject) => {
-        user.authenticateUser(authDetails, {
-            onSuccess: (session) => {
-                console.log("✅ Login bem-sucedido para:", email);
-                resolve({ session, user });
-            },
-            onFailure: (err) => {
-                console.error("❌ Erro no login:", err);
-                reject(err);
-            },
-        });
-    });
+  return new Promise<{ session: CognitoUserSession; user: CognitoUser }>(
+    (resolve, reject) => {
+      user.authenticateUser(authDetails, {
+        onSuccess: (session: CognitoUserSession) => {
+          console.log("✅ Login bem-sucedido:", email);
+          resolve({ session, user });
+        },
+        onFailure: (err) => {
+          console.error("❌ Erro no login:", err);
+          reject(err);
+        },
+      });
+    }
+  );
 }
 
 /**
  * 🧠 Obtém a role (custom:role) do usuário logado
  */
 export function getUserRole(): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const user = userPool.getCurrentUser();
-        if (!user) {
-            reject("Nenhum usuário autenticado.");
-            return;
+  return new Promise((resolve, reject) => {
+    const user = userPool.getCurrentUser();
+    if (!user) return reject("Nenhum usuário autenticado.");
+
+    user.getSession((err?: Error, session?: CognitoUserSession | null) => {
+      if (err || !session) return reject(err || "Sessão inválida.");
+
+      user.getUserAttributes(
+        (attrErr?: Error, attributes?: CognitoUserAttribute[]) => {
+          if (attrErr) return reject(attrErr);
+
+          const role =
+            attributes?.find((a) => a.Name === "custom:role")?.Value ||
+            "default";
+          resolve(role);
         }
-
-        user.getSession((err: any) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-
-            user.getUserAttributes((attrErr, attributes) => {
-                if (attrErr) {
-                    reject(attrErr);
-                } else {
-                    const roleAttr = attributes?.find(
-                        (a) => a.Name === "custom:role"
-                    )?.Value;
-                    resolve(roleAttr || "default");
-                }
-            });
-        });
+      );
     });
+  });
 }
 
 /**
- * 🔓 Logout manual
+ * 🚪 Logout
  */
 export function signOut(email: string) {
-    const user = new CognitoUser({ Username: email, Pool: userPool });
-    user.signOut();
-    console.log("🚪 Logout realizado para:", email);
+  const user = new CognitoUser({ Username: email, Pool: userPool });
+  user.signOut();
+  console.log("🚪 Logout realizado:", email);
 }
 
 /**
  * 👤 Sessão atual
  */
 export function getCurrentUserSession(): Promise<CognitoUserSession> {
-    return new Promise((resolve, reject) => {
-        const user = userPool.getCurrentUser();
-        if (!user) {
-            reject("Nenhum usuário autenticado.");
-            return;
-        }
+  return new Promise((resolve, reject) => {
+    const user = userPool.getCurrentUser();
+    if (!user) return reject("Nenhum usuário autenticado.");
 
-        user.getSession((err: any, session: CognitoUserSession | null) => {
-            if (err) {
-                console.error("❌ Erro ao obter sessão:", err);
-                reject(err);
-            } else if (session) {
-                resolve(session);
-            } else {
-                reject("Sessão inválida.");
-            }
-        });
+    user.getSession((err?: Error, session?: CognitoUserSession | null) => {
+      if (err) reject(err);
+      else if (session) resolve(session);
+      else reject("Sessão inválida.");
     });
+  });
 }
 
 /**
- * 🔑 Obtém o ID Token JWT (recomendado para APIs)
+ * 🧩 Token ID JWT (usado no backend Express)
  */
 export async function getIdToken(): Promise<string> {
-    try {
-        const session = await getCurrentUserSession();
-        return session.getIdToken().getJwtToken();
-    } catch (error) {
-        console.error("❌ Erro ao obter ID Token:", error);
-        throw error;
-    }
+  const session = await getCurrentUserSession();
+  return session.getIdToken().getJwtToken();
 }
 
 /**
- * 🔑 Obtém o Access Token JWT
+ * 🧩 Access Token JWT
  */
 export async function getAccessToken(): Promise<string> {
-    try {
-        const session = await getCurrentUserSession();
-        return session.getAccessToken().getJwtToken();
-    } catch (error) {
-        console.error("❌ Erro ao obter Access Token:", error);
-        throw error;
-    }
+  const session = await getCurrentUserSession();
+  return session.getAccessToken().getJwtToken();
 }
 
 /**
- * 🧠 Retorna todos os atributos do usuário autenticado
+ * 🔍 Retorna todos os atributos Cognito do usuário logado
  */
 export function getCurrentUserAttributes(): Promise<Record<string, string>> {
-    return new Promise((resolve, reject) => {
-        const user = userPool.getCurrentUser();
-        if (!user) {
-            reject("Nenhum usuário autenticado.");
-            return;
-        }
+  return new Promise((resolve, reject) => {
+    const user = userPool.getCurrentUser();
+    if (!user) return reject("Nenhum usuário autenticado.");
 
-        user.getSession((err: any) => {
-            if (err) {
-                reject(err);
-            } else {
-                user.getUserAttributes((attrErr, attributes) => {
-                    if (attrErr) {
-                        reject(attrErr);
-                    } else {
-                        const result: Record<string, string> = {};
-                        attributes?.forEach((a) => {
-                            result[a.Name] = a.Value;
-                        });
-                        resolve(result);
-                    }
-                });
-            }
-        });
+    user.getSession((err?: Error, session?: CognitoUserSession | null) => {
+      if (err || !session) return reject(err || "Sessão inválida.");
+
+      user.getUserAttributes(
+        (attrErr?: Error, attributes?: CognitoUserAttribute[]) => {
+          if (attrErr) return reject(attrErr);
+
+          const result: Record<string, string> = {};
+          attributes?.forEach((a) => {
+            result[a.Name] = a.Value;
+          });
+          resolve(result);
+        }
+      );
     });
+  });
 }
