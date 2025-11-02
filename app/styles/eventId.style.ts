@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     fontSize: font.sizeLarge,
     fontWeight: "500",
   },
-  // ✅ Adicionado estilo para campos de edição
+  // ✅ Campos de entrada no modo edição
   input: {
     borderWidth: 1,
     borderColor: "#d1d5db",
@@ -58,9 +58,18 @@ const styles = StyleSheet.create({
     color: "#111827",
     backgroundColor: colors.backgroundLight,
   },
+  // ✅ Estilo dos botões agrupados
   buttonBox: {
     padding: 16,
     gap: 16,
+  },
+  // ✅ Novo estilo para labels acima dos campos
+  label: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#374151",
+    marginTop: 8,
+    marginBottom: 6,
   },
 });
 

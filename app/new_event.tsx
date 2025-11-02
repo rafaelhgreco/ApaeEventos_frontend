@@ -1,35 +1,31 @@
 import GenericForm from "@/components/ATOMIC/molecules/form";
-import { FormField } from "@/types/molecules";
 import { getIdToken, getUserRole } from "@/lib/cognito";
 import { createEvent } from "@/services/event_services";
+import { FormField } from "@/types/molecules";
 import { useNavigation, useRouter } from "expo-router";
 import React, { useLayoutEffect, useState } from "react";
-import {
-  Alert,
-  Button,
-  Image,
-  ScrollView,
-  View,
-} from "react-native";
+import { Alert, Button, Image, ScrollView, View } from "react-native";
 
 export default function NewEventScreen() {
   const [formData, setFormData] = useState({
     nome: "",
     data: new Date(),
     local: "",
-    capacidade: "",
+    capacity: "",
+    ticket_price: "",
+    starts_at: new Date(), // inicializa com hora atual
     bannerUrl: "",
   });
 
   const [loading, setLoading] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState<{ [key: string]: boolean }>({});
+  const [showDatePicker, setShowDatePicker] = useState<{
+    [key: string]: boolean;
+  }>({});
   const router = useRouter();
   const navigation = useNavigation();
 
   useLayoutEffect(() => {
-    navigation.setOptions({
-      title: "Criar Evento",
-    });
+    navigation.setOptions({ title: "Criar Evento" });
   }, [navigation]);
 
   const toggleDatePicker = (key: string, visible: boolean) => {
@@ -40,12 +36,13 @@ export default function NewEventScreen() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleDateChange = (field: string) => (_event: any, selectedDate?: Date) => {
-    if (selectedDate) {
-      setFormData((prev) => ({ ...prev, [field]: selectedDate }));
-    }
-    toggleDatePicker(field, false);
-  };
+  const handleDateChange =
+    (field: string) => (_event: any, selectedDate?: Date) => {
+      if (selectedDate) {
+        setFormData((prev) => ({ ...prev, [field]: selectedDate }));
+      }
+      toggleDatePicker(field, false);
+    };
 
   const handlePickImage = async () => {
     Alert.alert("Seleção de imagem", "Em breve: upload de banner para S3");
@@ -54,40 +51,56 @@ export default function NewEventScreen() {
   const submitForm = async () => {
     setLoading(true);
     try {
-      // Validação
-      if (!formData.nome || !formData.local || !formData.capacidade || !formData.data) {
+      // ⚙️ Validação
+      if (
+        !formData.nome ||
+        !formData.local ||
+        !formData.capacity ||
+        !formData.data ||
+        !formData.ticket_price
+      ) {
         Alert.alert("Erro", "Preencha todos os campos obrigatórios.");
         return;
       }
 
-      // 🔒 Obter role do usuário logado (admin / staff / default)
+      // 🔒 Verifica permissão
       const role = await getUserRole();
-      if (role === "default") {
+      if (role !== "admin" && role !== "staff") {
         Alert.alert(
           "Acesso negado",
-          "Apenas administradores e operadores podem criar eventos."
+          "Apenas administradores e staff podem criar eventos."
         );
         return;
       }
 
-      // 🔑 Obter token Cognito
+      // 🔑 Token Cognito
       const token = await getIdToken();
       if (!token) {
         Alert.alert("Erro", "Usuário não autenticado. Faça login novamente.");
         return;
       }
 
-      // Converter capacidade para número
-      const capacidadeNum = parseInt(formData.capacidade, 10) || 0;
+      // 🧩 Conversões
+      const capacityNum = parseInt(formData.capacity, 10) || 0;
+      const ticketPriceNum = parseFloat(formData.ticket_price) || 0;
 
-      // Enviar dados para API
+      // Converte data e hora
+      const formattedDate = formData.data.toISOString().split("T")[0];
+      const startsAt = formData.starts_at
+        ? new Date(formData.starts_at).toISOString()
+        : null;
+
+      // 🚀 Envia para API
       await createEvent(
         {
           nome: formData.nome,
-          data: formData.data,
           local: formData.local,
-          capacidade: capacidadeNum,
-          bannerUrl: formData.bannerUrl,
+          data: formattedDate,
+          capacity: capacityNum,
+          bannerUrl: formData.bannerUrl || null,
+          ticket_price: ticketPriceNum,
+          starts_at: startsAt,
+          status: "published",
         },
         token
       );
@@ -128,21 +141,43 @@ export default function NewEventScreen() {
       type: "date",
       props: {
         label: "Data do Evento *",
-        placeholder: "XX/XX/XXXX",
+        placeholder: "Selecione a data",
         value: formData.data,
         mode: "date",
         onChange: handleDateChange("data"),
       },
     },
     {
-      key: "capacidade",
+      key: "starts_at",
+      type: "date",
+      props: {
+        label: "Horário de Início *",
+        placeholder: "Selecione o horário de início",
+        value: formData.starts_at,
+        mode: "time",
+        onChange: handleDateChange("starts_at"),
+      },
+    },
+    {
+      key: "capacity",
       type: "number",
       props: {
-        label: "Número Máximo de Participantes *",
-        placeholder: "Digite o número máximo de participantes",
-        value: formData.capacidade,
-        onChangeText: handleInputChange("capacidade"),
+        label: "Capacidade *",
+        placeholder: "Número máximo de participantes",
+        value: formData.capacity,
+        onChangeText: handleInputChange("capacity"),
         keyboardType: "numeric",
+      },
+    },
+    {
+      key: "ticket_price",
+      type: "number",
+      props: {
+        label: "Preço do Ingresso (R$) *",
+        placeholder: "Defina o valor do ingresso",
+        value: formData.ticket_price,
+        onChangeText: handleInputChange("ticket_price"),
+        keyboardType: "decimal-pad",
       },
     },
     {
@@ -184,7 +219,7 @@ export default function NewEventScreen() {
     <ScrollView contentContainerStyle={{ padding: 16 }}>
       <GenericForm
         fields={formFields}
-        title="Digite os dados do novo evento"
+        title="Cadastro de Novo Evento"
         titleStyle={{
           fontSize: 24,
           fontWeight: "bold",

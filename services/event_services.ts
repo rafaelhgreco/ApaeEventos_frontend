@@ -4,26 +4,41 @@ import axios from "axios";
 import { handleApiError } from "./auth_services";
 
 /**
- * Tipagem do evento usado no app
+ * 🧾 Tipagem completa do evento conforme o novo banco
  */
 export interface EventData {
   nome: string;
   data: string | Date;
   local: string;
-  capacidade: number;
+  capacity: number;
   bannerUrl: string | null;
+  ticket_price: number;
+  starts_at?: string | null;
+  ends_at?: string | null;
+  status?: "draft" | "published" | "canceled" | "finished";
 }
 
 /**
- * 🧠 Função auxiliar para normalizar data (corrige o fuso horário UTC)
- * - Converte para formato 'YYYY-MM-DD' antes de enviar ou exibir
+ * 🧠 Normaliza data para formato compatível com MySQL (YYYY-MM-DD)
  */
 const normalizeDate = (date: string | Date): string => {
   const d = new Date(date);
+  if (isNaN(d.getTime())) return "";
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+};
+
+/**
+ * 🧠 Normaliza datetime (ex: starts_at, ends_at)
+ * Retorna formato 'YYYY-MM-DD HH:MM:SS' (compatível com MySQL DATETIME)
+ */
+const normalizeDateTime = (value?: string | Date | null): string | null => {
+  if (!value) return null;
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return null;
+  return d.toISOString().slice(0, 19).replace("T", " ");
 };
 
 /**
@@ -38,10 +53,13 @@ export const getUserEvents = async (token: string) => {
       },
     });
 
-    // 🔧 Corrige fuso da data recebida (YYYY-MM-DDTHH:mm:ssZ → YYYY-MM-DD)
+    // 🔧 Corrige datas para exibição local
     const normalized = response.data.map((event: any) => ({
       ...event,
       data: event.data ? event.data.split("T")[0] : "",
+      ticket_price: Number(event.ticket_price || 0),
+      sold_count: Number(event.sold_count || 0),
+      capacity: Number(event.capacity || 0),
     }));
 
     return normalized;
@@ -60,8 +78,12 @@ export const createEvent = async (event: EventData, token: string) => {
       nome: event.nome,
       local: event.local,
       data: normalizeDate(event.data),
-      capacidade: event.capacidade,
+      capacity: event.capacity,
       bannerUrl: event.bannerUrl,
+      ticket_price: event.ticket_price,
+      starts_at: normalizeDateTime(event.starts_at),
+      ends_at: normalizeDateTime(event.ends_at),
+      status: event.status || "published",
     };
 
     const response = await axios.post(`${API_BASE_URL}/events`, payload, {
@@ -90,6 +112,10 @@ export const updateEvent = async (
     const payload = {
       ...event,
       data: event.data ? normalizeDate(event.data) : undefined,
+      starts_at: event.starts_at
+        ? normalizeDateTime(event.starts_at)
+        : undefined,
+      ends_at: event.ends_at ? normalizeDateTime(event.ends_at) : undefined,
     };
 
     const response = await axios.put(`${API_BASE_URL}/events/${id}`, payload, {
@@ -117,6 +143,7 @@ export const deleteEvent = async (id: number, token: string) => {
         "Content-Type": "application/json",
       },
     });
+
     return response.data;
   } catch (error) {
     console.error("❌ Erro ao excluir evento:", error);
