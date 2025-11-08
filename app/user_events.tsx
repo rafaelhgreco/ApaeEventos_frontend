@@ -97,7 +97,7 @@ export default function UserEventsScreen() {
     };
 
     const handleEventPress = (eventId: number) => {
-        router.push(`/event/${eventId}`);
+        router.push("/user_events_details");
     };
 
     const filteredEvents = events.filter((event) =>
