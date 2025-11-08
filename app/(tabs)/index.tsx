@@ -18,7 +18,6 @@ export default function HomeScreen() {
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
-    // 🧩 LOGIN
     const handleSignIn = async () => {
         setLoading(true);
         setError(null);
@@ -28,19 +27,17 @@ export default function HomeScreen() {
             const token = result.session.getIdToken().getJwtToken();
             console.log("Token JWT:", token);
 
-            // 🔍 Obtém a role do usuário logado
             const role = await getUserRole();
             console.log("Função do usuário:", role);
 
             Alert.alert("Sucesso", `Login realizado com sucesso! (${role})`);
 
-            // 🚀 Redireciona com base no grupo
             if (role === "admin") {
                 router.replace("/management");
             } else if (role === "staff") {
                 router.replace("/management");
             } else {
-                router.replace("/management");
+                router.push("/user_events");
             }
         } catch (err: any) {
             console.error("Erro no login Cognito:", err);
@@ -50,8 +47,6 @@ export default function HomeScreen() {
             setLoading(false);
         }
     };
-
-    // 🧭 OUTRAS FUNÇÕES
     const handleInputChange = (field: string) => (value: string) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
     };
@@ -69,7 +64,6 @@ export default function HomeScreen() {
         setError(null);
     };
 
-    // 🧱 CAMPOS DO FORMULÁRIO
     const formFields: FormField[] = [
         {
             type: "input",
@@ -148,19 +142,7 @@ export default function HomeScreen() {
                 containerStyle: { marginTop: 8 },
             },
         },
-        {
-            type: "button",
-            key: "teste",
-            props: {
-                label: "teste-pagamento",
-                onPress: () => router.push("/payment"),
-                variant: "outline",
-                containerStyle: { marginTop: 8 },
-            },
-        },
     ];
-
-    // 🧭 INTERFACE
     return (
         <ParallaxScrollView
             headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
