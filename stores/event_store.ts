@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { getUserEvents } from "../../../services/event_services";
-import { Event } from "../../domain/events";
+import { getUserEvents } from "../services/event_services";
+import { Event } from "../src/domain/events";
 
 interface EventState {
     events: Event[];

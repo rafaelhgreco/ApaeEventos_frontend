@@ -1,4 +1,5 @@
-import { getUserRole, signIn } from "@/lib/cognito";
+import { signIn } from "@/lib/cognito";
+import { useAuthStore } from "@/stores/auth_store";
 import { FormField } from "@/types/molecules";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -34,6 +35,9 @@ export const useHome = (): UseHomeReturn => {
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
+    // Usar a store de autenticação
+    const { setToken, fetchRole } = useAuthStore();
+
     const controller: UseHomeController = {
         handleSignIn: async () => {
             setLoading(true);
@@ -42,9 +46,11 @@ export const useHome = (): UseHomeReturn => {
             try {
                 const result = await signIn(formData.email, formData.password);
                 const token = result.session.getIdToken().getJwtToken();
-                console.log("Token JWT:", token);
 
-                const role = await getUserRole();
+                setToken(token);
+                console.log("Token JWT salvo na store");
+
+                const role = await fetchRole();
                 console.log("Função do usuário:", role);
 
                 Alert.alert(
@@ -52,9 +58,7 @@ export const useHome = (): UseHomeReturn => {
                     `Login realizado com sucesso! (${role})`
                 );
 
-                if (role === "admin") {
-                    router.replace("/management");
-                } else if (role === "staff") {
+                if (role === "admin" || role === "staff") {
                     router.replace("/management");
                 } else {
                     router.push("/user_events");
