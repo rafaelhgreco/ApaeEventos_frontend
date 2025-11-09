@@ -83,13 +83,18 @@ export default function EventsCard() {
                                             ).toFixed(2)}
                                         </Text>
                                     </View>
-                                    <Button
-                                        label="Ver Detalhes"
-                                        variant="outline"
-                                        onPress={() =>
-                                            router.push(`/event/${event.id}`)
-                                        }
-                                    />
+                                    <View style={styles.buttonViewDetails}>
+                                        <Button
+                                            label="Ver Detalhes"
+                                            variant="outline"
+                                            size="small"
+                                            onPress={() =>
+                                                router.push(
+                                                    `/event/${event.id}`
+                                                )
+                                            }
+                                        />
+                                    </View>
                                 </TouchableOpacity>
                             </View>
                         ))
