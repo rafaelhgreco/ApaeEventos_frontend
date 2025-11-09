@@ -1,10 +1,10 @@
-import { getIdToken, userPool } from "@/lib/cognito";
 import { createPaymentIntent } from "@/services/payment_services";
 import { createTicket } from "@/services/ticket_services";
 import { useStripe } from "@stripe/stripe-react-native";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { Alert } from "react-native";
+import { useAuth } from "./use-auth";
 
 interface PaymentParams {
     amount: number;
@@ -38,11 +38,12 @@ export const usePayment = (): UsePaymentReturn => {
     const searchParams = useLocalSearchParams();
     const navigation = useNavigation();
 
+    const { controller: authController } = useAuth();
+
     const [loading, setLoading] = useState(false);
     const [clientSecret, setClientSecret] = useState<string | null>(null);
     const [isSheetInitialized, setIsSheetInitialized] = useState(false);
 
-    // Parse params
     const params: PaymentParams = {
         amount: Number(searchParams.amount) || 0,
         eventId: Number(searchParams.eventId),
@@ -74,18 +75,12 @@ export const usePayment = (): UsePaymentReturn => {
             try {
                 setLoading(true);
 
-                const user = userPool.getCurrentUser();
+                // Usar o controller de autenticação para obter o token
+                const token = await authController.handleGetToken();
 
-                if (!user) {
-                    Alert.alert(
-                        "Erro de Autenticação",
-                        "Você precisa estar logado para realizar pagamentos."
-                    );
-                    router.replace("/");
+                if (!token) {
                     return null;
                 }
-
-                const token = await getIdToken();
 
                 const data = await createPaymentIntent(
                     {
@@ -100,28 +95,11 @@ export const usePayment = (): UsePaymentReturn => {
                 setClientSecret(secret);
                 return secret;
             } catch (error: any) {
-                if (
-                    error.name === "AuthenticationError" ||
-                    error.message === "Sessão expirada" ||
-                    error.message === "Nenhum usuário autenticado."
-                ) {
-                    Alert.alert(
-                        "Sessão Expirada",
-                        "Sua sessão expirou. Por favor, faça login novamente.",
-                        [
-                            {
-                                text: "OK",
-                                onPress: () => router.replace("/"),
-                            },
-                        ]
-                    );
-                } else {
-                    Alert.alert(
-                        "Erro no Pagamento",
-                        error.message ||
-                            "Não foi possível iniciar o pagamento. Tente novamente."
-                    );
-                }
+                Alert.alert(
+                    "Erro no Pagamento",
+                    error.message ||
+                        "Não foi possível iniciar o pagamento. Tente novamente."
+                );
                 return null;
             } finally {
                 setLoading(false);
@@ -186,7 +164,11 @@ export const usePayment = (): UsePaymentReturn => {
 
         handleCreateTickets: async () => {
             try {
-                const token = await getIdToken();
+                const token = await authController.handleGetToken();
+
+                if (!token) {
+                    return;
+                }
 
                 const payload = {
                     eventId: params.eventId,

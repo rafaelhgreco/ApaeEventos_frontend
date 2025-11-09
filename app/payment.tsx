@@ -6,9 +6,9 @@ import {
     Text,
     View,
 } from "react-native";
+import { usePayment } from "../hooks/use-payment";
 import { styles } from "./styles/payment.style";
 import { colors } from "./styles/themes";
-import { usePayment } from "./use-payment";
 
 export default function PaymentScreen() {
     const {

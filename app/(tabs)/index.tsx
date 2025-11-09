@@ -2,8 +2,8 @@ import GenericForm from "@/components/ATOMIC/molecules/form";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedView } from "@/components/ThemedView";
 import { Image, Text, View } from "react-native";
+import { useHome } from "../../hooks/use-home";
 import { styles } from "../styles/index.style";
-import { useHome } from "./use-home";
 
 export default function HomeScreen() {
     const { formFields, error } = useHome();
