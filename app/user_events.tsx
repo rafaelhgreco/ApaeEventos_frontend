@@ -1,4 +1,6 @@
+import Button from "@/components/ATOMIC/atoms/button";
 import SearchInput from "@/components/ATOMIC/atoms/search_input";
+import { useAuth } from "@/hooks/use-auth";
 import { getIdToken, userPool } from "@/lib/cognito";
 import { getUserEvents } from "@/services/event_services";
 import { useNavigation, useRouter } from "expo-router";
@@ -28,10 +30,19 @@ export default function UserEventsScreen() {
     );
     const navigation = useNavigation();
     const router = useRouter();
+    const { controller } = useAuth();
 
     useLayoutEffect(() => {
         navigation.setOptions({
             title: "Eventos Disponíveis",
+            headerRight: () => (
+                <Button
+                    label="Logout"
+                    variant="primary"
+                    size="small"
+                    onPress={controller.handleLogout}
+                />
+            ),
         });
     }, [navigation]);
 

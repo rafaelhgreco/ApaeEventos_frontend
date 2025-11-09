@@ -14,7 +14,6 @@ interface UseHomeController {
     handleSignIn: () => Promise<void>;
     handleInputChange: (field: string) => (value: string) => void;
     handleRegister: () => void;
-    handleConfirmAccount: () => void;
     handleReset: () => void;
 }
 
@@ -35,8 +34,7 @@ export const useHome = (): UseHomeReturn => {
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
-    // Usar a store de autenticação
-    const { setToken, fetchRole } = useAuthStore();
+    const { setToken, fetchRole, clearAuth } = useAuthStore();
 
     const controller: UseHomeController = {
         handleSignIn: async () => {
@@ -44,14 +42,20 @@ export const useHome = (): UseHomeReturn => {
             setError(null);
 
             try {
+                clearAuth();
+
                 const result = await signIn(formData.email, formData.password);
                 const token = result.session.getIdToken().getJwtToken();
 
                 setToken(token);
-                console.log("Token JWT salvo na store");
 
                 const role = await fetchRole();
-                console.log("Função do usuário:", role);
+
+                if (!role) {
+                    throw new Error(
+                        "Não foi possível obter a função do usuário"
+                    );
+                }
 
                 Alert.alert(
                     "Sucesso",
@@ -64,8 +68,9 @@ export const useHome = (): UseHomeReturn => {
                     router.push("/user_events");
                 }
             } catch (err: any) {
-                console.error("Erro no login Cognito:", err);
+                console.error("Erro no login:", err);
                 setError(err.message);
+                clearAuth();
                 Alert.alert(
                     "Erro no login",
                     err.message || "Erro desconhecido"
@@ -81,10 +86,6 @@ export const useHome = (): UseHomeReturn => {
 
         handleRegister: () => {
             router.push("/public_register");
-        },
-
-        handleConfirmAccount: () => {
-            router.push("../confirm_register");
         },
 
         handleReset: () => {
@@ -136,22 +137,6 @@ export const useHome = (): UseHomeReturn => {
                 onPress: controller.handleRegister,
                 variant: "primary",
                 containerStyle: { marginTop: 16 },
-            },
-        },
-        {
-            type: "button",
-            key: "confirmAccount",
-            props: {
-                label: "Confirmar Conta",
-                onPress: controller.handleConfirmAccount,
-                variant: "outline",
-                containerStyle: {
-                    marginTop: 8,
-                    borderColor: "#007AFF",
-                },
-                textStyle: {
-                    color: "#007AFF",
-                },
             },
         },
         {
