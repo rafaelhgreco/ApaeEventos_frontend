@@ -1,6 +1,6 @@
-import { getIdToken, getUserRole, userPool } from "@/lib/cognito";
+import { getIdToken, userPool } from "@/lib/cognito";
 import { Link, useFocusEffect, useRouter } from "expo-router";
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import {
     ActivityIndicator,
     Alert,
@@ -16,7 +16,6 @@ import { EventItem } from "./event_item";
 
 export default function EventsCard() {
     const { events, fetchEvents, loading, error } = useEvents();
-    const [role, setRole] = useState<string>("default");
     const router = useRouter();
 
     useFocusEffect(
@@ -31,9 +30,6 @@ export default function EventsCard() {
 
                     const token = await getIdToken();
                     await fetchEvents(token);
-
-                    const currentRole = await getUserRole();
-                    setRole(currentRole);
                 } catch (err) {
                     console.error("Erro ao carregar eventos:", err);
                 }
@@ -108,53 +104,50 @@ export default function EventsCard() {
                 </View>
             </View>
 
-            {/* 🔹 Ações rápidas (somente staff/admin) */}
-            {role !== "default" && (
-                <View style={styles.actionsBox}>
-                    <Text style={styles.title}>Ações Rápidas</Text>
-                    <View style={styles.actionsGrid}>
-                        <View style={styles.actionCard}>
-                            <Button
-                                label="Cadastrar Evento"
-                                variant="primary"
-                                onPress={handleCreateNewEvent}
-                                containerStyle={styles.actionButton}
-                                textStyle={styles.actionButtonText}
-                            />
-                        </View>
+            <View style={styles.actionsBox}>
+                <Text style={styles.title}>Ações Rápidas</Text>
+                <View style={styles.actionsGrid}>
+                    <View style={styles.actionCard}>
+                        <Button
+                            label="Cadastrar Evento"
+                            variant="primary"
+                            onPress={handleCreateNewEvent}
+                            containerStyle={styles.actionButton}
+                            textStyle={styles.actionButtonText}
+                        />
+                    </View>
 
-                        <View style={styles.actionCard}>
-                            <Button
-                                label="Validar Ingresso"
-                                variant="primary"
-                                onPress={handleValidateTicket}
-                                containerStyle={styles.actionButton}
-                                textStyle={styles.actionButtonText}
-                            />
-                        </View>
+                    <View style={styles.actionCard}>
+                        <Button
+                            label="Validar Ingresso"
+                            variant="primary"
+                            onPress={handleValidateTicket}
+                            containerStyle={styles.actionButton}
+                            textStyle={styles.actionButtonText}
+                        />
+                    </View>
 
-                        <View style={styles.actionCard}>
-                            <Button
-                                label="Dashboard"
-                                variant="primary"
-                                onPress={handleDashboard}
-                                containerStyle={styles.actionButton}
-                                textStyle={styles.actionButtonText}
-                            />
-                        </View>
+                    <View style={styles.actionCard}>
+                        <Button
+                            label="Dashboard"
+                            variant="primary"
+                            onPress={handleDashboard}
+                            containerStyle={styles.actionButton}
+                            textStyle={styles.actionButtonText}
+                        />
+                    </View>
 
-                        <View style={styles.actionCard}>
-                            <Button
-                                label="Registrar Usuário"
-                                variant="primary"
-                                onPress={() => router.push("/admin_register")}
-                                containerStyle={styles.actionButton}
-                                textStyle={styles.actionButtonText}
-                            />
-                        </View>
+                    <View style={styles.actionCard}>
+                        <Button
+                            label="Registrar Usuário"
+                            variant="primary"
+                            onPress={() => router.push("/admin_register")}
+                            containerStyle={styles.actionButton}
+                            textStyle={styles.actionButtonText}
+                        />
                     </View>
                 </View>
-            )}
+            </View>
         </View>
     );
 }

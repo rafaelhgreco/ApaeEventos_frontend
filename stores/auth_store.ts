@@ -30,7 +30,6 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     isLoading: false,
     error: null,
 
-    // Actions
     setToken: (token) =>
         set({
             token,
@@ -75,12 +74,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     fetchRole: async () => {
         const state = get();
 
-        if (state.role) {
-            return state.role;
-        }
-
         try {
             const role = await getUserRole();
+
             state.setRole(role);
             return role;
         } catch (error: any) {
@@ -112,21 +108,23 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
             const user = userPool.getCurrentUser();
             if (user) {
                 const email = user.getUsername();
-                signOut(email);
+                await signOut(email);
             }
             get().clearAuth();
         } catch (error: any) {
             console.error("Erro ao fazer logout:", error);
             get().setError(error.message || "Erro ao fazer logout");
+            get().clearAuth();
         }
     },
 
-    clearAuth: () =>
+    clearAuth: () => {
         set({
             token: null,
             role: null,
             isAuthenticated: false,
             error: null,
             isLoading: false,
-        }),
+        });
+    },
 }));
