@@ -1,5 +1,7 @@
-import { API_BASE_URL } from "@env";
+import { ENV } from "@/config/env";
 import axios from "axios";
+
+const API_BASE_URL = ENV.API_BASE_URL;
 
 interface EventData {
     id: number;

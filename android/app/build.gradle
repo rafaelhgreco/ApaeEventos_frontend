@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.anonymous.apaeeventos'
+    namespace 'com.apaeeventos.app'
     defaultConfig {
-        applicationId 'com.anonymous.apaeeventos'
+        applicationId 'com.apaeeventos.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

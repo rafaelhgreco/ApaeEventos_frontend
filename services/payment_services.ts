@@ -1,6 +1,8 @@
-import { API_BASE_URL } from "@env";
+import { ENV } from "@/config/env";
 import axios from "axios";
 import { handleApiError } from "./auth_services";
+
+const API_BASE_URL = ENV.API_BASE_URL;
 
 interface CreatePaymentIntentParams {
     amount: number;
