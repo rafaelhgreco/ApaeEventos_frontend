@@ -8,7 +8,7 @@
   "java.compile.nullAnalysis.mode": "automatic",
   "terminal.integrated.profiles.windows": {
         "Git Bash": {
-            "path": "D:\\Git\\bin\\\\bash.exe",
+            "path": "C:\\Program Files\\Git\\bin\\bash.exe",
             "source": "Git Bash"
         }
     },
