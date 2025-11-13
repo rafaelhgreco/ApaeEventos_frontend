@@ -9,16 +9,13 @@ export default {
         icon: "./assets/images/icon.png",
         scheme: "apaeeventos",
         userInterfaceStyle: "automatic",
-        newArchEnabled: false, // ✅ Desabilitado para estabilidade
+        newArchEnabled: false,
 
         extra: {
             eas: {
                 projectId: "b5941c7a-ff26-495c-9a3d-23dc1bf716ea",
             },
-            // ✅ Hard-code a URL para builds locais (ou use process.env com fallback)
-            apiUrl:
-                process.env.EXPO_PUBLIC_API_BASE_URL ||
-                "http://15.229.194.81:3000",
+            apiUrl: process.env.EXPO_PUBLIC_API_BASE_URL,
             cognitoRegion:
                 process.env.EXPO_PUBLIC_COGNITO_REGION || "us-east-1",
             cognitoUserPoolId:
@@ -30,7 +27,7 @@ export default {
 
         ios: {
             supportsTablet: true,
-            bundleIdentifier: "com.apaeeventos.app", // ✅ Formato correto
+            bundleIdentifier: "com.apaeeventos.app",
         },
 
         android: {
@@ -38,8 +35,8 @@ export default {
                 foregroundImage: "./assets/images/adaptive-icon.png",
                 backgroundColor: "#ffffff",
             },
-            package: "com.apaeeventos.app", // ✅ Mesmo package que o bundle identifier
-            usesCleartextTraffic: true, // ✅ Permite HTTP
+            package: "com.apaeeventos.app",
+            usesCleartextTraffic: true,
         },
 
         web: {

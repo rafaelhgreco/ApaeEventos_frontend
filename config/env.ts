@@ -1,8 +1,7 @@
 import Constants from "expo-constants";
 
 export const ENV = {
-    API_BASE_URL:
-        Constants.expoConfig?.extra?.apiUrl || "http://15.229.194.81:3000",
+    API_BASE_URL: Constants.expoConfig?.extra?.apiUrl,
     COGNITO_REGION: Constants.expoConfig?.extra?.cognitoRegion || "us-east-1",
     COGNITO_USER_POOL_ID: Constants.expoConfig?.extra?.cognitoUserPoolId || "",
     COGNITO_CLIENT_ID: Constants.expoConfig?.extra?.cognitoClientId || "",
