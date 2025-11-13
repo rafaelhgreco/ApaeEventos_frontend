@@ -1,4 +1,4 @@
-package com.anonymous.apaeeventos
+package com.apaeeventos.app
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build
