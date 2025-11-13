@@ -9,8 +9,8 @@ import {
 
 // ⚙️ Configuração do User Pool
 const poolData = {
-    UserPoolId: ENV.COGNITO_USER_POOL_ID,
-    ClientId: ENV.COGNITO_CLIENT_ID,
+    UserPoolId: ENV.EXPO_PUBLIC_COGNITO_USER_POOL_ID,
+    ClientId: ENV.EXPO_PUBLIC_COGNITO_CLIENT_ID,
 };
 
 export const userPool = new CognitoUserPool(poolData);

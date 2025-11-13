@@ -149,6 +149,16 @@ export const useHome = (): UseHomeReturn => {
                 containerStyle: { marginTop: 8 },
             },
         },
+        {
+            type: "button",
+            key: "confirmRegister",
+            props: {
+                label: "Confirmar Cadastro",
+                onPress: () => router.push("/confirm_register"),
+                variant: "outline",
+                containerStyle: { marginTop: 8 },
+            },
+        },
     ];
 
     return {
