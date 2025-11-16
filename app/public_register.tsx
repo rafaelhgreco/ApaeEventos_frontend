@@ -71,12 +71,12 @@ export default function RegisterScreen() {
 
       Alert.alert(
         "Sucesso",
-        "Conta criada com sucesso! Verifique seu e-mail para confirmar."
+        "Conta criada com sucesso!"
       );
 
-      // ✅ Redireciona automaticamente para tela de confirmação
+      // ✅ Redireciona automaticamente para tela de login
       router.push({
-        pathname: "../confirm_register",
+        pathname: "/",
         params: { email: formData.email.trim() },
       });
     } catch (err: any) {

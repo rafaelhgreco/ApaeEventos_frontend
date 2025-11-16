@@ -32,16 +32,21 @@ export default function AdminRegisterScreen() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSignUp = async () => {
-    const { nome, email, password, telefone, role } = formData;
+const handleSignUp = async () => {
+  const { nome, email, password, telefone, role } = formData;
 
-    if (!nome || !email || !password || !telefone) {
-      Alert.alert("Campos obrigatórios", "Preencha todos os campos.");
-      return;
-    }
+  // Verifica se os campos obrigatórios estão preenchidos
+  if (!email || !password || !nome) {
+    Alert.alert("Campos obrigatórios", "Preencha nome, e-mail e senha antes de continuar.");
+    return;
+  }
 
-    // 🧩 validação e formatação do telefone
+  // 🧩 Valida e formata o telefone apenas se não estiver vazio
+  let telefoneFormatado: string | undefined = undefined;
+
+  if (telefone.trim() !== "") {
     const telefoneNumerico = telefone.replace(/\D/g, "");
+
     if (telefoneNumerico.length < 10 || telefoneNumerico.length > 11) {
       Alert.alert(
         "Telefone inválido",
@@ -50,7 +55,8 @@ export default function AdminRegisterScreen() {
       return;
     }
 
-    const telefoneFormatado = `+55${telefoneNumerico}`;
+    telefoneFormatado = `+55${telefoneNumerico}`;
+
     if (!/^\+55\d{10,11}$/.test(telefoneFormatado)) {
       Alert.alert(
         "Telefone inválido",
@@ -58,43 +64,44 @@ export default function AdminRegisterScreen() {
       );
       return;
     }
+  }
 
-    // 👇 envia vazio = grupo default
-    const roleToSend = role.trim() === "" ? undefined : role.trim();
+  // Envia vazio se o telefone não foi fornecido
+  const roleToSend = role.trim() === "" ? undefined : role.trim();
 
-    setLoading(true);
-    try {
-      await signUp(
-        nome.trim(),
-        email.trim(),
-        password,
-        telefoneFormatado,
-        roleToSend
-      );
+  setLoading(true);
+  try {
+    await signUp(
+      nome.trim(),
+      email.trim(),
+      password,
+      telefoneFormatado, // Envia telefoneFormatado ou undefined
+      roleToSend
+    );
 
-      const msgGrupo = roleToSend
-        ? `Usuário adicionado ao grupo "${roleToSend}".`
-        : "Usuário adicionado ao grupo padrão (default).";
+    const msgGrupo = roleToSend
+      ? `Usuário adicionado ao grupo "${roleToSend}".`
+      : "Usuário adicionado ao grupo padrão (default).";
 
-      Alert.alert(
-        "Sucesso",
-        `Usuário ${nome} cadastrado com sucesso.\n${msgGrupo}`
-      );
+    Alert.alert(
+      "Sucesso",
+      `Usuário ${nome} cadastrado com sucesso.\n${msgGrupo}`
+    );
 
-      setFormData({
-        nome: "",
-        email: "",
-        telefone: "",
-        password: "",
-        role: "",
-      });
-    } catch (err: any) {
-      console.error("Erro ao criar usuário:", err);
-      Alert.alert("Erro", err.message || "Falha ao criar usuário.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    setFormData({
+      nome: "",
+      email: "",
+      telefone: "",
+      password: "",
+      role: "",
+    });
+  } catch (err: any) {
+    console.error("Erro ao criar usuário:", err);
+    Alert.alert("Erro", err.message || "Falha ao criar usuário.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleReset = () => {
     setFormData({
