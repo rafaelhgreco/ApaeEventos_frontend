@@ -1,7 +1,6 @@
-import { ENV } from "@/config/env";
+// eslint-disable-next-line import/no-unresolved
+import { API_BASE_URL } from "@env";
 import axios from "axios";
-
-const API_BASE_URL = ENV.API_BASE_URL;
 
 /**
  * 🎫 Estrutura dos dados do ticket

@@ -1,32 +1,23 @@
-import Constants from "expo-constants";
-
-export const ENV = {
-    API_BASE_URL: Constants.expoConfig?.extra?.apiUrl,
-    COGNITO_REGION: Constants.expoConfig?.extra?.cognitoRegion || "us-east-1",
-    EXPO_PUBLIC_COGNITO_USER_POOL_ID:
-        Constants.expoConfig?.extra?.cognitoUserPoolId || "",
-    EXPO_PUBLIC_COGNITO_CLIENT_ID:
-        Constants.expoConfig?.extra?.cognitoClientId || "",
-    STRIPE_PUBLISHABLE_KEY:
-        Constants.expoConfig?.extra?.stripePublishableKey || "",
+type Environment = {
+    API_BASE_URL: string;
 };
 
-// Debug em desenvolvimento
-if (__DEV__) {
-    console.log("🔧 ENV Config:", {
-        API_BASE_URL: ENV.API_BASE_URL,
-        COGNITO_REGION: ENV.COGNITO_REGION,
-        COGNITO_USER_POOL_ID: ENV.EXPO_PUBLIC_COGNITO_CLIENT_ID
-            ? "✅ SET"
-            : "❌ NOT SET",
-        COGNITO_CLIENT_ID: ENV.EXPO_PUBLIC_COGNITO_CLIENT_ID
-            ? "✅ SET"
-            : "❌ NOT SET",
-        STRIPE_PUBLISHABLE_KEY: ENV.STRIPE_PUBLISHABLE_KEY
-            ? "✅ SET"
-            : "❌ NOT SET",
-    });
-}
+// Configurações para desenvolvimento
+export const env: Environment = {
+    API_BASE_URL: "http://localhost:3000/api",
+};
 
-// Backwards compatibility
-export const env = ENV;
+// Configurações para produção
+// const production: Environment = {
+//     API_BASE_URL: "https://api.seuapp.com/v1",
+// };
+
+// // Seleção automática do ambiente
+// const getEnv = (): Environment => {
+//     if (__DEV__) {
+//         return development;
+//     }
+//     return production;
+// };
+
+// export const env = getEnv();

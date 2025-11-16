@@ -1,8 +1,6 @@
-import { ENV } from "@/config/env";
 import { getIdToken, userPool } from "@/lib/cognito";
+import { API_BASE_URL } from "@env";
 import axios from "axios";
-
-const API_BASE_URL = ENV.API_BASE_URL;
 
 export async function validateQRCode(
     data: string

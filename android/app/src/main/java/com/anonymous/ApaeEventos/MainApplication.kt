@@ -1,4 +1,4 @@
-package com.apaeeventos.app
+package com.anonymous.apaeeventos
 
 import android.app.Application
 import android.content.res.Configuration
