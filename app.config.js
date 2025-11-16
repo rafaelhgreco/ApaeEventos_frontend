@@ -1,77 +1,67 @@
 import "dotenv/config";
 
 export default {
-    expo: {
-        name: "ApaeEventos",
-        slug: "apae-eventos",
-        version: "1.0.0",
-        orientation: "portrait",
-        icon: "./assets/images/icon.png",
-        scheme: "apaeeventos",
-        userInterfaceStyle: "automatic",
-        newArchEnabled: false,
+  expo: {
+    name: "ApaeEventos",
+    slug: "apae-eventos",
+    version: "1.0.0",
+    orientation: "portrait",
+    icon: "./assets/images/icon.png",
+    scheme: "apaeeventos",
+    userInterfaceStyle: "automatic",
+    newArchEnabled: true,
 
-        extra: {
-            eas: {
-                projectId: "b5941c7a-ff26-495c-9a3d-23dc1bf716ea",
-            },
-            apiUrl: process.env.EXPO_PUBLIC_API_BASE_URL,
-            cognitoRegion:
-                process.env.EXPO_PUBLIC_COGNITO_REGION || "us-east-1",
-            cognitoUserPoolId:
-                process.env.EXPO_PUBLIC_COGNITO_USER_POOL_ID || "",
-            cognitoClientId: process.env.EXPO_PUBLIC_COGNITO_CLIENT_ID || "",
-            stripePublishableKey:
-                process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
-        },
+    // 🔐 AQUI ficam as variáveis do .env
+    extra: {
+      eas: {
+        projectId: "b5941c7a-ff26-495c-9a3d-23dc1bf716ea",
+      },
+      apiUrl: "http://35.247.231.143:3000",
 
-        ios: {
-            supportsTablet: true,
-            bundleIdentifier: "com.apaeeventos.app",
-        },
-
-        android: {
-            adaptiveIcon: {
-                foregroundImage: "./assets/images/adaptive-icon.png",
-                backgroundColor: "#ffffff",
-            },
-            package: "com.apaeeventos.app",
-            usesCleartextTraffic: true,
-        },
-
-        web: {
-            bundler: "metro",
-            output: "static",
-            favicon: "./assets/images/favicon.png",
-        },
-
-        plugins: [
-            "expo-router",
-            [
-                "expo-build-properties",
-                {
-                    android: {
-                        compileSdkVersion: 35,
-                        targetSdkVersion: 35,
-                        buildToolsVersion: "35.0.0",
-                    },
-                },
-            ],
-            [
-                "expo-splash-screen",
-                {
-                    image: "./assets/images/splash-icon.png",
-                    imageWidth: 200,
-                    resizeMode: "contain",
-                    backgroundColor: "#ffffff",
-                },
-            ],
-        ],
-
-        experiments: {
-            typedRoutes: true,
-        },
-
-        owner: "rafaelhgreco",
+      // ✅ Variáveis Cognito vindas do .env
+      COGNITO_REGION: process.env.COGNITO_REGION,
+      COGNITO_USER_POOL_ID: process.env.COGNITO_USER_POOL_ID,
+      COGNITO_CLIENT_ID: process.env.COGNITO_CLIENT_ID,
     },
+
+    ios: {
+      supportsTablet: true,
+      bundleIdentifier: "apae.android", // ajuste se necessário
+    },
+
+    android: {
+      adaptiveIcon: {
+        foregroundImage: "./assets/images/adaptive-icon.png",
+        backgroundColor: "#ffffff",
+      },
+      edgeToEdgeEnabled: true,
+      package: "com.anonymous.apaeeventos",
+    },
+
+    web: {
+      bundler: "metro",
+      output: "static",
+      favicon: "./assets/images/favicon.png",
+    },
+
+    plugins: [
+      "expo-router",
+      "expo-build-properties",
+      [
+        "expo-splash-screen",
+        {
+          image: "./assets/images/splash-icon.png",
+          imageWidth: 200,
+          resizeMode: "contain",
+          backgroundColor: "#ffffff",
+        },
+      ],
+    ],
+
+    experiments: {
+      typedRoutes: true,
+    },
+
+    owner: "rafaelhgreco",
+  },
 };

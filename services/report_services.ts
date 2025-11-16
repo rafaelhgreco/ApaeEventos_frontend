@@ -1,7 +1,5 @@
-import { ENV } from "@/config/env";
+import { API_BASE_URL } from "@env";
 import axios from "axios";
-
-const API_BASE_URL = ENV.API_BASE_URL;
 
 export interface ReportData {
     total: number;
