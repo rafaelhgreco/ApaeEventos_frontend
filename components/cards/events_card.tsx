@@ -1,6 +1,6 @@
-import { getIdToken, userPool } from "@/lib/cognito";
+import { getIdToken, getUserRole, userPool } from "@/lib/cognito";
 import { Link, useFocusEffect, useRouter } from "expo-router";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import {
     ActivityIndicator,
     Alert,
@@ -17,6 +17,7 @@ import { EventItem } from "./event_item";
 export default function EventsCard() {
     const { events, fetchEvents, loading, error } = useEvents();
     const router = useRouter();
+    const [role, setRole] = useState<string>("default");
 
     useFocusEffect(
         useCallback(() => {
@@ -30,6 +31,8 @@ export default function EventsCard() {
 
                     const token = await getIdToken();
                     await fetchEvents(token);
+                    const currentRole = await getUserRole();
+                    setRole(currentRole);
                 } catch (err) {
                     console.error("Erro ao carregar eventos:", err);
                 }
