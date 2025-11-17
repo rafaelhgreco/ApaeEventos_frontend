@@ -1,12 +1,12 @@
 import GenericForm from "@/components/ATOMIC/molecules/form";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedView } from "@/components/ThemedView";
 import { signUp } from "@/lib/cognito";
 import { FormField } from "@/types/molecules";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Alert,
+  Animated,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -23,6 +23,8 @@ export default function RegisterScreen() {
     password: "",
     telefone: "",
   });
+
+  const translateY = useRef(new Animated.Value(0)).current;
 
   const handleInputChange = (field: string) => (value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -69,14 +71,11 @@ export default function RegisterScreen() {
         telefoneFormatado
       );
 
-      Alert.alert(
-        "Sucesso",
-        "Conta criada com sucesso! Verifique seu e-mail para confirmar."
-      );
+      Alert.alert("Sucesso", "Conta criada com sucesso!");
 
-      // ✅ Redireciona automaticamente para tela de confirmação
+      // ✅ Redireciona automaticamente para tela de login
       router.push({
-        pathname: "../confirm_register",
+        pathname: "/",
         params: { email: formData.email.trim() },
       });
     } catch (err: any) {
@@ -141,31 +140,53 @@ export default function RegisterScreen() {
     },
   ];
 
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <View style={styles.container}>
-          <Image
-            style={styles.reactLogo}
-            source={require("@/assets/images/logo_apae.png")}
-          />
-        </View>
-      }
+  // Add focus/blur handlers to animate the form when inputs are selected.
+  const fieldsWithFocusHandlers: FormField[] = formFields.map((field) => {
+    if (field.type === "input") {
+      return {
+        ...field,
+        props: {
+          ...field.props,
+          onFocus: () => {
+            Animated.spring(translateY, {
+              toValue: -40,
+              useNativeDriver: true,
+            }).start();
+          },
+          onBlur: () => {
+            Animated.spring(translateY, {
+              toValue: 0,
+              useNativeDriver: true,
+            }).start();
+          },
+        },
+      };
+    }
+    return field;
+  });
+
+return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={150}
     >
-      <ThemedView>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1 }}
-        >
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            contentContainerStyle={{ padding: 16, flexGrow: 1 }}
-          >
-            <GenericForm title="Criar Conta" fields={formFields} />
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </ThemedView>
-    </ParallaxScrollView>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <ThemedView style={{ flex: 1 }}>
+          <View style={styles.container}>
+            <Image style={styles.reactLogo} source={require('@/assets/images/logo_apae.png')} />
+          </View>
+          {/* form animado */}
+          <Animated.View style={{ transform: [{ translateY }] }}>
+            <View style={styles.loginForm}>
+              <GenericForm title="Criar Conta" fields={fieldsWithFocusHandlers} />
+            </View>
+          </Animated.View>
+        </ThemedView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

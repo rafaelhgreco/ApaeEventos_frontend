@@ -6,10 +6,27 @@ import { signUp } from "@/lib/cognito";
 import { FormField } from "@/types/molecules";
 import { Image } from "expo-image";
 import { useNavigation } from "expo-router";
-import { useLayoutEffect, useState } from "react";
-import { Alert, View } from "react-native";
+import { useLayoutEffect, useRef, useState } from "react";
+import {
+  Alert,
+  Animated,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  View,
+} from "react-native";
 import { styles } from "./styles/register.style";
 
+/**
+ * AdminRegisterScreen allows administrators to create new users with
+ * optional roles. To ensure good keyboard behaviour, the form is
+ * wrapped in a KeyboardAvoidingView and ScrollView, and an
+ * Animated.View shifts the form up slightly when an input field gains
+ * focus. This mirrors the behaviour added to the login and public
+ * register screens, providing a consistent, fluid experience when
+ * entering data. After successful registration the form is reset and
+ * a success message is displayed.
+ */
 export default function AdminRegisterScreen() {
   const [formData, setFormData] = useState({
     nome: "",
@@ -21,6 +38,8 @@ export default function AdminRegisterScreen() {
 
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
+  // Animated value to translate the form when an input is focused.
+  const translateY = useRef(new Animated.Value(0)).current;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -35,31 +54,34 @@ export default function AdminRegisterScreen() {
   const handleSignUp = async () => {
     const { nome, email, password, telefone, role } = formData;
 
-    if (!nome || !email || !password || !telefone) {
-      Alert.alert("Campos obrigatórios", "Preencha todos os campos.");
-      return;
-    }
-
-    // 🧩 validação e formatação do telefone
-    const telefoneNumerico = telefone.replace(/\D/g, "");
-    if (telefoneNumerico.length < 10 || telefoneNumerico.length > 11) {
+    if (!email || !password || !nome) {
       Alert.alert(
-        "Telefone inválido",
-        "Informe um número com DDD. Ex: 19981234567"
+        "Campos obrigatórios",
+        "Preencha nome, e-mail e senha antes de continuar."
       );
       return;
     }
 
-    const telefoneFormatado = `+55${telefoneNumerico}`;
-    if (!/^\+55\d{10,11}$/.test(telefoneFormatado)) {
-      Alert.alert(
-        "Telefone inválido",
-        "O número precisa estar no formato +55DDDNÚMERO."
-      );
-      return;
+    // Format phone number if provided
+    let telefoneFormatado: string | undefined = undefined;
+    if (telefone.trim() !== "") {
+      const telefoneNumerico = telefone.replace(/\D/g, "");
+      if (telefoneNumerico.length < 10 || telefoneNumerico.length > 11) {
+        Alert.alert(
+          "Telefone inválido",
+          "Informe um número com DDD. Ex: 19981234567"
+        );
+        return;
+      }
+      telefoneFormatado = `+55${telefoneNumerico}`;
+      if (!/^\+55\d{10,11}$/.test(telefoneFormatado)) {
+        Alert.alert(
+          "Telefone inválido",
+          "O número precisa estar no formato +55DDDNÚMERO."
+        );
+        return;
+      }
     }
-
-    // 👇 envia vazio = grupo default
     const roleToSend = role.trim() === "" ? undefined : role.trim();
 
     setLoading(true);
@@ -71,16 +93,14 @@ export default function AdminRegisterScreen() {
         telefoneFormatado,
         roleToSend
       );
-
       const msgGrupo = roleToSend
         ? `Usuário adicionado ao grupo "${roleToSend}".`
         : "Usuário adicionado ao grupo padrão (default).";
-
       Alert.alert(
         "Sucesso",
         `Usuário ${nome} cadastrado com sucesso.\n${msgGrupo}`
       );
-
+      // Reset form
       setFormData({
         nome: "",
         email: "",
@@ -106,6 +126,7 @@ export default function AdminRegisterScreen() {
     });
   };
 
+  // Base form fields
   const formFields: FormField[] = [
     {
       type: "input",
@@ -190,6 +211,32 @@ export default function AdminRegisterScreen() {
     },
   ];
 
+  // Map over fields to add focus handlers to input fields. For the select
+  // and button types, we leave them unchanged.
+  const fieldsWithFocusHandlers: FormField[] = formFields.map((field) => {
+    if (field.type === "input") {
+      return {
+        ...field,
+        props: {
+          ...field.props,
+          onFocus: () => {
+            Animated.spring(translateY, {
+              toValue: -40,
+              useNativeDriver: true,
+            }).start();
+          },
+          onBlur: () => {
+            Animated.spring(translateY, {
+              toValue: 0,
+              useNativeDriver: true,
+            }).start();
+          },
+        },
+      };
+    }
+    return field;
+  });
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
@@ -202,13 +249,27 @@ export default function AdminRegisterScreen() {
         </View>
       }
     >
-      <ThemedView>
-        <GenericForm
-          title="Cadastro de Usuário (Admin)"
-          fields={formFields}
-          style={styles.registerForm}
-        />
-      </ThemedView>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={120}
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <ThemedView style={{ flex: 1 }}>
+            <Animated.View style={{ transform: [{ translateY }] }}>
+              <GenericForm
+                title="Cadastro de Usuário (Admin)"
+                fields={fieldsWithFocusHandlers}
+                // Use registerForm style for consistent spacing
+                containerStyle={styles.registerForm}
+              />
+            </Animated.View>
+          </ThemedView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </ParallaxScrollView>
   );
 }

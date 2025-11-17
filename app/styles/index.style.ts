@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
     },
     loginForm: {
         flex: 1,
-        justifyContent: "center",
+        justifyContent: "flex-start", // was 'center'
         padding: paddings.large,
         borderRadius: border.radiusMedium,
     },

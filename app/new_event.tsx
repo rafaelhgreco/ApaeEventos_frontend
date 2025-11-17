@@ -1,10 +1,17 @@
 import GenericForm from "@/components/ATOMIC/molecules/form";
 import { getIdToken, getUserRole } from "@/lib/cognito";
-import { createEvent } from "@/services/event_services";
+import { createEvent, uploadBannerService } from "@/services/event_services";
 import { FormField } from "@/types/molecules";
+import * as ImagePicker from "expo-image-picker";
 import { useNavigation, useRouter } from "expo-router";
 import React, { useLayoutEffect, useState } from "react";
-import { Alert, Button, Image, ScrollView, View } from "react-native";
+import {
+    Alert,
+    Button,
+    Image,
+    ScrollView,
+    View,
+} from "react-native";
 
 export default function NewEventScreen() {
     const [formData, setFormData] = useState({
@@ -13,14 +20,13 @@ export default function NewEventScreen() {
         local: "",
         capacity: "",
         ticket_price: "",
-        starts_at: new Date(), // inicializa com hora atual
+        starts_at: new Date(),
         bannerUrl: "",
     });
 
     const [loading, setLoading] = useState(false);
-    const [showDatePicker, setShowDatePicker] = useState<{
-        [key: string]: boolean;
-    }>({});
+    const [uploadingBanner, setUploadingBanner] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState<{ [key: string]: boolean }>({});
     const router = useRouter();
     const navigation = useNavigation();
 
@@ -44,14 +50,56 @@ export default function NewEventScreen() {
             toggleDatePicker(field, false);
         };
 
+    // 🔥 Seleciona imagem e envia para o backend → S3
     const handlePickImage = async () => {
-        Alert.alert("Seleção de imagem", "Em breve: upload de banner para S3");
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                quality: 1,
+            });
+
+            if (result.canceled) return;
+
+            const asset = result.assets[0];
+            console.log("RESULTADO DO PICKER:", result);
+            console.log("URI:", asset.uri);
+            console.log("MIME:", asset.mimeType);
+
+            const localUri = asset.uri;
+            const fileName = localUri.split("/").pop()!;
+            const fileType = asset.mimeType || "image/jpeg";
+
+            const form = new FormData();
+            form.append("file", {
+                uri: localUri,
+                name: fileName,
+                type: fileType,
+            } as any);
+
+            setUploadingBanner(true);
+
+            // Chamada ao backend → envia pro S3 → retorna URL
+            const token = await getIdToken();
+            if (!token) {
+                Alert.alert("Erro", "Usuário não autenticado.");
+                return;
+            }
+
+            const res = await uploadBannerService(form, token);
+
+            // Atualiza preview
+            setFormData((prev) => ({ ...prev, bannerUrl: res.url }));
+        } catch (err: any) {
+            console.error("Erro no upload do banner:", err);
+            Alert.alert("Erro", "Falha ao enviar o banner.");
+        } finally {
+            setUploadingBanner(false);
+        }
     };
 
     const submitForm = async () => {
         setLoading(true);
         try {
-            // ⚙️ Validação
             if (
                 !formData.nome ||
                 !formData.local ||
@@ -63,37 +111,26 @@ export default function NewEventScreen() {
                 return;
             }
 
-            // 🔒 Verifica permissão
             const role = await getUserRole();
             if (role !== "admin" && role !== "staff") {
-                Alert.alert(
-                    "Acesso negado",
-                    "Apenas administradores e staff podem criar eventos."
-                );
+                Alert.alert("Acesso negado", "Apenas admin/staff podem criar eventos.");
                 return;
             }
 
-            // 🔑 Token Cognito
             const token = await getIdToken();
             if (!token) {
-                Alert.alert(
-                    "Erro",
-                    "Usuário não autenticado. Faça login novamente."
-                );
+                Alert.alert("Erro", "Usuário não autenticado.");
                 return;
             }
 
-            // 🧩 Conversões
             const capacityNum = parseInt(formData.capacity, 10) || 0;
             const ticketPriceNum = parseFloat(formData.ticket_price) || 0;
 
-            // Converte data e hora
             const formattedDate = formData.data.toISOString().split("T")[0];
             const startsAt = formData.starts_at
                 ? new Date(formData.starts_at).toISOString()
                 : null;
 
-            // 🚀 Envia para API
             await createEvent(
                 {
                     nome: formData.nome,
@@ -190,9 +227,10 @@ export default function NewEventScreen() {
                 render: () => (
                     <View style={{ marginBottom: 16 }}>
                         <Button
-                            title="Selecionar Banner"
+                            title={uploadingBanner ? "Enviando banner..." : "Selecionar Banner"}
                             onPress={handlePickImage}
                         />
+
                         {formData.bannerUrl !== "" && (
                             <Image
                                 source={{ uri: formData.bannerUrl }}

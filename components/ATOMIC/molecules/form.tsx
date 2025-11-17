@@ -13,6 +13,12 @@ import Input from "../atoms/input";
 import Select from "../atoms/select";
 import { styles } from "./form.style";
 
+/**
+ * GenericForm is a reusable form generator. It renders a list of fields
+ * based on the configuration passed in via the `fields` prop. To
+ * improve keyboard handling, the internal ScrollView now specifies
+ * contentContainerStyle, keyboardShouldPersistTaps and keyboardDismissMode.
+ */
 const GenericForm: React.FC<GenericFormProps> = ({
   fields,
   containerStyle,
@@ -62,7 +68,15 @@ const GenericForm: React.FC<GenericFormProps> = ({
   return (
     <View style={[styles.container, containerStyle]} {...viewProps}>
       {title && <Text style={[styles.title, titleStyle]}>{title}</Text>}
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        // Ensures the content stretches to at least fill the ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        // Allows taps on children (e.g., buttons) to register when the keyboard is open
+        keyboardShouldPersistTaps="handled"
+        // Dismisses the keyboard when the user scrolls
+        keyboardDismissMode="on-drag"
+      >
         {fields.map(renderField)}
       </ScrollView>
     </View>

@@ -19,7 +19,7 @@ export interface EventData {
 }
 
 /**
- * 🧠 Normaliza data para formato compatível com MySQL (YYYY-MM-DD)
+ * 🧠 Normaliza data para formato MySQL (YYYY-MM-DD)
  */
 const normalizeDate = (date: string | Date): string => {
   const d = new Date(date);
@@ -31,8 +31,7 @@ const normalizeDate = (date: string | Date): string => {
 };
 
 /**
- * 🧠 Normaliza datetime (ex: starts_at, ends_at)
- * Retorna formato 'YYYY-MM-DD HH:MM:SS' (compatível com MySQL DATETIME)
+ * 🧠 Normaliza datetime para MySQL DATETIME (YYYY-MM-DD HH:MM:SS)
  */
 const normalizeDateTime = (value?: string | Date | null): string | null => {
   if (!value) return null;
@@ -42,7 +41,7 @@ const normalizeDateTime = (value?: string | Date | null): string | null => {
 };
 
 /**
- * 🔹 Obtém todos os eventos disponíveis (qualquer usuário autenticado)
+ * 🔹 Lista eventos (qualquer usuário autenticado)
  */
 export const getUserEvents = async (token: string) => {
   try {
@@ -53,7 +52,6 @@ export const getUserEvents = async (token: string) => {
       },
     });
 
-    // 🔧 Corrige datas para exibição local
     const normalized = response.data.map((event: any) => ({
       ...event,
       data: event.data ? event.data.split("T")[0] : "",
@@ -70,7 +68,7 @@ export const getUserEvents = async (token: string) => {
 };
 
 /**
- * 🔹 Cria um novo evento (apenas admin ou staff)
+ * 🔹 Cria um novo evento (admin/staff)
  */
 export const createEvent = async (event: EventData, token: string) => {
   try {
@@ -101,7 +99,7 @@ export const createEvent = async (event: EventData, token: string) => {
 };
 
 /**
- * 🔹 Atualiza um evento existente (somente admin)
+ * 🔹 Atualiza evento existente
  */
 export const updateEvent = async (
   id: number,
@@ -133,7 +131,7 @@ export const updateEvent = async (
 };
 
 /**
- * 🔹 Exclui um evento (somente admin)
+ * 🔹 Exclui evento
  */
 export const deleteEvent = async (id: number, token: string) => {
   try {
@@ -148,5 +146,41 @@ export const deleteEvent = async (id: number, token: string) => {
   } catch (error) {
     console.error("❌ Erro ao excluir evento:", error);
     handleApiError(error);
+  }
+};
+
+/**
+ * 🔥 Envia banner para API → S3
+ * Recebe FormData com campo "file"
+ * Retorna: { url: "https://s3.amazonaws..." }
+ */
+export const uploadBannerService = async (
+  formData: FormData,
+  token: string
+) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/events/upload-banner`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        // não definir "Content-Type" aqui, o próprio fetch + FormData cuidam disso
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const text = await response.text().catch(() => "");
+      console.error(
+        "Resposta não OK no upload do banner:",
+        response.status,
+        text
+      );
+      throw new Error("Erro ao enviar banner para o servidor");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Erro no upload do banner:", error);
+    throw error;
   }
 };
