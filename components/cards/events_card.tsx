@@ -1,10 +1,9 @@
 import { getIdToken, userPool } from "@/lib/cognito";
-import { Link, useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback } from "react";
 import {
     ActivityIndicator,
     Alert,
-    ScrollView,
     Text,
     TouchableOpacity,
     View,
@@ -39,114 +38,53 @@ export default function EventsCard() {
         }, [fetchEvents])
     );
 
-    const handleCreateNewEvent = () => router.push("/new_event");
-    const handleValidateTicket = () => router.push("/qrcode");
-    const handleDashboard = () => router.push("/dashboard");
-
     return (
-        <View>
-            <View style={styles.container}>
-                <Text style={styles.title}>Próximos Eventos</Text>
-
-                <ScrollView style={styles.scrollView}>
-                    {loading ? (
-                        <ActivityIndicator size="large" />
-                    ) : error ? (
-                        <Text style={styles.errorText}>{error}</Text>
-                    ) : events.length === 0 ? (
-                        <Text style={styles.title}>
-                            Nenhum evento encontrado
-                        </Text>
-                    ) : (
-                        events.map((event) => (
-                            <View style={styles.eventCard} key={event.id}>
-                                <TouchableOpacity
+        <View style={styles.container}>
+            {loading ? (
+                <ActivityIndicator size="large" />
+            ) : error ? (
+                <Text style={styles.errorText}>{error}</Text>
+            ) : events.length === 0 ? (
+                <Text style={styles.title}>Nenhum evento encontrado</Text>
+            ) : (
+                events.map((event) => (
+                    <View style={styles.eventCard} key={event.id}>
+                        <TouchableOpacity
+                            onPress={() => router.push(`/event/${event.id}`)}
+                        >
+                            <EventItem event={event} />
+                            <View style={styles.infoBox}>
+                                <Text style={styles.infoText}>
+                                    🎟️ {event.sold_count || 0} /{" "}
+                                    {event.capacity || 0} ingressos vendidos
+                                </Text>
+                                <Text style={styles.infoText}>
+                                    💰 R${" "}
+                                    {Number(event.ticket_price || 0).toFixed(2)}
+                                </Text>
+                            </View>
+                            <View style={styles.buttonViewDetails}>
+                                <Button
+                                    label="Ver Detalhes"
+                                    variant="outline"
+                                    size="small"
                                     onPress={() =>
                                         router.push(`/event/${event.id}`)
                                     }
-                                >
-                                    <EventItem event={event} />
-                                    <View style={styles.infoBox}>
-                                        <Text style={styles.infoText}>
-                                            🎟️ {event.sold_count || 0} /{" "}
-                                            {event.capacity || 0} ingressos
-                                            vendidos
-                                        </Text>
-                                        <Text style={styles.infoText}>
-                                            💰 R${" "}
-                                            {Number(
-                                                event.ticket_price || 0
-                                            ).toFixed(2)}
-                                        </Text>
-                                    </View>
-                                    <View style={styles.buttonViewDetails}>
-                                        <Button
-                                            label="Ver Detalhes"
-                                            variant="outline"
-                                            size="small"
-                                            onPress={() =>
-                                                router.push(
-                                                    `/event/${event.id}`
-                                                )
-                                            }
-                                        />
-                                    </View>
-                                </TouchableOpacity>
+                                />
                             </View>
-                        ))
-                    )}
-                </ScrollView>
-
-                <View style={styles.linkContainer}>
-                    <Link href="/list_all_events" style={styles.linkBox}>
-                        <Text style={styles.link}>Ver todos os eventos 👉</Text>
-                    </Link>
-                </View>
-            </View>
-
-            <View style={styles.actionsBox}>
-                <Text style={styles.title}>Ações Rápidas</Text>
-                <View style={styles.actionsGrid}>
-                    <View style={styles.actionCard}>
-                        <Button
-                            label="Cadastrar Evento"
-                            variant="primary"
-                            onPress={handleCreateNewEvent}
-                            containerStyle={styles.actionButton}
-                            textStyle={styles.actionButtonText}
-                        />
+                        </TouchableOpacity>
                     </View>
+                ))
+            )}
 
-                    <View style={styles.actionCard}>
-                        <Button
-                            label="Validar Ingresso"
-                            variant="primary"
-                            onPress={handleValidateTicket}
-                            containerStyle={styles.actionButton}
-                            textStyle={styles.actionButtonText}
-                        />
-                    </View>
-
-                    <View style={styles.actionCard}>
-                        <Button
-                            label="Dashboard"
-                            variant="primary"
-                            onPress={handleDashboard}
-                            containerStyle={styles.actionButton}
-                            textStyle={styles.actionButtonText}
-                        />
-                    </View>
-
-                    <View style={styles.actionCard}>
-                        <Button
-                            label="Registrar Usuário"
-                            variant="primary"
-                            onPress={() => router.push("/admin_register")}
-                            containerStyle={styles.actionButton}
-                            textStyle={styles.actionButtonText}
-                        />
-                    </View>
-                </View>
+            <View style={styles.linkContainer}>
+                <TouchableOpacity
+                    onPress={() => router.push("/list_all_events")}
+                    style={styles.linkBox}
+                >
+                    <Text style={styles.link}>Ver todos os eventos 👉</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
