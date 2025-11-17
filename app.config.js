@@ -16,7 +16,7 @@ export default {
       eas: {
         projectId: "b5941c7a-ff26-495c-9a3d-23dc1bf716ea",
       },
-      apiUrl: "http://35.247.231.143:3000",
+      apiUrl: "http://15.229.194.81:3000",
 
       // ✅ Variáveis Cognito vindas do .env
       COGNITO_REGION: process.env.COGNITO_REGION,
