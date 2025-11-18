@@ -1,9 +1,9 @@
-import GenericForm from "@/components/ATOMIC/molecules/form";
-import { ThemedView } from "@/components/ThemedView";
-import { signUp } from "@/lib/cognito";
-import { FormField } from "@/types/molecules";
-import { useRouter } from "expo-router";
-import { useRef, useState } from "react";
+import GenericForm from '@/components/ATOMIC/molecules/form';
+import { ThemedView } from '@/components/ThemedView';
+import { signUp } from '@/lib/cognito';
+import { FormField } from '@/types/molecules';
+import { useRouter } from 'expo-router';
+import { useRef, useState } from 'react';
 import {
   Alert,
   Animated,
@@ -12,19 +12,19 @@ import {
   Platform,
   ScrollView,
   View,
-} from "react-native";
-import { styles } from "../app/styles/index.style";
+} from 'react-native';
+import { publicRegisterStyles as styles } from '../app/styles/public_register.style';
 
 export default function RegisterScreen() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    nome: "",
-    email: "",
-    password: "",
-    telefone: "",
-  });
-
   const translateY = useRef(new Animated.Value(0)).current;
+
+  const [formData, setFormData] = useState({
+    nome: '',
+    email: '',
+    password: '',
+    telefone: '',
+  });
 
   const handleInputChange = (field: string) => (value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -32,35 +32,19 @@ export default function RegisterScreen() {
 
   const handleSubmit = async () => {
     if (!formData.nome || !formData.email || !formData.password) {
-      Alert.alert(
-        "Campos obrigatórios",
-        "Preencha nome, e-mail e senha antes de continuar."
-      );
+      Alert.alert('Campos obrigatórios', 'Preencha nome, e-mail e senha.');
       return;
     }
 
     let telefoneFormatado: string | undefined = undefined;
 
-    if (formData.telefone.trim() !== "") {
-      const telefoneNumerico = formData.telefone.replace(/\D/g, "");
-
-      if (telefoneNumerico.length < 10 || telefoneNumerico.length > 11) {
-        Alert.alert(
-          "Telefone inválido",
-          "Informe um número com DDD. Ex: 19981234567"
-        );
+    if (formData.telefone.trim() !== '') {
+      const tel = formData.telefone.replace(/\D/g, '');
+      if (tel.length < 10 || tel.length > 11) {
+        Alert.alert('Telefone inválido', 'Digite com DDD. Ex: 19981234567');
         return;
       }
-
-      telefoneFormatado = `+55${telefoneNumerico}`;
-
-      if (!/^\+55\d{10,11}$/.test(telefoneFormatado)) {
-        Alert.alert(
-          "Telefone inválido",
-          "O número precisa estar no formato +55DDDNÚMERO."
-        );
-        return;
-      }
+      telefoneFormatado = `+55${tel}`;
     }
 
     try {
@@ -68,122 +52,106 @@ export default function RegisterScreen() {
         formData.nome.trim(),
         formData.email.trim(),
         formData.password,
-        telefoneFormatado
+        telefoneFormatado,
       );
 
-      Alert.alert("Sucesso", "Conta criada com sucesso!");
-
-      // ✅ Redireciona automaticamente para tela de login
+      Alert.alert('Conta criada!', 'Você já pode fazer login.');
       router.push({
-        pathname: "/",
+        pathname: '/',
         params: { email: formData.email.trim() },
       });
     } catch (err: any) {
-      console.error("Erro no cadastro Cognito:", err);
-      Alert.alert(
-        "Erro no cadastro",
-        err.message || "Tente novamente mais tarde."
-      );
+      Alert.alert('Erro no cadastro', err.message || 'Tente novamente.');
     }
   };
 
+  // 🎭 Animação de subir o form ao focar no input
   const formFields: FormField[] = [
     {
-      type: "input",
-      key: "nome",
+      type: 'input',
+      key: 'nome',
       props: {
-        placeholder: "Nome completo",
+        placeholder: 'Nome completo',
         value: formData.nome,
-        onChangeText: handleInputChange("nome"),
+        onChangeText: handleInputChange('nome'),
+        onFocus: () =>
+          Animated.spring(translateY, {
+            toValue: -40,
+            useNativeDriver: true,
+          }).start(),
+        onBlur: () =>
+          Animated.spring(translateY, {
+            toValue: 0,
+            useNativeDriver: true,
+          }).start(),
       },
     },
     {
-      type: "input",
-      key: "email",
+      type: 'input',
+      key: 'email',
       props: {
-        placeholder: "E-mail",
+        placeholder: 'E-mail',
+        autoCapitalize: 'none',
+        keyboardType: 'email-address',
         value: formData.email,
-        onChangeText: handleInputChange("email"),
-        keyboardType: "email-address",
-        autoCapitalize: "none",
+        onChangeText: handleInputChange('email'),
       },
     },
     {
-      type: "input",
-      key: "telefone",
+      type: 'input',
+      key: 'telefone',
       props: {
-        placeholder: "Telefone com DDD (opcional)",
+        placeholder: 'Telefone com DDD (opcional)',
+        keyboardType: 'phone-pad',
         value: formData.telefone,
-        onChangeText: handleInputChange("telefone"),
-        keyboardType: "phone-pad",
+        onChangeText: handleInputChange('telefone'),
       },
     },
     {
-      type: "input",
-      key: "password",
+      type: 'input',
+      key: 'password',
       props: {
-        placeholder: "Senha",
-        value: formData.password,
-        onChangeText: handleInputChange("password"),
+        placeholder: 'Senha',
         isPassword: true,
+        value: formData.password,
+        onChangeText: handleInputChange('password'),
       },
     },
     {
-      type: "button",
-      key: "submit",
+      type: 'button',
+      key: 'submit',
       props: {
-        label: "Criar Conta",
+        label: 'Criar Conta',
         onPress: handleSubmit,
-        variant: "primary",
+        variant: 'primary',
         containerStyle: { marginTop: 16 },
       },
     },
   ];
 
-  // Add focus/blur handlers to animate the form when inputs are selected.
-  const fieldsWithFocusHandlers: FormField[] = formFields.map((field) => {
-    if (field.type === "input") {
-      return {
-        ...field,
-        props: {
-          ...field.props,
-          onFocus: () => {
-            Animated.spring(translateY, {
-              toValue: -40,
-              useNativeDriver: true,
-            }).start();
-          },
-          onBlur: () => {
-            Animated.spring(translateY, {
-              toValue: 0,
-              useNativeDriver: true,
-            }).start();
-          },
-        },
-      };
-    }
-    return field;
-  });
-
-return (
+  return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={150}
+      keyboardVerticalOffset={120}
     >
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
-      >
-        <ThemedView style={{ flex: 1 }}>
-          <View style={styles.container}>
-            <Image style={styles.reactLogo} source={require('@/assets/images/logo_apae.png')} />
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+        <ThemedView style={styles.container}>
+          <View style={styles.bannerContainer}>
+            <Image source={require('@/assets/images/logo_apae.png')} style={styles.bannerImage} />
           </View>
-          {/* form animado */}
-          <Animated.View style={{ transform: [{ translateY }] }}>
-            <View style={styles.loginForm}>
-              <GenericForm title="Criar Conta" fields={fieldsWithFocusHandlers} />
-            </View>
+
+          <Animated.View style={[styles.formWrapper, { transform: [{ translateY }] }]}>
+            <GenericForm
+              title="Criar Conta"
+              fields={formFields}
+              titleStyle={{
+                fontSize: 24,
+                fontWeight: 'bold',
+                marginBottom: 12,
+                textAlign: 'center',
+              }}
+            />
           </Animated.View>
         </ThemedView>
       </ScrollView>
