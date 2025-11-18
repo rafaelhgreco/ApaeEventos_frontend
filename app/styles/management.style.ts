@@ -36,7 +36,7 @@ export const styles = StyleSheet.create({
   },
 
   actionItem: {
-    width: '48%',
+    width: '42%',
     justifyContent: 'center',
     alignItems: 'center',
   },
