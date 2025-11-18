@@ -27,7 +27,7 @@ export interface SelectProps extends Omit<TouchableOpacityProps, "style"> {
 
 export interface ButtonProps extends Omit<TouchableOpacityProps, "style"> {
     label: string;
-    variant?: "primary" | "secondary" | "outline";
+    variant?: "primary" | "secondary" | "outline" | "dark";
     size?: "small" | "medium" | "large";
     loading?: boolean;
     containerStyle?: object;

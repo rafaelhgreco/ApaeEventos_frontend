@@ -1,124 +1,82 @@
-import { Dimensions, StyleSheet } from "react-native";
-import { border, colors } from "../../app/styles/themes";
+import { StyleSheet } from "react-native";
+import { border } from "../../app/styles/themes";
 
 export const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        padding: 20,
-        height: Dimensions.get("window").height * 0.3,
-        width: 350,
-        backgroundColor: "#fff",
-        borderRadius: border.radiusLarge,
-        marginBottom: 24,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-        elevation: 4,
-    },
-    actionsBox: {
-        flex: 1,
-        padding: 24,
-        width: 350,
-        maxHeight: 300,
-        backgroundColor: "#FFFFFF",
-        borderRadius: border.radiusLarge,
-        marginBottom: 24,
-        shadowColor: colors.shadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-        elevation: 4,
-    },
-    actionsGrid: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        gap: 12,
-        justifyContent: "space-between",
-    },
-    actionCard: {
-        width: "48%",
-        aspectRatio: 1.2,
-        backgroundColor: "#F8F9FA",
-        borderRadius: border.radiusMedium,
-        padding: 2,
-        shadowColor: colors.shadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 8,
-        elevation: 2,
-    },
-    actionButton: {
         width: "100%",
-        height: "70%",
-        borderRadius: border.radiusMedium,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: colors.primary,
     },
+
     title: {
         fontSize: 18,
-        fontWeight: "bold",
-        color: colors.primary,
-        marginBottom: 16,
+        fontWeight: "700",
+        color: "#2c3e50",
+        marginBottom: 12,
     },
-    scrollView: {
-        flex: 1,
-    },
-    link: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: "green",
-    },
-    linkBox: {
-        padding: 10,
-        alignSelf: "center",
-    },
-    eventItem: {
-        padding: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: "#ddd",
-    },
-    linkContainer: {
-        borderColor: "green",
-        borderWidth: 1,
+
+eventCard: {
+    backgroundColor: "#fff",
+    borderRadius: border.radiusLarge,
+    padding: 10,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+
+    minHeight: 160,   // 🔥 altura mínima, NÃO fixa
+    overflow: "hidden",
+},
+    banner: {
+        width: "100%",
+        height: 110,        // 🔥 banner menor e proporcional
         borderRadius: 10,
-        width: "80%",
-        alignSelf: "center",
+        marginBottom: 8,
+        backgroundColor: "#e5e5e5",
     },
-    actionButtonText: {
-        fontSize: 17,
-        fontWeight: "600",
-        color: "#FFFFFF",
-        textAlign: "center",
+
+    infoBox: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 4,
     },
+
+    infoText: {
+        fontSize: 13,
+        color: "#374151",
+        fontWeight: "500",
+    },
+
     errorText: {
         color: "#dc2626",
         textAlign: "center",
         fontSize: 16,
         marginVertical: 8,
     },
-    eventCard: {
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 12,
-        borderWidth: 1,
-        borderColor: "#ddd",
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-    },
-    infoBox: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginTop: 8,
-    },
-    infoText: {
-        color: "#374151",
-        fontSize: 14,
-        fontWeight: "500",
-    },
+
     buttonViewDetails: {
-        padding: 8,
-        marginTop: 8,
+        marginTop: "auto",     // mantém o botão no final
+        paddingTop: 4,
+    },
+
+    linkContainer: {
+        marginTop: 10,
+        alignItems: "center",
+        marginBottom: 10,
+    },
+
+    linkBox: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+        backgroundColor: "#eef6ee",
+    },
+
+    link: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: "#1c7c1b",
     },
 });

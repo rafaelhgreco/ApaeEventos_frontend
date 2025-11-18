@@ -23,7 +23,9 @@ export const EventItem: React.FC<{ event: Event }> = ({ event }) => {
 
   return (
     <View style={styles.eventItem}>
-      <Text style={styles.eventName}>{event.nome}</Text>
+<Text style={styles.eventName} numberOfLines={1}>
+    {event.nome}
+</Text>
       <Text style={styles.eventData}>Data: {formattedDate}</Text>
       <Text style={styles.eventLocal}>Local: {event.local}</Text>
     </View>

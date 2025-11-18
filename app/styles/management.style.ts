@@ -1,43 +1,43 @@
-import { StyleSheet } from "react-native";
-import { colors, paddings } from "../styles/themes"; // ajuste o caminho conforme o seu projeto
+import { StyleSheet } from 'react-native';
+import { border, paddings } from '../styles/themes';
 
 export const styles = StyleSheet.create({
-    scrollContent: {
-        padding: paddings.extraLarge,
-        paddingBottom: 40, // espaço extra para scroll no final
-    },
-    innerContainer: {
-        alignItems: "flex-start", // ou "flex-start" dependendo do layout
-    },
-    text: {
-        fontSize: 20,
-        color: colors.primary,
-        marginBottom: 20,
-        fontWeight: "600",
-    },
-    container: {
-        justifyContent: "flex-start",
-        alignItems: "center",
-        padding: paddings.extraLarge,
-    },
-    error: {
-        fontSize: 16,
-        color: "red",
-        textAlign: "center",
-    },
-    greetingContainer: {
-        marginTop: 20,
-    },
-    greeting: {
-        fontSize: 20,
-        fontWeight: "bold",
-        color: "#FFFFF8",
-    },
-    buttonContainer: {
-        justifyContent: "flex-end",
-        alignItems: "flex-end",
-        padding: paddings.extraLarge,
-    },
-});
+  scrollContent: {
+    padding: paddings.extraLarge,
+    paddingBottom: 40,
+    gap: 24,
+    backgroundColor: '#f5f6fa',
+  },
 
-export default styles;
+  // Card branco com sombra suave
+  section: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: border.radiusLarge,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 4,
+  },
+
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#2c3e50',
+    marginBottom: 18,
+  },
+
+  quickActionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+
+  actionItem: {
+    width: '48%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

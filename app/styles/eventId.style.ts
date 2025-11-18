@@ -1,75 +1,85 @@
-import { StyleSheet } from "react-native";
-import { border, colors, font } from "../../app/styles/themes";
+import { StyleSheet } from 'react-native';
+import { border, colors } from '../../app/styles/themes';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 32,
+    flexGrow: 1,
+    padding: 24,
     backgroundColor: colors.background,
   },
+
+  // CARD PRINCIPAL
   box: {
-    padding: 24,
-    backgroundColor: colors.backgroundLight,
+    padding: 20,
+    backgroundColor: '#fff',
     borderRadius: border.radiusLarge,
     marginBottom: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
   },
+
   title: {
-    fontSize: 28,
-    fontWeight: "700",
-    color: "#1f2937",
-    marginBottom: 12,
+    fontSize: 26,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 8,
   },
+
   subtitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#3b82f6",
-    marginBottom: 6,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2563eb',
+    marginBottom: 8,
   },
+
   date: {
-    fontSize: font.sizeLarge,
-    color: "#6b7280",
-    fontStyle: "italic",
-    marginBottom: 16,
+    fontSize: 16,
+    color: '#6b7280',
+    fontStyle: 'italic',
+    marginBottom: 10,
   },
+
   description: {
-    fontSize: font.sizeLarge,
+    fontSize: 16,
     lineHeight: 24,
-    color: "#374151",
+    color: '#374151',
   },
+
   error: {
-    color: "#dc2626",
-    textAlign: "center",
+    color: '#dc2626',
+    textAlign: 'center',
     marginTop: 40,
-    fontSize: font.sizeLarge,
-    fontWeight: "500",
+    fontSize: 18,
+    fontWeight: '600',
   },
-  // ✅ Campos de entrada no modo edição
+
+  // INPUT NO MODO EDIÇÃO
   input: {
     borderWidth: 1,
-    borderColor: "#d1d5db",
+    borderColor: '#d1d5db',
     borderRadius: border.radiusMedium,
     padding: 12,
-    fontSize: font.sizeLarge,
-    color: "#111827",
-    backgroundColor: colors.backgroundLight,
+    fontSize: 16,
+    color: '#111827',
+    backgroundColor: '#f9fafb',
   },
-  // ✅ Estilo dos botões agrupados
-  buttonBox: {
-    padding: 16,
-    gap: 16,
-  },
-  // ✅ Novo estilo para labels acima dos campos
+
+  // LABEL DOS CAMPOS
   label: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#374151",
-    marginTop: 8,
-    marginBottom: 6,
+    fontWeight: '600',
+    color: '#374151',
+    marginTop: 10,
+    marginBottom: 4,
+  },
+
+  // BOX DE BOTÕES
+  buttonBox: {
+    marginTop: 24,
+    gap: 16,
   },
 });
 

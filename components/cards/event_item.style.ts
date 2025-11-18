@@ -26,14 +26,15 @@ export const styles = StyleSheet.create({
     scrollView: {
         flex: 1,
     },
-    eventItem: {
-        padding: smallPadding,
-    },
-    eventName: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: "#555",
-    },
+eventName: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#111",
+    marginBottom: 4,
+},
+eventItem: {
+    marginBottom: 8,
+},
     eventData: {
         fontSize: 14,
         color: "#777",

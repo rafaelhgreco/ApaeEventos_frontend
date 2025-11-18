@@ -1,22 +1,22 @@
-import SearchInput from "@/components/ATOMIC/atoms/search_input";
-import { EventItem } from "@/components/cards/event_item";
-import { getIdToken, userPool } from "@/lib/cognito";
-import { getUserEvents } from "@/services/event_services";
-import { useNavigation, useRouter } from "expo-router";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import SearchInput from '@/components/ATOMIC/atoms/search_input';
+import { getIdToken, userPool } from '@/lib/cognito';
+import { getUserEvents } from '@/services/event_services';
+import { useNavigation, useRouter } from 'expo-router';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   FlatList,
+  Image,
   Text,
   TouchableOpacity,
   View,
-} from "react-native";
-import { Event } from "../src/domain/events";
-import { styles } from "./styles/list_all_events.style";
+} from 'react-native';
+import { Event } from '../src/domain/events';
+import { styles } from './styles/list_all_events.style';
 
 export default function EventsPage() {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,12 +24,11 @@ export default function EventsPage() {
   const router = useRouter();
 
   useLayoutEffect(() => {
-    navigation.setOptions({ title: "Todos os eventos" });
+    navigation.setOptions({ title: 'Todos os Eventos' });
   }, [navigation]);
 
   useEffect(() => {
     fetchEvents();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchEvents = async () => {
@@ -39,8 +38,8 @@ export default function EventsPage() {
 
       const user = userPool.getCurrentUser();
       if (!user) {
-        Alert.alert("Erro", "Usuário não autenticado. Faça login novamente.");
-        router.replace("../login");
+        Alert.alert('Erro', 'Usuário não autenticado. Faça login novamente.');
+        router.replace('../login');
         return;
       }
 
@@ -49,26 +48,14 @@ export default function EventsPage() {
 
       setEvents(eventsData);
     } catch (err: any) {
-      const errorMessage = err?.message || "Erro ao carregar eventos";
-      setError(errorMessage);
-
-      if (
-        err === "Nenhum usuário autenticado." ||
-        err === "Sessão inválida ou expirada."
-      ) {
-        Alert.alert("Sessão expirada", "Por favor, faça login novamente.", [
-          { text: "OK", onPress: () => router.replace("../login") },
-        ]);
-      } else {
-        Alert.alert("Erro", errorMessage);
-      }
+      setError(err?.message || 'Erro ao carregar eventos');
     } finally {
       setLoading(false);
     }
   };
 
   const filteredEvents = events.filter((event) =>
-    event.nome.toLowerCase().includes(search.toLowerCase())
+    event.nome.toLowerCase().includes(search.toLowerCase()),
   );
 
   const handleEventPress = (eventId: number) => {
@@ -92,18 +79,37 @@ export default function EventsPage() {
           placeholder="Buscar eventos por nome..."
         />
       </View>
+
       <FlatList
         data={filteredEvents}
         keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32 }}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() => handleEventPress(item.id)}
-          >
-            <EventItem event={item} />
+          <TouchableOpacity style={styles.card} onPress={() => handleEventPress(item.id)}>
+            {/* Banner grande */}
+            {item.bannerUrl ? (
+              <Image source={{ uri: item.bannerUrl }} style={styles.banner} />
+            ) : (
+              <View style={styles.bannerPlaceholder}>
+                <Text style={styles.bannerText}>Sem banner</Text>
+              </View>
+            )}
+
+            {/* Infos */}
+            <Text style={styles.name}>{item.nome}</Text>
+            <Text style={styles.info}>📍 {item.local}</Text>
+            <Text style={styles.info}>
+              🗓️ {typeof item.data === 'string' ? item.data : item.data.toLocaleDateString('pt-BR')}
+            </Text>
+
+            <View style={styles.row}>
+              <Text style={styles.tag}>
+                🎟️ {item.sold_count || 0}/{item.capacity || 0}
+              </Text>
+              <Text style={styles.tag}>💰 R$ {item.ticket_price}</Text>
+            </View>
           </TouchableOpacity>
         )}
-        contentContainerStyle={{ padding: 16 }}
       />
     </View>
   );
