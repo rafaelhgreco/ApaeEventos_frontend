@@ -7,6 +7,7 @@ import {
     Text,
     TouchableOpacity,
     View,
+    Image,
 } from "react-native";
 import { useEvents } from "../../hooks/useEvents";
 import Button from "../ATOMIC/atoms/button";
@@ -52,7 +53,19 @@ export default function EventsCard() {
                         <TouchableOpacity
                             onPress={() => router.push(`/event/${event.id}`)}
                         >
+                            {/* 🔥 Banner do evento */}
+                            {event.bannerUrl ? (
+                                <Image
+                                    source={{ uri: event.bannerUrl }}
+                                    style={styles.banner}
+                                    resizeMode="cover"
+                                />
+                            ) : null}
+
+                            {/* Nome, data, local */}
                             <EventItem event={event} />
+
+                            {/* Info inferior */}
                             <View style={styles.infoBox}>
                                 <Text style={styles.infoText}>
                                     🎟️ {event.sold_count || 0} /{" "}
@@ -63,6 +76,7 @@ export default function EventsCard() {
                                     {Number(event.ticket_price || 0).toFixed(2)}
                                 </Text>
                             </View>
+
                             <View style={styles.buttonViewDetails}>
                                 <Button
                                     label="Ver Detalhes"

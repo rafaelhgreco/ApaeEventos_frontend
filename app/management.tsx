@@ -68,28 +68,43 @@ useLayoutEffect(() => {
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Ações Rápidas</Text>
 
-                <View style={styles.quickActionsGrid}>
-                    <Button
-                        label="Cadastrar Evento"
-                        variant="secondary"
-                        onPress={() => router.push("/new_event")}
-                    />
-                    <Button
-                        label="Validar Ingresso"
-                        variant="secondary"
-                        onPress={() => router.push("/qrcode")}
-                    />
-                    <Button
-                        label="Dashboard"
-                        variant="secondary"
-                        onPress={() => router.push("/dashboard")}
-                    />
-                    <Button
-                        label="Registrar Usuário"
-                        variant="secondary"
-                        onPress={() => router.push("/admin_register")}
-                    />
-                </View>
+<View style={styles.quickActionsGrid}>
+<View style={styles.actionItem}>
+    <Button
+        label="Cadastrar Evento"
+        variant="dark"
+        containerStyle={{ width: "100%", height: 60}}
+        onPress={() => router.push("/new_event")}
+    />
+</View>
+
+<View style={styles.actionItem}>
+    <Button
+        label="Validar Ingresso"
+        variant="dark"
+        containerStyle={{ width: "100%", height: 60 }}
+        onPress={() => router.push("/qrcode")}
+    />
+</View>
+
+<View style={styles.actionItem}>
+    <Button
+        label="Dashboard"
+        variant="dark"
+        containerStyle={{ width: "100%", height: 60 }}
+        onPress={() => router.push("/dashboard")}
+    />
+</View>
+
+<View style={styles.actionItem}>
+    <Button
+        label="Registrar Usuário"
+        variant="dark"
+        containerStyle={{ width: "100%", height: 60}}
+        onPress={() => router.push("/admin_register")}
+    />
+</View>
+</View>
             </View>
         </Animated.ScrollView>
     );

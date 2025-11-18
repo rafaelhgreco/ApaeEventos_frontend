@@ -13,29 +13,38 @@ export const styles = StyleSheet.create({
         marginBottom: 12,
     },
 
-    // Cada card individual de evento
-    eventCard: {
-        backgroundColor: "#fff",
-        borderRadius: border.radiusLarge,
-        padding: 16,
-        marginBottom: 16,
-        shadowColor: "#000",
-        shadowOpacity: 0.05,
-        shadowRadius: 6,
-        shadowOffset: { width: 0, height: 2 },
-        elevation: 3,
-        borderWidth: 1,
-        borderColor: "#e5e7eb",
+eventCard: {
+    backgroundColor: "#fff",
+    borderRadius: border.radiusLarge,
+    padding: 10,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+
+    minHeight: 160,   // 🔥 altura mínima, NÃO fixa
+    overflow: "hidden",
+},
+    banner: {
+        width: "100%",
+        height: 110,        // 🔥 banner menor e proporcional
+        borderRadius: 10,
+        marginBottom: 8,
+        backgroundColor: "#e5e5e5",
     },
 
     infoBox: {
         flexDirection: "row",
         justifyContent: "space-between",
-        marginTop: 10,
+        marginTop: 4,
     },
 
     infoText: {
-        fontSize: 14,
+        fontSize: 13,
         color: "#374151",
         fontWeight: "500",
     },
@@ -47,9 +56,9 @@ export const styles = StyleSheet.create({
         marginVertical: 8,
     },
 
-    // Botão "Ver Detalhes"
     buttonViewDetails: {
-        marginTop: 16,
+        marginTop: "auto",     // mantém o botão no final
+        paddingTop: 4,
     },
 
     linkContainer: {

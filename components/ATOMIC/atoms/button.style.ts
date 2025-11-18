@@ -15,7 +15,7 @@ export const styles = StyleSheet.create({
         flexDirection: "row",
     },
 
-    // Variants
+    // 🔥 VARIANTS
     button_primary: {
         backgroundColor: colors.primary,
         borderWidth: 0,
@@ -30,20 +30,27 @@ export const styles = StyleSheet.create({
         borderColor: colors.primary,
     },
 
-    // Sizes
+    // 🟦 NOVO VARIANT — DARK (azul escuro elegante)
+    button_dark: {
+        backgroundColor: "#1f2937", // Navy/Slate
+        borderWidth: 0,
+        borderColor: "#1f2937",
+    },
+
+    // SIZES
     button_small: {
-        paddingHorizontal: paddings.medium * 1.5, // 12
-        paddingVertical: paddings.small * 3, // 12
+        paddingHorizontal: paddings.medium * 1.5,
+        paddingVertical: paddings.small * 3,
         minHeight: 32,
     },
     button_medium: {
-        paddingHorizontal: paddings.large, // 16
-        paddingVertical: paddings.medium * 1.5, // 12
+        paddingHorizontal: paddings.large,
+        paddingVertical: paddings.medium * 1.5,
         minHeight: 44,
     },
     button_large: {
-        paddingHorizontal: paddings.extraLarge, // 24
-        paddingVertical: paddings.large, // 16
+        paddingHorizontal: paddings.extraLarge,
+        paddingVertical: paddings.large,
         minHeight: 52,
     },
 
@@ -51,10 +58,14 @@ export const styles = StyleSheet.create({
         opacity: 0.6,
     },
 
-    // Text styles
+    // TEXT BASE
     buttonText: {
         fontWeight: "500",
+        textAlign: "center",   
+    textAlignVertical: "center",
     },
+
+    // TEXT VARIANTS
     buttonText_primary: {
         color: colors.backgroundLight,
         fontSize: font.sizeDefault,
@@ -68,6 +79,13 @@ export const styles = StyleSheet.create({
         fontSize: font.sizeDefault,
     },
 
+    // 🟦 TEXTO DO VARIANT DARK
+    buttonText_dark: {
+        color: "#ffffff",
+        fontSize: font.sizeDefault,
+    },
+
+    // TEXT SIZES
     buttonText_small: {
         fontSize: font.sizeSmall,
     },

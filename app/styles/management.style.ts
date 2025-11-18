@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { colors, paddings, border } from "../styles/themes";
+import { border, paddings } from "../styles/themes";
 
 export const styles = StyleSheet.create({
     scrollContent: {
@@ -28,11 +28,16 @@ export const styles = StyleSheet.create({
         marginBottom: 18,
     },
 
-    // GRID de opções rápidas
-    quickActionsGrid: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        justifyContent: "space-between",
-        gap: 14,
-    },
+quickActionsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    gap: 12,
+},
+
+actionItem: {
+    width: "48%",
+    justifyContent: "center",
+    alignItems: "center",
+},
 });

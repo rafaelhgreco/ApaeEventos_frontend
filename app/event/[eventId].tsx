@@ -1,10 +1,13 @@
 import { getIdToken, getUserRole } from "@/lib/cognito";
 import {
     deleteEvent,
+    EventData,
     getUserEvents,
     updateEvent,
+    uploadBannerService,
 } from "@/services/event_services";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
@@ -23,12 +26,14 @@ import styles from "../styles/eventId.style";
 
 export default function EventDetailsPage() {
     const { eventId } = useLocalSearchParams();
+    const navigation = useNavigation();
+
     const [event, setEvent] = useState<Event | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isEditing, setIsEditing] = useState(false);
+    const [uploadingBanner, setUploadingBanner] = useState(false);
     const [role, setRole] = useState<string>("default");
-    const navigation = useNavigation();
 
     // Estados do formulário
     const [editedEvent, setEditedEvent] = useState({
@@ -38,6 +43,7 @@ export default function EventDetailsPage() {
         starts_at: new Date(),
         capacity: "",
         ticket_price: "",
+        bannerUrl: "",
         status: "published" as Event["status"],
     });
 
@@ -54,8 +60,8 @@ export default function EventDetailsPage() {
         if (!eventId) return;
         const id = Array.isArray(eventId) ? eventId[0] : eventId;
         const numericId = parseInt(id, 10);
-        fetchUserEvents(numericId);
         fetchUserRole();
+        fetchUserEvents(numericId);
     }, [eventId]);
 
     const fetchUserRole = async () => {
@@ -72,7 +78,17 @@ export default function EventDetailsPage() {
         try {
             setLoading(true);
             const token = await getIdToken();
+            if (!token) {
+                setError("Usuário não autenticado.");
+                return;
+            }
+
             const eventsData = await getUserEvents(token);
+            if (!eventsData) {
+                setError("Não foi possível carregar eventos.");
+                return;
+            }
+
             const findEvent = eventsData.find(
                 (e: { id: number }) => e.id === id
             );
@@ -92,34 +108,89 @@ export default function EventDetailsPage() {
                     : new Date(),
                 capacity: findEvent.capacity?.toString() || "",
                 ticket_price: findEvent.ticket_price?.toString() || "",
+                bannerUrl: findEvent.bannerUrl || "",
                 status: findEvent.status || "published",
             });
-        } catch (error) {
-            console.error("Erro ao buscar evento:", error);
+        } catch (err) {
+            console.error("Erro ao buscar evento:", err);
             Alert.alert("Erro", "Não foi possível carregar os dados.");
         } finally {
             setLoading(false);
         }
     };
 
+    // 📸 Trocar banner
+    const handlePickImage = async () => {
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                quality: 1,
+            });
+
+            if (result.canceled) return;
+
+            const asset = result.assets[0];
+            const fileName = asset.uri.split("/").pop()!;
+            const fileType = asset.mimeType || "image/jpeg";
+
+            const form = new FormData();
+            form.append("file", {
+                uri: asset.uri,
+                name: fileName,
+                type: fileType,
+            } as any);
+
+            setUploadingBanner(true);
+
+            const token = await getIdToken();
+            if (!token) {
+                Alert.alert("Erro", "Usuário não autenticado.");
+                return;
+            }
+
+            const upload = await uploadBannerService(form, token);
+
+            setEditedEvent((prev) => ({
+                ...prev,
+                bannerUrl: upload.url,
+            }));
+        } catch (err) {
+            console.error("Erro ao enviar banner:", err);
+            Alert.alert("Erro", "Não foi possível enviar o banner.");
+        } finally {
+            setUploadingBanner(false);
+        }
+    };
+
     const handleSaveEdit = async () => {
         try {
             const token = await getIdToken();
-            const updatedEvent = {
+            if (!token) {
+                Alert.alert("Erro", "Usuário não autenticado.");
+                return;
+            }
+
+            const updatedEvent: Partial<EventData> = {
                 nome: editedEvent.nome,
                 local: editedEvent.local,
-                data: editedEvent.data.toISOString().split("T")[0],
+                data: editedEvent.data,
                 starts_at: editedEvent.starts_at.toISOString(),
                 capacity: Number(editedEvent.capacity) || 0,
                 ticket_price: Number(editedEvent.ticket_price) || 0,
                 status: editedEvent.status,
+                bannerUrl:
+                    editedEvent.bannerUrl ||
+                    event?.bannerUrl ||
+                    null,
             };
 
             await updateEvent(event?.id!, updatedEvent, token);
             Alert.alert("Sucesso", "Evento atualizado com sucesso!");
             setIsEditing(false);
-            fetchUserEvents(event?.id!);
-        } catch (err: any) {
+            if (event?.id) {
+                fetchUserEvents(event.id);
+            }
+        } catch (err) {
             console.error("Erro ao atualizar evento:", err);
             Alert.alert("Erro", "Falha ao atualizar evento.");
         }
@@ -137,10 +208,17 @@ export default function EventDetailsPage() {
                     onPress: async () => {
                         try {
                             const token = await getIdToken();
+                            if (!token) {
+                                Alert.alert(
+                                    "Erro",
+                                    "Usuário não autenticado."
+                                );
+                                return;
+                            }
                             await deleteEvent(event?.id!, token);
                             Alert.alert("Evento excluído com sucesso!");
                             router.back();
-                        } catch (err: any) {
+                        } catch (err) {
                             console.error("Erro ao excluir evento:", err);
                             Alert.alert(
                                 "Erro",
@@ -169,11 +247,15 @@ export default function EventDetailsPage() {
           })
         : "—";
 
+    // Garante que a URL do banner nunca seja null/undefined
+    const currentBannerUrl: string =
+        editedEvent.bannerUrl || event.bannerUrl || "";
+
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            {event.bannerUrl && (
+            {currentBannerUrl ? (
                 <Image
-                    source={{ uri: event.bannerUrl }}
+                    source={{ uri: currentBannerUrl }}
                     style={{
                         width: "100%",
                         height: 200,
@@ -182,10 +264,23 @@ export default function EventDetailsPage() {
                     }}
                     resizeMode="cover"
                 />
-            )}
+            ) : null}
 
             {isEditing ? (
                 <View style={{ gap: 16 }}>
+                    {/* Banner */}
+                    <Text style={styles.label}>Banner</Text>
+                    <Button
+                        label={
+                            uploadingBanner
+                                ? "Enviando banner..."
+                                : "Alterar Banner"
+                        }
+                        variant="outline"
+                        onPress={handlePickImage}
+                    />
+
+                    {/* Nome */}
                     <Text style={styles.label}>Nome do Evento</Text>
                     <TextInput
                         value={editedEvent.nome}
@@ -195,6 +290,7 @@ export default function EventDetailsPage() {
                         style={styles.input}
                     />
 
+                    {/* Local */}
                     <Text style={styles.label}>Local</Text>
                     <TextInput
                         value={editedEvent.local}
@@ -204,6 +300,7 @@ export default function EventDetailsPage() {
                         style={styles.input}
                     />
 
+                    {/* Data */}
                     <Text style={styles.label}>Data do Evento</Text>
                     <Button
                         label={editedEvent.data.toLocaleDateString("pt-BR")}
@@ -237,6 +334,7 @@ export default function EventDetailsPage() {
                         />
                     )}
 
+                    {/* Hora */}
                     <Text style={styles.label}>Horário de Início</Text>
                     <Button
                         label={editedEvent.starts_at.toLocaleTimeString(
@@ -277,6 +375,7 @@ export default function EventDetailsPage() {
                         />
                     )}
 
+                    {/* Capacidade */}
                     <Text style={styles.label}>Capacidade</Text>
                     <TextInput
                         value={editedEvent.capacity}
@@ -290,6 +389,7 @@ export default function EventDetailsPage() {
                         style={styles.input}
                     />
 
+                    {/* Preço */}
                     <Text style={styles.label}>Preço do Ingresso (R$)</Text>
                     <TextInput
                         value={editedEvent.ticket_price}
@@ -352,29 +452,27 @@ export default function EventDetailsPage() {
                     </View>
 
                     {role === "admin" && (
-                        <>
-                            <View style={{ gap: 10, marginTop: 20 }}>
-                                <Button
-                                    label="Editar Evento"
-                                    variant="secondary"
-                                    onPress={() => setIsEditing(true)}
-                                />
-                                <Button
-                                    label="Excluir Evento"
-                                    variant="outline"
-                                    onPress={handleDelete}
-                                />
-                                <Button
-                                    label="Escanear ingresso"
-                                    variant="primary"
-                                    onPress={() =>
-                                        router.push(
-                                            `/qrcode?eventId=${event.id}`
-                                        )
-                                    }
-                                />
-                            </View>
-                        </>
+                        <View style={{ gap: 10, marginTop: 20 }}>
+                            <Button
+                                label="Editar Evento"
+                                variant="secondary"
+                                onPress={() => setIsEditing(true)}
+                            />
+                            <Button
+                                label="Excluir Evento"
+                                variant="outline"
+                                onPress={handleDelete}
+                            />
+                            <Button
+                                label="Escanear ingresso"
+                                variant="primary"
+                                onPress={() =>
+                                    router.push(
+                                        `/qrcode?eventId=${event.id}`
+                                    )
+                                }
+                            />
+                        </View>
                     )}
 
                     {role === "default" && (
