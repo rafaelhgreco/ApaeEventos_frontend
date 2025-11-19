@@ -1,501 +1,442 @@
-import { getIdToken, getUserRole } from "@/lib/cognito";
+import { getIdToken, getUserRole } from '@/lib/cognito';
 import {
-    deleteEvent,
-    EventData,
-    getUserEvents,
-    updateEvent,
-    uploadBannerService,
-} from "@/services/event_services";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import * as ImagePicker from "expo-image-picker";
-import { router, useLocalSearchParams, useNavigation } from "expo-router";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+  deleteEvent,
+  EventData,
+  getUserEvents,
+  updateEvent,
+  uploadBannerService,
+} from '@/services/event_services';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import * as ImagePicker from 'expo-image-picker';
+import { router, useLocalSearchParams, useNavigation } from 'expo-router';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Image,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    View,
-} from "react-native";
-import Button from "../../components/ATOMIC/atoms/button";
-import { Event } from "../../src/domain/events";
-import styles from "../styles/eventId.style";
+  ActivityIndicator,
+  Alert,
+  Image,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+
+import Button from '../../components/ATOMIC/atoms/button';
+import { Event } from '../../src/domain/events';
+import styles from '../styles/eventId.style';
+import { colors } from '../styles/themes';
+
+// ÍCONES LUCIDE
+import {
+  BarChart3,
+  Calendar,
+  CheckCircle2,
+  Clock,
+  DollarSign,
+  MapPin,
+  TrendingUp,
+  Users,
+} from 'lucide-react-native';
+
+/* -----------------------------------------------------
+   CORREÇÃO DE TIMEZONE (SEM PERDER 1 DIA)
+----------------------------------------------------- */
+function parseDateSafe(value: string | Date) {
+  if (!value) return new Date();
+
+  const iso = typeof value === 'string' ? value : value.toISOString();
+  const onlyDate = iso.length === 10 ? `${iso}T00:00:00` : iso;
+
+  const d = new Date(onlyDate);
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function parseTimeSafe(value: string | Date) {
+  if (!value) return new Date();
+
+  const d = typeof value === 'string' ? new Date(value) : value;
+  return new Date(0, 0, 0, d.getHours(), d.getMinutes());
+}
 
 export default function EventDetailsPage() {
-    const { eventId } = useLocalSearchParams();
-    const navigation = useNavigation();
+  const { eventId } = useLocalSearchParams();
+  const navigation = useNavigation();
 
-    const [event, setEvent] = useState<Event | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [uploadingBanner, setUploadingBanner] = useState(false);
-    const [role, setRole] = useState<string>("default");
+  const [event, setEvent] = useState<Event | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
+  const [role, setRole] = useState('default');
 
-    // Estados do formulário
-    const [editedEvent, setEditedEvent] = useState({
-        nome: "",
-        local: "",
-        data: new Date(),
-        starts_at: new Date(),
-        capacity: "",
-        ticket_price: "",
-        bannerUrl: "",
-        status: "published" as Event["status"],
+  const [editedEvent, setEditedEvent] = useState({
+    nome: '',
+    local: '',
+    data: new Date(),
+    starts_at: new Date(),
+    capacity: '',
+    ticket_price: '',
+    bannerUrl: '',
+    status: 'published' as Event['status'],
+  });
+
+  const [showPicker, setShowPicker] = useState({
+    date: false,
+    time: false,
+  });
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: 'Detalhes do Evento',
     });
+  }, [navigation]);
 
-    const [showPicker, setShowPicker] = useState({
-        date: false,
-        time: false,
-    });
+  /* -----------------------------------------------------
+       CARREGAR ROLE E EVENTO
+    ----------------------------------------------------- */
+  useEffect(() => {
+    if (!eventId) return;
 
-    useLayoutEffect(() => {
-        navigation.setOptions({ title: "Detalhes do evento" });
-    }, [navigation]);
+    const id = Array.isArray(eventId) ? eventId[0] : eventId;
+    const numericId = parseInt(id, 10);
 
-    useEffect(() => {
-        if (!eventId) return;
-        const id = Array.isArray(eventId) ? eventId[0] : eventId;
-        const numericId = parseInt(id, 10);
-        fetchUserRole();
-        fetchUserEvents(numericId);
-    }, [eventId]);
+    fetchUserRole();
+    fetchEvent(numericId);
+  }, [eventId]);
 
-    const fetchUserRole = async () => {
-        try {
-            const userRole = await getUserRole();
-            setRole(userRole);
-        } catch (err) {
-            console.error("Erro ao obter role:", err);
-            setRole("default");
-        }
-    };
+  const fetchUserRole = async () => {
+    try {
+      const r = await getUserRole();
+      setRole(r);
+    } catch {
+      setRole('default');
+    }
+  };
 
-    const fetchUserEvents = async (id: number) => {
-        try {
-            setLoading(true);
-            const token = await getIdToken();
-            if (!token) {
-                setError("Usuário não autenticado.");
-                return;
-            }
+  const fetchEvent = async (id: number) => {
+    try {
+      setLoading(true);
+      const token = await getIdToken();
+      if (!token) return setError('Usuário não autenticado.');
 
-            const eventsData = await getUserEvents(token);
-            if (!eventsData) {
-                setError("Não foi possível carregar eventos.");
-                return;
-            }
+      const eventsData = await getUserEvents(token);
+      const found = eventsData.find((e: { id: number }) => e.id === id);
 
-            const findEvent = eventsData.find(
-                (e: { id: number }) => e.id === id
-            );
+      if (!found) return setError('Evento não encontrado.');
 
-            if (!findEvent) {
-                setError("Evento não encontrado.");
-                return;
-            }
+      setEvent(found);
 
-            setEvent(findEvent);
-            setEditedEvent({
-                nome: findEvent.nome,
-                local: findEvent.local,
-                data: new Date(findEvent.data),
-                starts_at: findEvent.starts_at
-                    ? new Date(findEvent.starts_at)
-                    : new Date(),
-                capacity: findEvent.capacity?.toString() || "",
-                ticket_price: findEvent.ticket_price?.toString() || "",
-                bannerUrl: findEvent.bannerUrl || "",
-                status: findEvent.status || "published",
-            });
-        } catch (err) {
-            console.error("Erro ao buscar evento:", err);
-            Alert.alert("Erro", "Não foi possível carregar os dados.");
-        } finally {
-            setLoading(false);
-        }
-    };
+      setEditedEvent({
+        nome: found.nome,
+        local: found.local,
+        data: parseDateSafe(found.data),
+        starts_at: parseTimeSafe(found.starts_at || new Date()),
+        capacity: found.capacity?.toString() || '',
+        ticket_price: found.ticket_price?.toString() || '',
+        bannerUrl: found.bannerUrl || '',
+        status: found.status || 'published',
+      });
+    } catch {
+      Alert.alert('Erro', 'Falha ao carregar o evento.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    // 📸 Trocar banner
-    const handlePickImage = async () => {
-        try {
-            const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                quality: 1,
-            });
+  /* -----------------------------------------------------
+       TROCAR BANNER
+    ----------------------------------------------------- */
+  const handlePickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+      });
 
-            if (result.canceled) return;
+      if (result.canceled) return;
+      const asset = result.assets[0];
 
-            const asset = result.assets[0];
-            const fileName = asset.uri.split("/").pop()!;
-            const fileType = asset.mimeType || "image/jpeg";
+      const form = new FormData();
+      form.append('file', {
+        uri: asset.uri,
+        name: asset.uri.split('/').pop(),
+        type: asset.mimeType || 'image/jpeg',
+      } as any);
 
-            const form = new FormData();
-            form.append("file", {
-                uri: asset.uri,
-                name: fileName,
-                type: fileType,
-            } as any);
+      setUploadingBanner(true);
 
-            setUploadingBanner(true);
+      const token = await getIdToken();
+      if (!token) return;
 
-            const token = await getIdToken();
-            if (!token) {
-                Alert.alert("Erro", "Usuário não autenticado.");
-                return;
-            }
+      const upload = await uploadBannerService(form, token);
 
-            const upload = await uploadBannerService(form, token);
+      setEditedEvent((p) => ({ ...p, bannerUrl: upload.url }));
+    } catch {
+      Alert.alert('Erro', 'Falha ao enviar banner.');
+    } finally {
+      setUploadingBanner(false);
+    }
+  };
 
-            setEditedEvent((prev) => ({
-                ...prev,
-                bannerUrl: upload.url,
-            }));
-        } catch (err) {
-            console.error("Erro ao enviar banner:", err);
-            Alert.alert("Erro", "Não foi possível enviar o banner.");
-        } finally {
-            setUploadingBanner(false);
-        }
-    };
+  /* -----------------------------------------------------
+       SALVAR EDIÇÕES
+    ----------------------------------------------------- */
+  const handleSave = async () => {
+    try {
+      const token = await getIdToken();
+      if (!token) return;
 
-    const handleSaveEdit = async () => {
-        try {
-            const token = await getIdToken();
-            if (!token) {
-                Alert.alert("Erro", "Usuário não autenticado.");
-                return;
-            }
+      const payload: Partial<EventData> = {
+        nome: editedEvent.nome,
+        local: editedEvent.local,
+        data: editedEvent.data,
+        starts_at: editedEvent.starts_at.toISOString(),
+        capacity: Number(editedEvent.capacity),
+        ticket_price: Number(editedEvent.ticket_price),
+        status: editedEvent.status,
+        bannerUrl: editedEvent.bannerUrl || event?.bannerUrl || null,
+      };
 
-            const updatedEvent: Partial<EventData> = {
-                nome: editedEvent.nome,
-                local: editedEvent.local,
-                data: editedEvent.data,
-                starts_at: editedEvent.starts_at.toISOString(),
-                capacity: Number(editedEvent.capacity) || 0,
-                ticket_price: Number(editedEvent.ticket_price) || 0,
-                status: editedEvent.status,
-                bannerUrl:
-                    editedEvent.bannerUrl ||
-                    event?.bannerUrl ||
-                    null,
-            };
+      await updateEvent(event!.id, payload, token);
 
-            await updateEvent(event?.id!, updatedEvent, token);
-            Alert.alert("Sucesso", "Evento atualizado com sucesso!");
-            setIsEditing(false);
-            if (event?.id) {
-                fetchUserEvents(event.id);
-            }
-        } catch (err) {
-            console.error("Erro ao atualizar evento:", err);
-            Alert.alert("Erro", "Falha ao atualizar evento.");
-        }
-    };
+      Alert.alert('Sucesso', 'Evento atualizado!');
+      setIsEditing(false);
 
-    const handleDelete = async () => {
-        Alert.alert(
-            "Confirmar exclusão",
-            "Tem certeza que deseja excluir este evento? Essa ação não pode ser desfeita.",
-            [
-                { text: "Cancelar", style: "cancel" },
-                {
-                    text: "Excluir",
-                    style: "destructive",
-                    onPress: async () => {
-                        try {
-                            const token = await getIdToken();
-                            if (!token) {
-                                Alert.alert(
-                                    "Erro",
-                                    "Usuário não autenticado."
-                                );
-                                return;
-                            }
-                            await deleteEvent(event?.id!, token);
-                            Alert.alert("Evento excluído com sucesso!");
-                            router.back();
-                        } catch (err) {
-                            console.error("Erro ao excluir evento:", err);
-                            Alert.alert(
-                                "Erro",
-                                "Não foi possível excluir o evento."
-                            );
-                        }
-                    },
-                },
-            ]
-        );
-    };
+      fetchEvent(event!.id);
+    } catch {
+      Alert.alert('Erro', 'Não foi possível salvar.');
+    }
+  };
 
-    if (loading)
-        return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
-    if (error || !event)
-        return (
-            <Text style={styles.error}>{error || "Evento não encontrado"}</Text>
-        );
+  /* -----------------------------------------------------
+       EXCLUIR EVENTO
+    ----------------------------------------------------- */
+  const handleDelete = () => {
+    Alert.alert('Excluir evento', 'Tem certeza?', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Excluir',
+        style: 'destructive',
+        onPress: async () => {
+          const token = await getIdToken();
+          if (!token) return;
 
-    // 🧭 Formatação de data no modo visualização
-    const formattedDate = new Date(event.data).toLocaleDateString("pt-BR");
-    const formattedTime = event.starts_at
-        ? new Date(event.starts_at).toLocaleTimeString("pt-BR", {
-              hour: "2-digit",
-              minute: "2-digit",
-          })
-        : "—";
+          await deleteEvent(event!.id, token);
+          router.back();
+        },
+      },
+    ]);
+  };
 
-    // Garante que a URL do banner nunca seja null/undefined
-    const currentBannerUrl: string =
-        editedEvent.bannerUrl || event.bannerUrl || "";
+  /* -----------------------------------------------------
+       RENDER
+    ----------------------------------------------------- */
+  if (loading) return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
+  if (error || !event) return <Text style={styles.error}>{error}</Text>;
 
-    return (
-        <ScrollView contentContainerStyle={styles.container}>
-            {currentBannerUrl ? (
-                <Image
-                    source={{ uri: currentBannerUrl }}
-                    style={{
-                        width: "100%",
-                        height: 200,
-                        borderRadius: 10,
-                        marginBottom: 16,
-                    }}
-                    resizeMode="cover"
-                />
-            ) : null}
+  const formattedDate = parseDateSafe(event.data).toLocaleDateString('pt-BR');
+  const formattedTime = parseTimeSafe(event.starts_at ?? new Date()).toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
-            {isEditing ? (
-                <View style={{ gap: 16 }}>
-                    {/* Banner */}
-                    <Text style={styles.label}>Banner</Text>
-                    <Button
-                        label={
-                            uploadingBanner
-                                ? "Enviando banner..."
-                                : "Alterar Banner"
-                        }
-                        variant="outline"
-                        onPress={handlePickImage}
-                    />
+  const banner = editedEvent.bannerUrl || event.bannerUrl || '';
 
-                    {/* Nome */}
-                    <Text style={styles.label}>Nome do Evento</Text>
-                    <TextInput
-                        value={editedEvent.nome}
-                        onChangeText={(text) =>
-                            setEditedEvent((prev) => ({ ...prev, nome: text }))
-                        }
-                        style={styles.input}
-                    />
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      {banner !== '' && <Image source={{ uri: banner }} style={styles.banner} resizeMode="cover" />}
 
-                    {/* Local */}
-                    <Text style={styles.label}>Local</Text>
-                    <TextInput
-                        value={editedEvent.local}
-                        onChangeText={(text) =>
-                            setEditedEvent((prev) => ({ ...prev, local: text }))
-                        }
-                        style={styles.input}
-                    />
+      {/* -----------------------------------------------------
+               VISUALIZAÇÃO
+            ----------------------------------------------------- */}
+      {!isEditing && (
+        <>
+          <View style={styles.box}>
+            <Text style={styles.title}>{event.nome}</Text>
 
-                    {/* Data */}
-                    <Text style={styles.label}>Data do Evento</Text>
-                    <Button
-                        label={editedEvent.data.toLocaleDateString("pt-BR")}
-                        variant="outline"
-                        onPress={() =>
-                            setShowPicker((prev) => ({
-                                ...prev,
-                                date: !prev.date,
-                            }))
-                        }
-                    />
-                    {showPicker.date && (
-                        <DateTimePicker
-                            value={editedEvent.data}
-                            mode="date"
-                            display={
-                                Platform.OS === "ios" ? "spinner" : "default"
-                            }
-                            onChange={(_, selectedDate) => {
-                                if (selectedDate) {
-                                    setEditedEvent((prev) => ({
-                                        ...prev,
-                                        data: selectedDate,
-                                    }));
-                                }
-                                setShowPicker((prev) => ({
-                                    ...prev,
-                                    date: false,
-                                }));
-                            }}
-                        />
-                    )}
+            <View style={styles.infoRow}>
+              <MapPin size={20} color={colors.primary} />
+              <Text style={styles.date}>{event.local}</Text>
+            </View>
 
-                    {/* Hora */}
-                    <Text style={styles.label}>Horário de Início</Text>
-                    <Button
-                        label={editedEvent.starts_at.toLocaleTimeString(
-                            "pt-BR",
-                            {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                            }
-                        )}
-                        variant="outline"
-                        onPress={() =>
-                            setShowPicker((prev) => ({
-                                ...prev,
-                                time: !prev.time,
-                            }))
-                        }
-                    />
-                    {showPicker.time && (
-                        <DateTimePicker
-                            value={editedEvent.starts_at}
-                            mode="time"
-                            is24Hour={true}
-                            display={
-                                Platform.OS === "ios" ? "spinner" : "default"
-                            }
-                            onChange={(_, selectedTime) => {
-                                if (selectedTime) {
-                                    setEditedEvent((prev) => ({
-                                        ...prev,
-                                        starts_at: selectedTime,
-                                    }));
-                                }
-                                setShowPicker((prev) => ({
-                                    ...prev,
-                                    time: false,
-                                }));
-                            }}
-                        />
-                    )}
+            <View style={styles.infoRow}>
+              <Calendar size={20} color={colors.primary} />
+              <Text style={styles.date}>{formattedDate}</Text>
+            </View>
 
-                    {/* Capacidade */}
-                    <Text style={styles.label}>Capacidade</Text>
-                    <TextInput
-                        value={editedEvent.capacity}
-                        onChangeText={(text) =>
-                            setEditedEvent((prev) => ({
-                                ...prev,
-                                capacity: text,
-                            }))
-                        }
-                        keyboardType="numeric"
-                        style={styles.input}
-                    />
+            <View style={styles.infoRow}>
+              <Clock size={20} color={colors.primary} />
+              <Text style={styles.date}>{formattedTime}</Text>
+            </View>
 
-                    {/* Preço */}
-                    <Text style={styles.label}>Preço do Ingresso (R$)</Text>
-                    <TextInput
-                        value={editedEvent.ticket_price}
-                        onChangeText={(text) =>
-                            setEditedEvent((prev) => ({
-                                ...prev,
-                                ticket_price: text,
-                            }))
-                        }
-                        keyboardType="decimal-pad"
-                        style={styles.input}
-                    />
+            {/* TODOS VEEM O PREÇO */}
+            <View style={styles.infoRow}>
+              <DollarSign size={20} color={colors.primary} />
+              <Text style={styles.date}>R$ {Number(event.ticket_price).toFixed(2)}</Text>
+            </View>
 
-                    <Button
-                        label="Salvar alterações"
-                        variant="primary"
-                        onPress={handleSaveEdit}
-                    />
-                    <Button
-                        label="Cancelar"
-                        variant="outline"
-                        onPress={() => setIsEditing(false)}
-                    />
+            {/* APENAS ADMIN */}
+            {role === 'admin' && (
+              <>
+                <View style={styles.infoRow}>
+                  <Users size={20} color={colors.primary} />
+                  <Text style={styles.date}>{event.capacity} pessoas</Text>
                 </View>
-            ) : (
-                <>
-                    <View style={styles.box}>
-                        <Text style={styles.title}>{event.nome}</Text>
-                        <Text style={styles.subtitle}>📍 {event.local}</Text>
-                        <Text style={styles.date}>🗓️ {formattedDate}</Text>
-                        <Text style={styles.date}>🕓 {formattedTime}</Text>
-                        <Text style={styles.date}>
-                            🎟️ Capacidade: {event.capacity}
-                        </Text>
-                        <Text style={styles.date}>
-                            💰 Preço: R${" "}
-                            {Number(event.ticket_price || 0).toFixed(2)}
-                        </Text>
-                        <Text style={styles.date}>
-                            🔄 Status:{" "}
-                            {event.status === "published"
-                                ? "Publicado"
-                                : event.status === "draft"
-                                ? "Rascunho"
-                                : event.status === "canceled"
-                                ? "Cancelado"
-                                : "Finalizado"}
-                        </Text>
-                        <Text style={styles.date}>
-                            ✅ Vendidos: {event.sold_count || 0} /{" "}
-                            {event.capacity || 0}
-                        </Text>
-                        <Text style={styles.date}>
-                            💵 Receita Estimada: R${" "}
-                            {(
-                                Number(event.ticket_price || 0) *
-                                Number(event.sold_count || 0)
-                            ).toFixed(2)}
-                        </Text>
-                    </View>
 
-                    {role === "admin" && (
-                        <View style={{ gap: 10, marginTop: 20 }}>
-                            <Button
-                                label="Editar Evento"
-                                variant="secondary"
-                                onPress={() => setIsEditing(true)}
-                            />
-                            <Button
-                                label="Excluir Evento"
-                                variant="outline"
-                                onPress={handleDelete}
-                            />
-                            <Button
-                                label="Escanear ingresso"
-                                variant="primary"
-                                onPress={() =>
-                                    router.push(
-                                        `/qrcode?eventId=${event.id}`
-                                    )
-                                }
-                            />
-                        </View>
-                    )}
+                <View style={styles.infoRow}>
+                  <CheckCircle2 size={20} color={colors.primary} />
+                  <Text style={styles.date}>{event.status}</Text>
+                </View>
 
-                    {role === "default" && (
-                        <View style={styles.buttonBox}>
-                            <Button
-                                label="Comprar Ingressos"
-                                variant="secondary"
-                                onPress={() =>
-                                    router.push(`/ticket?eventId=${event.id}`)
-                                }
-                            />
-                        </View>
-                    )}
+                <View style={styles.infoRow}>
+                  <BarChart3 size={20} color={colors.primary} />
+                  <Text style={styles.date}>
+                    {event.sold_count || 0} / {event.capacity}
+                  </Text>
+                </View>
 
-                    <View style={styles.buttonBox}>
-                        <Button
-                            label="Ver todos os ingressos"
-                            variant="outline"
-                            onPress={() => router.push(`/my_tickets`)}
-                        />
-                    </View>
-                </>
+                <View style={styles.infoRow}>
+                  <TrendingUp size={20} color={colors.primary} />
+                  <Text style={styles.date}>
+                    R$
+                    {(Number(event.ticket_price) * Number(event.sold_count || 0)).toFixed(2)}
+                  </Text>
+                </View>
+              </>
             )}
-        </ScrollView>
-    );
+          </View>
+
+          {/* BOTÕES POR ROLE */}
+          {role === 'admin' ? (
+            <View style={styles.buttonBox}>
+              <Button
+                label="Editar Evento"
+                variant="secondary"
+                onPress={() => setIsEditing(true)}
+              />
+              <Button label="Excluir Evento" variant="outline" onPress={handleDelete} />
+              <Button
+                label="Escanear Ingresso"
+                variant="primary"
+                onPress={() => router.push(`/qrcode?eventId=${event.id}`)}
+              />
+            </View>
+          ) : (
+            <View style={styles.buttonBox}>
+              <Button
+                label="Comprar Ingressos"
+                variant="secondary"
+                onPress={() => router.push(`/ticket?eventId=${event.id}`)}
+              />
+            </View>
+          )}
+
+          <View style={styles.buttonBox}>
+            <Button
+              label="Meus ingressos"
+              variant="outline"
+              onPress={() => router.push(`/my_tickets`)}
+            />
+          </View>
+        </>
+      )}
+
+      {/* -----------------------------------------------------
+               MODO EDIÇÃO
+            ----------------------------------------------------- */}
+      {isEditing && (
+        <View style={{ gap: 16 }}>
+          <Text style={styles.label}>Banner</Text>
+          <Button
+            label={uploadingBanner ? 'Enviando...' : 'Alterar Banner'}
+            variant="outline"
+            onPress={handlePickImage}
+          />
+
+          <Text style={styles.label}>Nome</Text>
+          <TextInput
+            style={styles.input}
+            value={editedEvent.nome}
+            onChangeText={(t) => setEditedEvent({ ...editedEvent, nome: t })}
+          />
+
+          <Text style={styles.label}>Local</Text>
+          <TextInput
+            style={styles.input}
+            value={editedEvent.local}
+            onChangeText={(t) => setEditedEvent({ ...editedEvent, local: t })}
+          />
+
+          <Text style={styles.label}>Data</Text>
+          <Button
+            label={editedEvent.data.toLocaleDateString('pt-BR')}
+            variant="outline"
+            onPress={() => setShowPicker((p) => ({ ...p, date: !p.date }))}
+          />
+
+          {showPicker.date && (
+            <DateTimePicker
+              value={editedEvent.data}
+              mode="date"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              onChange={(_, selected) => {
+                if (selected)
+                  setEditedEvent({
+                    ...editedEvent,
+                    data: parseDateSafe(selected),
+                  });
+                setShowPicker((p) => ({ ...p, date: false }));
+              }}
+            />
+          )}
+
+          <Text style={styles.label}>Horário</Text>
+          <Button
+            label={editedEvent.starts_at.toLocaleTimeString('pt-BR', {
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+            variant="outline"
+            onPress={() => setShowPicker((p) => ({ ...p, time: !p.time }))}
+          />
+
+          {showPicker.time && (
+            <DateTimePicker
+              value={editedEvent.starts_at}
+              mode="time"
+              is24Hour
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              onChange={(_, selected) => {
+                if (selected)
+                  setEditedEvent({
+                    ...editedEvent,
+                    starts_at: parseTimeSafe(selected),
+                  });
+                setShowPicker((p) => ({ ...p, time: false }));
+              }}
+            />
+          )}
+
+          <Text style={styles.label}>Capacidade</Text>
+          <TextInput
+            style={styles.input}
+            value={editedEvent.capacity}
+            onChangeText={(t) => setEditedEvent({ ...editedEvent, capacity: t })}
+            keyboardType="numeric"
+          />
+
+          <Text style={styles.label}>Preço (R$)</Text>
+          <TextInput
+            style={styles.input}
+            value={editedEvent.ticket_price}
+            onChangeText={(t) => setEditedEvent({ ...editedEvent, ticket_price: t })}
+            keyboardType="decimal-pad"
+          />
+
+          <Button label="Salvar" variant="primary" onPress={handleSave} />
+          <Button label="Cancelar" variant="outline" onPress={() => setIsEditing(false)} />
+        </View>
+      )}
+    </ScrollView>
+  );
 }

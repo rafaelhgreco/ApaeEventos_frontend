@@ -1,95 +1,79 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
-    StyleProp,
-    Text,
-    TextInput,
-    TextInputProps,
-    TextStyle,
-    View,
-    ViewStyle,
-} from "react-native";
-import Icon from "../atoms/icon";
-import { styles } from "./input.style"; // importe seu styles com StyleSheet
+  StyleProp,
+  Text,
+  TextInput,
+  TextInputProps,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
+
+import { Eye, EyeOff } from 'lucide-react-native';
+import { colors } from '../../../app/styles/themes';
+import { styles } from './input.style';
 
 interface InputProps extends TextInputProps {
-    label?: string;
-    error?: string;
-    containerStyle?: StyleProp<ViewStyle>;
-    inputStyle?: StyleProp<TextStyle>;
-    leftIcon?: React.ReactNode;
-    rightIcon?: React.ReactNode;
-    isPassword?: boolean;
-    secureTextEntry?: boolean;
+  label?: string;
+  error?: string;
+  containerStyle?: StyleProp<ViewStyle>;
+  inputStyle?: StyleProp<TextStyle>;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  isPassword?: boolean;
 }
 
 const Input: React.FC<InputProps> = ({
-    label,
-    error,
-    containerStyle,
-    inputStyle,
-    leftIcon,
-    rightIcon,
-    isPassword = false,
-    secureTextEntry,
-    ...textInputProps
+  label,
+  error,
+  containerStyle,
+  inputStyle,
+  leftIcon,
+  rightIcon,
+  isPassword = false,
+  secureTextEntry,
+  ...props
 }) => {
-    const [isSecureEntry, setIsSecureEntry] = useState(
-        isPassword || secureTextEntry
-    );
+  const [isSecure, setIsSecure] = useState(isPassword || secureTextEntry || false);
 
-    const togglePasswordVisibility = () => {
-        setIsSecureEntry(!isSecureEntry);
-    };
+  return (
+    <View style={[styles.container, containerStyle]}>
+      {label && <Text style={styles.label}>{label}</Text>}
 
-    const renderPasswordIcon = () => {
-        if (!isPassword) return null;
+      <View style={[styles.inputWrapper, error && { borderColor: colors.error }]}>
+        {/* LEFT ICON */}
+        {leftIcon && <View style={styles.iconLeft}>{leftIcon}</View>}
 
-        return (
-            <Icon
-                name={isSecureEntry ? "eye-off" : "eye"}
-                size={20}
-                color="#666"
-                onPress={togglePasswordVisibility}
-                containerStyle={{ marginLeft: 8 }}
-            />
-        );
-    };
+        {/* INPUT */}
+        <TextInput
+          {...props}
+          style={[styles.input, inputStyle]}
+          placeholderTextColor={colors.textSecondary}
+          secureTextEntry={isSecure}
+        />
 
-    const renderLeftIcon = () => {
-        if (!leftIcon) return null;
-        return <View style={{ marginRight: 8 }}>{leftIcon}</View>;
-    };
+        {/* RIGHT ICON */}
+        {isPassword ? (
+          <TouchableOpacity
+            onPress={() => setIsSecure((prev) => !prev)}
+            style={styles.iconRight}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            {isSecure ? (
+              <EyeOff size={20} color={colors.textSecondary} />
+            ) : (
+              <Eye size={20} color={colors.textSecondary} />
+            )}
+          </TouchableOpacity>
+        ) : rightIcon ? (
+          <View style={styles.iconRight}>{rightIcon}</View>
+        ) : null}
+      </View>
 
-    const renderRightIcon = () => {
-        if (isPassword) {
-            return renderPasswordIcon();
-        }
-        if (!rightIcon) return null;
-        return <View style={{ marginLeft: 8 }}>{rightIcon}</View>;
-    };
-
-    return (
-        <View style={[styles.container, containerStyle]}>
-            {label && <Text style={styles.label}>{label}</Text>}
-
-            <View style={[styles.shadowWrapper]}>
-                <View style={[styles.inputInnerContainer]}>
-                    {renderLeftIcon()}
-
-                    <TextInput
-                        {...textInputProps}
-                        style={[styles.inputIcon, inputStyle]}
-                        secureTextEntry={isSecureEntry}
-                        placeholderTextColor="#999"
-                    />
-
-                    {renderRightIcon()}
-                </View>
-            </View>
-
-            {error && <Text style={styles.errorText}>{error}</Text>}
-        </View>
-    );
+      {error && <Text style={styles.error}>{error}</Text>}
+    </View>
+  );
 };
 
 export default Input;

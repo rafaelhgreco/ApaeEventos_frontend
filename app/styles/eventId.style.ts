@@ -1,86 +1,149 @@
-import { StyleSheet } from 'react-native';
-import { border, colors } from '../../app/styles/themes';
+import { StyleSheet } from "react-native";
+import { colors, paddings, border, font, shadows } from "../../app/styles/themes";
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 24,
-    backgroundColor: colors.background,
-  },
+    container: {
+        flexGrow: 1,
+        padding: paddings.large,
+        backgroundColor: colors.background,
+    },
 
-  // CARD PRINCIPAL
-  box: {
-    padding: 20,
-    backgroundColor: '#fff',
-    borderRadius: border.radiusLarge,
-    marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 3,
-  },
+    /* -----------------------------
+       BANNER DO EVENTO
+    ------------------------------ */
+    banner: {
+        width: "100%",
+        height: 220,
+        borderRadius: border.radiusLarge,
+        marginBottom: paddings.large,
+        backgroundColor: colors.backgroundDark,
+        ...shadows,
+    },
 
-  title: {
-    fontSize: 26,
-    fontWeight: '700',
-    color: '#1f2937',
-    marginBottom: 8,
-  },
+    /* -----------------------------
+       CARD PRINCIPAL
+    ------------------------------ */
+    box: {
+        padding: paddings.large,
+        backgroundColor: colors.backgroundLight,
+        borderRadius: border.radiusLarge,
+        marginBottom: paddings.large,
+        ...shadows,
+        shadowOpacity: 0.08,
+        elevation: 4,
+    },
 
-  subtitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#2563eb',
-    marginBottom: 8,
-  },
+    title: {
+        fontSize: font.sizeExtraLarge,
+        fontWeight: "800",
+        color: colors.primary,
+        marginBottom: paddings.small,
+    },
 
-  date: {
-    fontSize: 16,
-    color: '#6b7280',
-    fontStyle: 'italic',
-    marginBottom: 10,
-  },
+    subtitle: {
+        fontSize: font.sizeMedium,
+        fontWeight: "600",
+        color: colors.secondary,
+        marginBottom: paddings.small,
+    },
 
-  description: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: '#374151',
-  },
+    date: {
+        fontSize: font.sizeDefault,
+        color: colors.textSecondary,
+        marginBottom: paddings.small,
+    },
 
-  error: {
-    color: '#dc2626',
-    textAlign: 'center',
-    marginTop: 40,
-    fontSize: 18,
-    fontWeight: '600',
-  },
+    description: {
+        fontSize: font.sizeDefault,
+        color: colors.text,
+        lineHeight: 22,
+        marginTop: paddings.small,
+    },
 
-  // INPUT NO MODO EDIÇÃO
-  input: {
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: border.radiusMedium,
-    padding: 12,
-    fontSize: 16,
-    color: '#111827',
-    backgroundColor: '#f9fafb',
-  },
+    /* -----------------------------
+       LINHA DE INFO (ÍCONES)
+    ------------------------------ */
+    infoRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+        marginBottom: paddings.small,
+    },
 
-  // LABEL DOS CAMPOS
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
-    marginTop: 10,
-    marginBottom: 4,
-  },
+    /* -----------------------------
+       ERRO
+    ------------------------------ */
+    error: {
+        color: colors.error,
+        textAlign: "center",
+        marginTop: paddings.large * 2,
+        fontSize: font.sizeLarge,
+        fontWeight: "600",
+    },
 
-  // BOX DE BOTÕES
-  buttonBox: {
-    marginTop: 24,
-    gap: 16,
-  },
+    /* -----------------------------
+       INPUTS E EDIÇÃO
+    ------------------------------ */
+    label: {
+        fontSize: font.sizeDefault,
+        fontWeight: "600",
+        color: colors.text,
+        marginTop: paddings.medium,
+        marginBottom: paddings.xs,
+    },
+
+    input: {
+        borderWidth: 1,
+        borderColor: colors.borderLight,
+        borderRadius: border.radiusMedium,
+        padding: paddings.medium,
+        fontSize: font.sizeDefault,
+        color: colors.text,
+        backgroundColor: colors.backgroundLight,
+    },
+
+    /* -----------------------------
+       CHIPS
+    ------------------------------ */
+    chipContainer: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        gap: 10,
+        marginTop: paddings.small,
+    },
+
+    chip: {
+        backgroundColor: colors.backgroundLight,
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: colors.borderLight,
+    },
+
+    chipText: {
+        fontSize: font.sizeSmall,
+        color: colors.text,
+    },
+
+    priceChip: {
+        backgroundColor: colors.successLight,
+        borderColor: colors.success,
+    },
+
+    priceChipText: {
+        fontSize: font.sizeSmall,
+        fontWeight: "700",
+        color: colors.successDark,
+    },
+
+    /* -----------------------------
+       BOTÕES
+    ------------------------------ */
+    buttonBox: {
+        marginTop: paddings.large,
+        gap: paddings.medium,
+    },
 });
 
 export default styles;

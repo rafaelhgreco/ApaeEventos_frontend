@@ -1,16 +1,38 @@
 import { StyleSheet } from "react-native";
-import { colors, paddings } from "../../../app/styles/themes";
+import { colors, font, paddings } from "../../../app/styles/themes";
 
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: paddings.large,
+        backgroundColor: colors.background,
     },
+
     title: {
-        fontSize: 32,
-        fontWeight: "600",
+        fontSize: font.sizeExtraLarge,
+        fontWeight: "700",
+        color: colors.primary,
+        marginBottom: paddings.large,
+    },
+
+    groupTitle: {
+        fontSize: font.sizeLarge,
+        fontWeight: "700",
+        color: colors.primary,
+        marginBottom: paddings.small,
+    },
+
+    groupDescription: {
+        fontSize: font.sizeSmall,
         color: colors.text,
-        marginBottom: paddings.extraLarge,
-        textAlign: "left",
+        marginBottom: paddings.medium,
+        opacity: 0.7,
+    },
+
+    descriptionText: {
+        marginTop: 4,
+        fontSize: font.sizeSmall,
+        color: colors.text,
+        opacity: 0.6,
     },
 });

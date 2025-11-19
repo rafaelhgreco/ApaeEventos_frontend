@@ -1,48 +1,62 @@
-import { StyleSheet } from "react-native";
-import { border, colors, font, paddings } from "../../../app/styles/themes";
+import { StyleSheet } from 'react-native';
+import { border, colors, font, paddings } from '../../../app/styles/themes';
 
 export const styles = StyleSheet.create({
-    container: {
-        marginBottom: paddings.large,
-    },
-    label: {
-        fontSize: font.sizeMedium,
-        fontWeight: "600",
-        color: colors.text,
-        marginBottom: paddings.medium,
-    },
-    inputIcon: {
-        flex: 1,
-        fontSize: font.sizeMedium,
-        color: colors.text,
-        paddingVertical: 12,
-    },
-    errorText: {
-        color: colors.error,
-        fontSize: font.sizeSmall,
-        marginTop: paddings.small,
-    },
-    shadowWrapper: {
-        borderRadius: border.radiusLarge,
-        backgroundColor: colors.backgroundLight,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 1.7,
-        overflow: "visible",
-    },
-    inputInnerContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        borderColor: colors.borderLight,
-        borderWidth: 1,
-        borderRadius: border.radiusLarge,
-        paddingHorizontal: paddings.large,
-        minHeight: 48,
-        backgroundColor: "transparent",
-    },
+  container: {
+    marginBottom: paddings.large,
+  },
+
+  label: {
+    fontSize: font.sizeMedium,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: paddings.small,
+  },
+
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    borderRadius: border.radiusLarge,
+
+    backgroundColor: colors.backgroundLight,
+
+    paddingHorizontal: paddings.medium,
+    minHeight: 48,
+
+    // sombra suave (premium)
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 1,
+  },
+
+  input: {
+    flex: 1,
+    fontSize: font.sizeMedium,
+    color: colors.text,
+    paddingVertical: paddings.small,
+  },
+
+  iconLeft: {
+    marginRight: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  iconRight: {
+    marginLeft: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  error: {
+    marginTop: paddings.small,
+    color: colors.error,
+    fontSize: font.sizeSmall,
+    fontWeight: '500',
+  },
 });
