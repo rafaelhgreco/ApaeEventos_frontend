@@ -5,6 +5,7 @@ import {
     TouchableOpacity,
     ViewStyle,
 } from "react-native";
+
 import { colors } from "../../../app/styles/themes";
 import { ButtonProps } from "../../../types/atoms";
 import { styles } from "./button.style";
@@ -14,47 +15,42 @@ const Button: React.FC<ButtonProps> = ({
     variant = "primary",
     size = "medium",
     loading = false,
+    disabled = false,
     containerStyle,
     textStyle,
-    disabled,
-    ...touchableOpacityProps
+    ...props
 }) => {
-    const getButtonStyle = () => {
-        const baseStyle: ViewStyle[] = [
-            styles.button,
-            styles[`button_${variant}`] || styles.button_primary, // fallback seguro
+    const getButtonStyle = (): ViewStyle[] => {
+        const base: ViewStyle[] = [
+            styles.buttonBase,
+            styles[`button_${variant}`],
             styles[`button_${size}`],
         ];
 
-        if (disabled || loading) {
-            baseStyle.push(styles.buttonDisabled);
-        }
+        if (disabled || loading) base.push(styles.buttonDisabled);
 
-        return baseStyle;
+        return base;
     };
 
-    const getTextStyle = () => {
-        return [
-            styles.buttonText,
-            styles[`buttonText_${variant}`] || styles.buttonText_primary, // fallback seguro
-            styles[`buttonText_${size}`],
-            textStyle,
-        ];
-    };
+    const getTextStyle = () => [
+        styles.textBase,
+        styles[`text_${variant}`],
+        styles[`text_${size}`],
+        textStyle,
+    ];
 
     const spinnerColor =
-        variant === "outline"
-            ? colors.primary
-            : (styles[`buttonText_${variant}`] as any)?.color || "#fff";
+        variant === "outline" ? colors.primary : styles[`text_${variant}`]?.color;
 
     return (
         <TouchableOpacity
+            activeOpacity={0.7}
             style={[...getButtonStyle(), containerStyle]}
             disabled={disabled || loading}
-            {...touchableOpacityProps}
+            {...props}
         >
             {loading ? (
-                <ActivityIndicator color={spinnerColor} size="small" />
+                <ActivityIndicator size="small" color={spinnerColor} />
             ) : (
                 <Text style={getTextStyle()}>{label}</Text>
             )}

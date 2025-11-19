@@ -6,13 +6,10 @@ import {
   updateEvent,
   uploadBannerService,
 } from '@/services/event_services';
-
-import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-
+import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
-
 import {
   ActivityIndicator,
   Alert,
@@ -26,7 +23,6 @@ import {
 
 import Button from '../../components/ATOMIC/atoms/button';
 import { Event } from '../../src/domain/events';
-
 import styles from '../styles/eventId.style';
 import { colors } from '../styles/themes';
 
@@ -42,6 +38,26 @@ import {
   Users,
 } from 'lucide-react-native';
 
+/* -----------------------------------------------------
+   CORREÇÃO DE TIMEZONE (SEM PERDER 1 DIA)
+----------------------------------------------------- */
+function parseDateSafe(value: string | Date) {
+  if (!value) return new Date();
+
+  const iso = typeof value === 'string' ? value : value.toISOString();
+  const onlyDate = iso.length === 10 ? `${iso}T00:00:00` : iso;
+
+  const d = new Date(onlyDate);
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function parseTimeSafe(value: string | Date) {
+  if (!value) return new Date();
+
+  const d = typeof value === 'string' ? new Date(value) : value;
+  return new Date(0, 0, 0, d.getHours(), d.getMinutes());
+}
+
 export default function EventDetailsPage() {
   const { eventId } = useLocalSearchParams();
   const navigation = useNavigation();
@@ -51,7 +67,7 @@ export default function EventDetailsPage() {
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [uploadingBanner, setUploadingBanner] = useState(false);
-  const [role, setRole] = useState<string>('default');
+  const [role, setRole] = useState('default');
 
   const [editedEvent, setEditedEvent] = useState({
     nome: '',
@@ -75,6 +91,9 @@ export default function EventDetailsPage() {
     });
   }, [navigation]);
 
+  /* -----------------------------------------------------
+       CARREGAR ROLE E EVENTO
+    ----------------------------------------------------- */
   useEffect(() => {
     if (!eventId) return;
 
@@ -82,59 +101,51 @@ export default function EventDetailsPage() {
     const numericId = parseInt(id, 10);
 
     fetchUserRole();
-    fetchEventData(numericId);
+    fetchEvent(numericId);
   }, [eventId]);
 
-  // ROLE
   const fetchUserRole = async () => {
     try {
-      const userRole = await getUserRole();
-      setRole(userRole);
+      const r = await getUserRole();
+      setRole(r);
     } catch {
       setRole('default');
     }
   };
 
-  // EVENTO
-  const fetchEventData = async (id: number) => {
+  const fetchEvent = async (id: number) => {
     try {
       setLoading(true);
-
       const token = await getIdToken();
-      if (!token) {
-        setError('Usuário não autenticado.');
-        return;
-      }
+      if (!token) return setError('Usuário não autenticado.');
 
       const eventsData = await getUserEvents(token);
+      const found = eventsData.find((e: { id: number }) => e.id === id);
 
-      const selectedEvent = eventsData.find((e: Event) => e.id === id);
+      if (!found) return setError('Evento não encontrado.');
 
-      if (!selectedEvent) {
-        setError('Evento não encontrado.');
-        return;
-      }
-
-      setEvent(selectedEvent);
+      setEvent(found);
 
       setEditedEvent({
-        nome: selectedEvent.nome,
-        local: selectedEvent.local,
-        data: new Date(selectedEvent.data),
-        starts_at: selectedEvent.starts_at ? new Date(selectedEvent.starts_at) : new Date(),
-        capacity: selectedEvent.capacity?.toString() || '',
-        ticket_price: selectedEvent.ticket_price?.toString() || '',
-        bannerUrl: selectedEvent.bannerUrl || '',
-        status: selectedEvent.status || 'published',
+        nome: found.nome,
+        local: found.local,
+        data: parseDateSafe(found.data),
+        starts_at: parseTimeSafe(found.starts_at || new Date()),
+        capacity: found.capacity?.toString() || '',
+        ticket_price: found.ticket_price?.toString() || '',
+        bannerUrl: found.bannerUrl || '',
+        status: found.status || 'published',
       });
     } catch {
-      Alert.alert('Erro', 'Falha ao carregar dados do evento.');
+      Alert.alert('Erro', 'Falha ao carregar o evento.');
     } finally {
       setLoading(false);
     }
   };
 
-  // SELECT BANNER
+  /* -----------------------------------------------------
+       TROCAR BANNER
+    ----------------------------------------------------- */
   const handlePickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -143,26 +154,23 @@ export default function EventDetailsPage() {
       });
 
       if (result.canceled) return;
-
       const asset = result.assets[0];
-      const fileName = asset.uri.split('/').pop()!;
-      const fileType = asset.mimeType || 'image/jpeg';
 
       const form = new FormData();
       form.append('file', {
         uri: asset.uri,
-        name: fileName,
-        type: fileType,
+        name: asset.uri.split('/').pop(),
+        type: asset.mimeType || 'image/jpeg',
       } as any);
 
       setUploadingBanner(true);
 
       const token = await getIdToken();
-      if (!token) return Alert.alert('Erro', 'Usuário não autenticado.');
+      if (!token) return;
 
       const upload = await uploadBannerService(form, token);
 
-      setEditedEvent((prev) => ({ ...prev, bannerUrl: upload.url }));
+      setEditedEvent((p) => ({ ...p, bannerUrl: upload.url }));
     } catch {
       Alert.alert('Erro', 'Falha ao enviar banner.');
     } finally {
@@ -170,13 +178,15 @@ export default function EventDetailsPage() {
     }
   };
 
-  // SALVAR EDIÇÃO
-  const handleSaveEdit = async () => {
+  /* -----------------------------------------------------
+       SALVAR EDIÇÕES
+    ----------------------------------------------------- */
+  const handleSave = async () => {
     try {
       const token = await getIdToken();
-      if (!token) return Alert.alert('Erro', 'Usuário não autenticado.');
+      if (!token) return;
 
-      const updatedEvent: Partial<EventData> = {
+      const payload: Partial<EventData> = {
         nome: editedEvent.nome,
         local: editedEvent.local,
         data: editedEvent.data,
@@ -187,193 +197,174 @@ export default function EventDetailsPage() {
         bannerUrl: editedEvent.bannerUrl || event?.bannerUrl || null,
       };
 
-      await updateEvent(event?.id!, updatedEvent, token);
+      await updateEvent(event!.id, payload, token);
 
       Alert.alert('Sucesso', 'Evento atualizado!');
       setIsEditing(false);
 
-      if (event?.id) fetchEventData(event.id);
+      fetchEvent(event!.id);
     } catch {
-      Alert.alert('Erro', 'Falha ao atualizar evento.');
+      Alert.alert('Erro', 'Não foi possível salvar.');
     }
   };
 
-  // APAGAR EVENTO
-  const handleDelete = async () => {
-    Alert.alert('Excluir Evento', 'Essa ação não pode ser desfeita. Confirmar?', [
+  /* -----------------------------------------------------
+       EXCLUIR EVENTO
+    ----------------------------------------------------- */
+  const handleDelete = () => {
+    Alert.alert('Excluir evento', 'Tem certeza?', [
       { text: 'Cancelar', style: 'cancel' },
       {
         text: 'Excluir',
         style: 'destructive',
         onPress: async () => {
-          try {
-            const token = await getIdToken();
-            if (!token) return;
+          const token = await getIdToken();
+          if (!token) return;
 
-            await deleteEvent(event?.id!, token);
-            Alert.alert('Evento excluído!');
-            router.back();
-          } catch {
-            Alert.alert('Erro', 'Falha ao excluir.');
-          }
+          await deleteEvent(event!.id, token);
+          router.back();
         },
       },
     ]);
   };
 
-  // RENDER
+  /* -----------------------------------------------------
+       RENDER
+    ----------------------------------------------------- */
   if (loading) return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
+  if (error || !event) return <Text style={styles.error}>{error}</Text>;
 
-  if (error || !event) return <Text style={styles.error}>{error || 'Evento não encontrado.'}</Text>;
-
-  const formattedDate = new Date(event.data).toLocaleDateString('pt-BR');
-  const formattedTime =
-    event.starts_at &&
-    new Date(event.starts_at).toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+  const formattedDate = parseDateSafe(event.data).toLocaleDateString('pt-BR');
+  const formattedTime = parseTimeSafe(event.starts_at ?? new Date()).toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
   const banner = editedEvent.bannerUrl || event.bannerUrl || '';
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* BANNER */}
-      {banner !== '' && <Image source={{ uri: banner }} style={styles.banner} />}
+      {banner !== '' && <Image source={{ uri: banner }} style={styles.banner} resizeMode="cover" />}
 
-      {/* SE NÃO ESTÁ EDITANDO */}
-      {!isEditing ? (
+      {/* -----------------------------------------------------
+               VISUALIZAÇÃO
+            ----------------------------------------------------- */}
+      {!isEditing && (
         <>
           <View style={styles.box}>
             <Text style={styles.title}>{event.nome}</Text>
 
-            {/* LOCAL */}
             <View style={styles.infoRow}>
               <MapPin size={20} color={colors.primary} />
               <Text style={styles.date}>{event.local}</Text>
             </View>
 
-            {/* DATA */}
             <View style={styles.infoRow}>
               <Calendar size={20} color={colors.primary} />
               <Text style={styles.date}>{formattedDate}</Text>
             </View>
 
-            {/* HORA */}
             <View style={styles.infoRow}>
               <Clock size={20} color={colors.primary} />
               <Text style={styles.date}>{formattedTime}</Text>
             </View>
 
-            {/* PREÇO (TODOS VEEM) */}
+            {/* TODOS VEEM O PREÇO */}
             <View style={styles.infoRow}>
               <DollarSign size={20} color={colors.primary} />
-              <Text style={styles.date}>R${Number(event.ticket_price || 0).toFixed(2)}</Text>
+              <Text style={styles.date}>R$ {Number(event.ticket_price).toFixed(2)}</Text>
             </View>
 
-            {/* CAPACIDADE — SÓ ADMIN */}
+            {/* APENAS ADMIN */}
             {role === 'admin' && (
-              <View style={styles.infoRow}>
-                <Users size={20} color={colors.primary} />
-                <Text style={styles.date}>{event.capacity} pessoas</Text>
-              </View>
-            )}
+              <>
+                <View style={styles.infoRow}>
+                  <Users size={20} color={colors.primary} />
+                  <Text style={styles.date}>{event.capacity} pessoas</Text>
+                </View>
 
-            {/* STATUS — SÓ ADMIN */}
-            {role === 'admin' && (
-              <View style={styles.infoRow}>
-                <CheckCircle2 size={20} color={colors.primary} />
-                <Text style={styles.date}>
-                  {event.status === 'published'
-                    ? 'Publicado'
-                    : event.status === 'draft'
-                    ? 'Rascunho'
-                    : event.status === 'canceled'
-                    ? 'Cancelado'
-                    : 'Finalizado'}
-                </Text>
-              </View>
-            )}
+                <View style={styles.infoRow}>
+                  <CheckCircle2 size={20} color={colors.primary} />
+                  <Text style={styles.date}>{event.status}</Text>
+                </View>
 
-            {/* INGRESSOS — SÓ ADMIN */}
-            {role === 'admin' && (
-              <View style={styles.infoRow}>
-                <BarChart3 size={20} color={colors.primary} />
-                <Text style={styles.date}>
-                  {event.sold_count || 0} / {event.capacity} vendidos
-                </Text>
-              </View>
-            )}
+                <View style={styles.infoRow}>
+                  <BarChart3 size={20} color={colors.primary} />
+                  <Text style={styles.date}>
+                    {event.sold_count || 0} / {event.capacity}
+                  </Text>
+                </View>
 
-            {/* RECEITA — SÓ ADMIN */}
-            {role === 'admin' && (
-              <View style={styles.infoRow}>
-                <TrendingUp size={20} color={colors.primary} />
-                <Text style={styles.date}>
-                  R$
-                  {(Number(event.ticket_price || 0) * Number(event.sold_count || 0)).toFixed(2)}
-                </Text>
-              </View>
+                <View style={styles.infoRow}>
+                  <TrendingUp size={20} color={colors.primary} />
+                  <Text style={styles.date}>
+                    R$
+                    {(Number(event.ticket_price) * Number(event.sold_count || 0)).toFixed(2)}
+                  </Text>
+                </View>
+              </>
             )}
           </View>
 
-          {/* BOTÕES */}
-          {role === 'admin' && (
+          {/* BOTÕES POR ROLE */}
+          {role === 'admin' ? (
             <View style={styles.buttonBox}>
               <Button
                 label="Editar Evento"
                 variant="secondary"
                 onPress={() => setIsEditing(true)}
               />
-
               <Button label="Excluir Evento" variant="outline" onPress={handleDelete} />
-
               <Button
                 label="Escanear Ingresso"
                 variant="primary"
                 onPress={() => router.push(`/qrcode?eventId=${event.id}`)}
               />
             </View>
-          )}
-
-          {role === 'default' && (
+          ) : (
             <View style={styles.buttonBox}>
               <Button
-                label="Comprar Ingressso"
+                label="Comprar Ingressos"
                 variant="secondary"
                 onPress={() => router.push(`/ticket?eventId=${event.id}`)}
               />
-
-              <Button
-                label="Ver Meus Ingressos"
-                variant="outline"
-                onPress={() => router.push(`/my_tickets`)}
-              />
             </View>
           )}
+
+          <View style={styles.buttonBox}>
+            <Button
+              label="Meus ingressos"
+              variant="outline"
+              onPress={() => router.push(`/my_tickets`)}
+            />
+          </View>
         </>
-      ) : (
-        /* EDITANDO */
+      )}
+
+      {/* -----------------------------------------------------
+               MODO EDIÇÃO
+            ----------------------------------------------------- */}
+      {isEditing && (
         <View style={{ gap: 16 }}>
           <Text style={styles.label}>Banner</Text>
           <Button
-            label={uploadingBanner ? 'Enviando banner...' : 'Alterar Banner'}
+            label={uploadingBanner ? 'Enviando...' : 'Alterar Banner'}
             variant="outline"
             onPress={handlePickImage}
           />
 
-          <Text style={styles.label}>Nome do Evento</Text>
+          <Text style={styles.label}>Nome</Text>
           <TextInput
-            value={editedEvent.nome}
-            onChangeText={(v) => setEditedEvent((p) => ({ ...p, nome: v }))}
             style={styles.input}
+            value={editedEvent.nome}
+            onChangeText={(t) => setEditedEvent({ ...editedEvent, nome: t })}
           />
 
           <Text style={styles.label}>Local</Text>
           <TextInput
-            value={editedEvent.local}
-            onChangeText={(v) => setEditedEvent((p) => ({ ...p, local: v }))}
             style={styles.input}
+            value={editedEvent.local}
+            onChangeText={(t) => setEditedEvent({ ...editedEvent, local: t })}
           />
 
           <Text style={styles.label}>Data</Text>
@@ -388,17 +379,13 @@ export default function EventDetailsPage() {
               value={editedEvent.data}
               mode="date"
               display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={(_: DateTimePickerEvent, selectedDate?: Date) => {
-                if (selectedDate)
-                  setEditedEvent((p) => ({
-                    ...p,
-                    data: selectedDate,
-                  }));
-
-                setShowPicker((p) => ({
-                  ...p,
-                  date: false,
-                }));
+              onChange={(_, selected) => {
+                if (selected)
+                  setEditedEvent({
+                    ...editedEvent,
+                    data: parseDateSafe(selected),
+                  });
+                setShowPicker((p) => ({ ...p, date: false }));
               }}
             />
           )}
@@ -419,39 +406,34 @@ export default function EventDetailsPage() {
               mode="time"
               is24Hour
               display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={(_: DateTimePickerEvent, selectedTime?: Date) => {
-                if (selectedTime)
-                  setEditedEvent((p) => ({
-                    ...p,
-                    starts_at: selectedTime,
-                  }));
-
-                setShowPicker((p) => ({
-                  ...p,
-                  time: false,
-                }));
+              onChange={(_, selected) => {
+                if (selected)
+                  setEditedEvent({
+                    ...editedEvent,
+                    starts_at: parseTimeSafe(selected),
+                  });
+                setShowPicker((p) => ({ ...p, time: false }));
               }}
             />
           )}
 
           <Text style={styles.label}>Capacidade</Text>
           <TextInput
-            value={editedEvent.capacity}
-            onChangeText={(v) => setEditedEvent((p) => ({ ...p, capacity: v }))}
-            keyboardType="numeric"
             style={styles.input}
+            value={editedEvent.capacity}
+            onChangeText={(t) => setEditedEvent({ ...editedEvent, capacity: t })}
+            keyboardType="numeric"
           />
 
           <Text style={styles.label}>Preço (R$)</Text>
           <TextInput
-            value={editedEvent.ticket_price}
-            onChangeText={(v) => setEditedEvent((p) => ({ ...p, ticket_price: v }))}
-            keyboardType="decimal-pad"
             style={styles.input}
+            value={editedEvent.ticket_price}
+            onChangeText={(t) => setEditedEvent({ ...editedEvent, ticket_price: t })}
+            keyboardType="decimal-pad"
           />
 
-          <Button label="Salvar alterações" variant="primary" onPress={handleSaveEdit} />
-
+          <Button label="Salvar" variant="primary" onPress={handleSave} />
           <Button label="Cancelar" variant="outline" onPress={() => setIsEditing(false)} />
         </View>
       )}

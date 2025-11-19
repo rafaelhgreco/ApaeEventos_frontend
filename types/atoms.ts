@@ -1,42 +1,96 @@
-import { ReactElement } from "react";
-import { TextInputProps, TouchableOpacityProps } from "react-native";
+import { ReactElement } from 'react';
+import {
+  StyleProp,
+  TextInputProps,
+  TextStyle,
+  TouchableOpacityProps,
+  ViewStyle,
+} from 'react-native';
 
-export interface IconProps extends Omit<TouchableOpacityProps, "style"> {
-    name: string;
-    size?: number;
-    color?: string;
-    containerStyle?: object;
+/* --------------------------------------------
+   ICON
+--------------------------------------------- */
+export interface IconProps extends Omit<TouchableOpacityProps, 'style'> {
+  name: string; // Futuro: restringir para o set de ícones da app
+  size?: number;
+  color?: string;
+  containerStyle?: StyleProp<ViewStyle>;
 }
 
-export interface InputProps extends Omit<TextInputProps, "style"> {
-    label?: string;
-    error?: string;
-    containerStyle?: object;
-    inputStyle?: object;
-    leftIcon?: ReactElement;
-    rightIcon?: ReactElement;
-    isPassword?: boolean;
+/* --------------------------------------------
+   INPUT
+--------------------------------------------- */
+export interface InputProps extends Omit<TextInputProps, 'style'> {
+  label?: string;
+  error?: string;
+
+  containerStyle?: StyleProp<ViewStyle>;
+  inputStyle?: StyleProp<TextStyle>;
+
+  leftIcon?: ReactElement;
+  rightIcon?: ReactElement;
+
+  isPassword?: boolean;
+
+  /** Texto auxiliar abaixo do input */
+  description?: string;
+
+  /** Densidade (compacto, normal, amplo) */
+  density?: 'compact' | 'regular' | 'comfortable';
 }
 
-export interface SelectProps extends Omit<TouchableOpacityProps, "style"> {
-    title: string;
-    options: Array<{ label: string; value: string }>;
-    selectedValue?: string;
-    onValueChange: (value: string) => void;
+/* --------------------------------------------
+   SELECT
+--------------------------------------------- */
+export interface SelectOption {
+  label: string;
+  value: string;
 }
 
-export interface ButtonProps extends Omit<TouchableOpacityProps, "style"> {
-    label: string;
-    variant?: "primary" | "secondary" | "outline" | "dark";
-    size?: "small" | "medium" | "large";
-    loading?: boolean;
-    containerStyle?: object;
-    textStyle?: object;
+export interface SelectProps extends Omit<TouchableOpacityProps, 'style'> {
+  title: string;
+  options: SelectOption[];
+
+  selectedValue?: string;
+  onValueChange: (value: string) => void;
+
+  placeholder?: string;
+
+  containerStyle?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
 }
 
+/* --------------------------------------------
+   BUTTON
+--------------------------------------------- */
+export interface ButtonProps extends Omit<TouchableOpacityProps, 'style'> {
+  label: string;
+
+  /** Visual do botão */
+  variant?: 'primary' | 'secondary' | 'outline' | 'dark' | 'ghost';
+
+  /** Tamanho físico */
+  size?: 'small' | 'medium' | 'large';
+
+  loading?: boolean;
+
+  /** Ícones opcionais */
+  leftIcon?: ReactElement;
+  rightIcon?: ReactElement;
+
+  /** Estilos externos */
+  containerStyle?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
+
+  fullWidth?: boolean;
+}
+
+/* --------------------------------------------
+   DATE FIELD
+--------------------------------------------- */
 export interface DateFieldProps {
-    value: Date;
-    mode: "date" | "time" | "datetime";
-    onChange: (event: any, date?: Date) => void;
-    label?: string;
+  value: Date;
+  mode: 'date' | 'time'; // seu app não usa "datetime"
+  onChange: (event: any, date?: Date) => void;
+  label?: string;
 }
