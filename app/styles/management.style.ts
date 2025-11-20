@@ -3,13 +3,43 @@ import { border, paddings } from '../styles/themes';
 
 export const styles = StyleSheet.create({
   scrollContent: {
-    padding: paddings.extraLarge,
-    paddingBottom: 40,
-    gap: 24,
-    backgroundColor: '#f5f6fa',
+    padding: paddings.large,
+    paddingBottom: 50,
+    gap: 28,
+    backgroundColor: '#f3f5f9',
   },
 
-  // Card branco com sombra suave
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#1a1a1a',
+  },
+
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: -4,
+  },
+
+  logoutBtn: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    backgroundColor: '#e74c3c',
+    borderRadius: 8,
+  },
+
+  logoutText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+
   section: {
     backgroundColor: '#fff',
     padding: 20,
@@ -32,12 +62,11 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    gap: 12,
+    gap: 16,
   },
 
-  actionItem: {
-    width: '42%',
-    justifyContent: 'center',
-    alignItems: 'center',
+  carousel: {
+    paddingRight: 10,
+    gap: 16,
   },
 });
