@@ -360,13 +360,15 @@ export default function EventDetailsPage() {
                 </View>
               )}
 
-              <View style={styles.buttonBox}>
-                <Button
-                  label="Meus ingressos"
-                  variant="outline"
-                  onPress={() => router.push(`/my_tickets?eventId=${event.id}`)}
-                />
-              </View>
+              {role !== 'admin' && (
+                <View style={styles.buttonBox}>
+                  <Button
+                    label="Meus ingressos"
+                    variant="outline"
+                    onPress={() => router.push(`/my_tickets?eventId=${event.id}`)}
+                  />
+                </View>
+              )}
             </>
           )}
 

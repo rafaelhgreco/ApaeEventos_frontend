@@ -3,7 +3,7 @@
 import { STRIPE_PUBLISHABLE_KEY } from '@env';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { StripeProvider } from '@stripe/stripe-react-native';
-import { Stack, useRouter, useSegments } from 'expo-router';
+import { Stack, usePathname, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ChevronLeft } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
@@ -13,6 +13,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { authEvents } from '@/lib/authEvents';
 import { getUserName } from '@/lib/cognito';
+
+import { useAuth } from "@/hooks/use-auth";
+
 
 /* --------------------------------------------------------
     SAUDAÇÃO DINÂMICA
@@ -30,6 +33,10 @@ export default function RootLayout() {
   const router = useRouter();
   const segments = useSegments();
   const canGoBack = segments.length > 1;
+
+  const pathname = usePathname();
+  const { controller } = useAuth();
+
 
   /* --------------------------------------------------------
       CARREGAR NOME E ATUALIZAR AUTOMATICAMENTE
@@ -73,6 +80,12 @@ export default function RootLayout() {
                 {/* TEXTO: Saudação + Nome */}
                 <Text style={styles.greeting}>{getGreeting()}</Text>
                 <Text style={styles.name}>{userName || 'Carregando...'}</Text>
+                {/* BOTÃO DE LOGOUT APENAS NA TELA DE EVENTOS */}
+                {pathname === '/user_events' && (
+                  <TouchableOpacity onPress={controller.handleLogout} style={styles.logoutButton}>
+                    <Text style={styles.logoutText}>Sair</Text>
+                  </TouchableOpacity>
+                )}
               </SafeAreaView>
             ),
           }}
@@ -122,5 +135,18 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#1f2937',
     textTransform: 'capitalize',
+  },
+
+  logoutButton: {
+    marginLeft: 'auto',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: '#ef4444',
+    borderRadius: 8,
+  },
+
+  logoutText: {
+    color: '#fff',
+    fontWeight: '700',
   },
 });

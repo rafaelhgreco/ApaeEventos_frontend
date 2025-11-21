@@ -42,13 +42,14 @@ export default function UserEventsScreen() {
         <Button label="Logout" variant="primary" size="small" onPress={controller.handleLogout} />
       ),
     });
-  }, [navigation]);
+  }, [controller.handleLogout, navigation]);
 
   /* ---------------------------------------------
      LOAD EVENTS
   --------------------------------------------- */
   useEffect(() => {
     fetchUserEvents();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchUserEvents = async () => {
