@@ -1,277 +1,259 @@
-import GenericForm from "@/components/ATOMIC/molecules/form";
-import { getIdToken, getUserRole } from "@/lib/cognito";
-import { createEvent, uploadBannerService } from "@/services/event_services";
-import { FormField } from "@/types/molecules";
-import * as ImagePicker from "expo-image-picker";
-import { useNavigation, useRouter } from "expo-router";
-import React, { useLayoutEffect, useState } from "react";
-import {
-    Alert,
-    Button,
-    Image,
-    ScrollView,
-    View,
-} from "react-native";
+import Button from '@/components/ATOMIC/atoms/button';
+import GenericForm from '@/components/ATOMIC/molecules/form';
+import { getIdToken, getUserRole } from '@/lib/cognito';
+import { createEvent, uploadBannerService } from '@/services/event_services';
+import { FormField } from '@/types/molecules';
+import * as ImagePicker from 'expo-image-picker';
+import { useNavigation, useRouter } from 'expo-router';
+import React, { useLayoutEffect, useState } from 'react';
+import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 
 export default function NewEventScreen() {
-    const [formData, setFormData] = useState({
-        nome: "",
-        data: new Date(),
-        local: "",
-        capacity: "",
-        ticket_price: "",
-        starts_at: new Date(),
-        bannerUrl: "",
-    });
+  const [formData, setFormData] = useState({
+    nome: '',
+    data: new Date(),
+    local: '',
+    capacity: '',
+    ticket_price: '',
+    starts_at: new Date(),
+    bannerUrl: '',
+  });
 
-    const [loading, setLoading] = useState(false);
-    const [uploadingBanner, setUploadingBanner] = useState(false);
-    const [showDatePicker, setShowDatePicker] = useState<{ [key: string]: boolean }>({});
-    const router = useRouter();
-    const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState<Record<string, boolean>>({});
 
-    useLayoutEffect(() => {
-        navigation.setOptions({ title: "Criar Evento" });
-    }, [navigation]);
+  const router = useRouter();
+  const navigation = useNavigation();
 
-    const toggleDatePicker = (key: string, visible: boolean) => {
-        setShowDatePicker((prev) => ({ ...prev, [key]: visible }));
-    };
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: 'Criar Evento' });
+  }, [navigation]);
 
-    const handleInputChange = (field: string) => (value: string) => {
-        setFormData((prev) => ({ ...prev, [field]: value }));
-    };
+  const handleInputChange = (field: string) => (value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
-    const handleDateChange =
-        (field: string) => (_event: any, selectedDate?: Date) => {
-            if (selectedDate) {
-                setFormData((prev) => ({ ...prev, [field]: selectedDate }));
-            }
-            toggleDatePicker(field, false);
-        };
+  const toggleDatePicker = (key: string, visible: boolean) => {
+    setShowDatePicker((prev) => ({ ...prev, [key]: visible }));
+  };
 
-    // 🔥 Seleciona imagem e envia para o backend → S3
-    const handlePickImage = async () => {
-        try {
-            const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                quality: 1,
-            });
+  const handleDateChange = (field: string) => (_event: any, selectedDate?: Date) => {
+    if (selectedDate) {
+      setFormData((prev) => ({ ...prev, [field]: selectedDate }));
+    }
+    toggleDatePicker(field, false);
+  };
 
-            if (result.canceled) return;
+  // ============================
+  // 🔥 UPLOAD DE BANNER
+  // ============================
+  const handlePickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+      });
 
-            const asset = result.assets[0];
-            console.log("RESULTADO DO PICKER:", result);
-            console.log("URI:", asset.uri);
-            console.log("MIME:", asset.mimeType);
+      if (result.canceled) return;
 
-            const localUri = asset.uri;
-            const fileName = localUri.split("/").pop()!;
-            const fileType = asset.mimeType || "image/jpeg";
+      const asset = result.assets[0];
+      const fileName = asset.uri.split('/').pop()!;
+      const mime = asset.mimeType || 'image/jpeg';
 
-            const form = new FormData();
-            form.append("file", {
-                uri: localUri,
-                name: fileName,
-                type: fileType,
-            } as any);
+      const form = new FormData();
+      form.append('file', {
+        uri: asset.uri,
+        name: fileName,
+        type: mime,
+      } as any);
 
-            setUploadingBanner(true);
+      setUploadingBanner(true);
 
-            // Chamada ao backend → envia pro S3 → retorna URL
-            const token = await getIdToken();
-            if (!token) {
-                Alert.alert("Erro", "Usuário não autenticado.");
-                return;
-            }
+      const token = await getIdToken();
+      if (!token) return Alert.alert('Erro', 'Usuário não autenticado.');
 
-            const res = await uploadBannerService(form, token);
+      const upload = await uploadBannerService(form, token);
 
-            // Atualiza preview
-            setFormData((prev) => ({ ...prev, bannerUrl: res.url }));
-        } catch (err: any) {
-            console.error("Erro no upload do banner:", err);
-            Alert.alert("Erro", "Falha ao enviar o banner.");
-        } finally {
-            setUploadingBanner(false);
-        }
-    };
+      setFormData((prev) => ({ ...prev, bannerUrl: upload.url }));
+    } catch (err) {
+      Alert.alert('Erro', 'Falha ao enviar o banner.');
+    } finally {
+      setUploadingBanner(false);
+    }
+  };
 
-    const submitForm = async () => {
-        setLoading(true);
-        try {
-            if (
-                !formData.nome ||
-                !formData.local ||
-                !formData.capacity ||
-                !formData.data ||
-                !formData.ticket_price
-            ) {
-                Alert.alert("Erro", "Preencha todos os campos obrigatórios.");
-                return;
-            }
+  // ============================
+  // 🔥 SUBMIT
+  // ============================
+  const submitForm = async () => {
+    try {
+      if (!formData.nome || !formData.local || !formData.capacity || !formData.ticket_price) {
+        Alert.alert('Erro', 'Preencha todos os campos obrigatórios.');
+        return;
+      }
 
-            const role = await getUserRole();
-            if (role !== "admin" && role !== "staff") {
-                Alert.alert("Acesso negado", "Apenas admin/staff podem criar eventos.");
-                return;
-            }
+      const role = await getUserRole();
+      if (role !== 'admin' && role !== 'staff') {
+        Alert.alert('Acesso negado', 'Apenas admin/staff podem criar eventos.');
+        return;
+      }
 
-            const token = await getIdToken();
-            if (!token) {
-                Alert.alert("Erro", "Usuário não autenticado.");
-                return;
-            }
+      const token = await getIdToken();
+      if (!token) {
+        Alert.alert('Erro', 'Usuário não autenticado.');
+        return;
+      }
 
-            const capacityNum = parseInt(formData.capacity, 10) || 0;
-            const ticketPriceNum = parseFloat(formData.ticket_price) || 0;
+      const payload = {
+        nome: formData.nome,
+        local: formData.local,
+        data: formData.data.toISOString().split('T')[0],
+        starts_at: new Date(formData.starts_at).toISOString(),
+        capacity: Number(formData.capacity),
+        ticket_price: Number(formData.ticket_price),
+        bannerUrl: formData.bannerUrl || null,
+        status: 'published' as const, // 🔥 TIPO CORRIGIDO
+      };
 
-            const formattedDate = formData.data.toISOString().split("T")[0];
-            const startsAt = formData.starts_at
-                ? new Date(formData.starts_at).toISOString()
-                : null;
+      setLoading(true);
+      await createEvent(payload, token);
 
-            await createEvent(
-                {
-                    nome: formData.nome,
-                    local: formData.local,
-                    data: formattedDate,
-                    capacity: capacityNum,
-                    bannerUrl: formData.bannerUrl || null,
-                    ticket_price: ticketPriceNum,
-                    starts_at: startsAt,
-                    status: "published",
-                },
-                token
-            );
+      Alert.alert('Sucesso', 'Evento criado com sucesso!');
+      router.back();
+    } catch (err: any) {
+      Alert.alert('Erro', err.message || 'Erro ao criar evento.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            Alert.alert("Sucesso", "Evento criado com sucesso!");
-            router.back();
-        } catch (error: any) {
-            console.error("❌ Erro ao criar evento:", error);
-            Alert.alert("Erro", error.message || "Erro ao criar evento.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const formFields: FormField[] = [
-        {
-            key: "nome",
-            type: "input",
-            props: {
-                label: "Nome do Evento *",
-                placeholder: "Digite o nome do evento",
-                value: formData.nome,
-                onChangeText: handleInputChange("nome"),
-            },
-        },
-        {
-            key: "local",
-            type: "input",
-            props: {
-                label: "Local do Evento *",
-                placeholder: "Digite o local do evento",
-                value: formData.local,
-                onChangeText: handleInputChange("local"),
-            },
-        },
-        {
-            key: "data",
-            type: "date",
-            props: {
-                label: "Data do Evento *",
-                placeholder: "Selecione a data",
-                value: formData.data,
-                mode: "date",
-                onChange: handleDateChange("data"),
-            },
-        },
-        {
-            key: "starts_at",
-            type: "date",
-            props: {
-                label: "Horário de Início *",
-                placeholder: "Selecione o horário de início",
-                value: formData.starts_at,
-                mode: "time",
-                onChange: handleDateChange("starts_at"),
-            },
-        },
-        {
-            key: "capacity",
-            type: "number",
-            props: {
-                label: "Capacidade *",
-                placeholder: "Número máximo de participantes",
-                value: formData.capacity,
-                onChangeText: handleInputChange("capacity"),
-                keyboardType: "numeric",
-            },
-        },
-        {
-            key: "ticket_price",
-            type: "number",
-            props: {
-                label: "Preço do Ingresso (R$) *",
-                placeholder: "Defina o valor do ingresso",
-                value: formData.ticket_price,
-                onChangeText: handleInputChange("ticket_price"),
-                keyboardType: "decimal-pad",
-            },
-        },
-        {
-            key: "bannerUpload",
-            type: "custom",
-            props: {
-                render: () => (
-                    <View style={{ marginBottom: 16 }}>
-                        <Button
-                            title={uploadingBanner ? "Enviando banner..." : "Selecionar Banner"}
-                            onPress={handlePickImage}
-                        />
-
-                        {formData.bannerUrl !== "" && (
-                            <Image
-                                source={{ uri: formData.bannerUrl }}
-                                style={{
-                                    width: "100%",
-                                    height: 200,
-                                    marginTop: 12,
-                                    borderRadius: 8,
-                                }}
-                                resizeMode="cover"
-                            />
-                        )}
-                    </View>
-                ),
-            },
-        },
-        {
-            key: "submitButton",
-            type: "button",
-            props: {
-                label: loading ? "Cadastrando..." : "Cadastrar Evento",
-                onPress: submitForm,
-                loading: loading,
-                variant: "primary",
-            },
-        },
-    ];
-
-    return (
-        <ScrollView contentContainerStyle={{ padding: 16 }}>
-            <GenericForm
-                fields={formFields}
-                title="Cadastro de Novo Evento"
-                titleStyle={{
-                    fontSize: 24,
-                    fontWeight: "bold",
-                    marginBottom: 16,
-                }}
-                showDatePicker={showDatePicker}
-                toggleDatePicker={toggleDatePicker}
+  // ============================
+  // 🔥 CAMPOS DO FORM
+  // ============================
+  const formFields: FormField[] = [
+    {
+      key: 'nome',
+      type: 'input',
+      props: {
+        label: 'Nome do Evento *',
+        placeholder: 'Ex: Festa Junina APAE',
+        value: formData.nome,
+        onChangeText: handleInputChange('nome'),
+      },
+    },
+    {
+      key: 'local',
+      type: 'input',
+      props: {
+        label: 'Local *',
+        placeholder: 'Digite o local',
+        value: formData.local,
+        onChangeText: handleInputChange('local'),
+      },
+    },
+    {
+      key: 'data',
+      type: 'date',
+      props: {
+        label: 'Data *',
+        value: formData.data,
+        mode: 'date',
+        onChange: handleDateChange('data'),
+      },
+    },
+    {
+      key: 'starts_at',
+      type: 'date',
+      props: {
+        label: 'Horário *',
+        value: formData.starts_at,
+        mode: 'time',
+        onChange: handleDateChange('starts_at'),
+      },
+    },
+    {
+      key: 'capacity',
+      type: 'number',
+      props: {
+        label: 'Capacidade *',
+        placeholder: 'Número máximo de pessoas',
+        value: formData.capacity,
+        keyboardType: 'numeric',
+        onChangeText: handleInputChange('capacity'),
+      },
+    },
+    {
+      key: 'ticket_price',
+      type: 'number',
+      props: {
+        label: 'Preço (R$) *',
+        placeholder: 'Ex: 10.00',
+        value: formData.ticket_price,
+        keyboardType: 'decimal-pad',
+        onChangeText: handleInputChange('ticket_price'),
+      },
+    },
+    {
+      key: 'banner',
+      type: 'custom',
+      props: {
+        render: () => (
+          <View style={{ marginBottom: 20 }}>
+            <Button
+              label={uploadingBanner ? 'Enviando...' : 'Selecionar Banner'}
+              variant="secondary"
+              onPress={handlePickImage}
             />
-        </ScrollView>
-    );
+
+            {formData.bannerUrl && (
+              <Image
+                source={{ uri: formData.bannerUrl }}
+                style={{
+                  width: '100%',
+                  height: 200,
+                  borderRadius: 12,
+                  marginTop: 10,
+                }}
+              />
+            )}
+          </View>
+        ),
+      },
+    },
+    {
+      key: 'submit',
+      type: 'button',
+      props: {
+        label: loading ? 'Cadastrando...' : 'Cadastrar Evento',
+        onPress: submitForm,
+        variant: 'primary',
+      },
+    },
+  ];
+
+  return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView
+        contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <GenericForm
+          title="Cadastro de Novo Evento"
+          fields={formFields}
+          titleStyle={{
+            fontSize: 26,
+            fontWeight: '800',
+            marginBottom: 16,
+            textAlign: 'center',
+          }}
+          showDatePicker={showDatePicker}
+          toggleDatePicker={toggleDatePicker}
+        />
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
 }

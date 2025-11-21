@@ -1,78 +1,107 @@
-import { StyleSheet } from "react-native";
-import { colors } from "./themes";
+import { StyleSheet } from 'react-native';
+import { border, colors, font, paddings, shadows } from './themes';
 
 export const styles = StyleSheet.create({
-    container: {
-        flexGrow: 1,
-        padding: 20,
-        backgroundColor: "#F9FAFB",
-    },
-    eventCard: {
-        backgroundColor: "#fff",
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 16,
-        shadowColor: "#000",
-        shadowOpacity: 0.1,
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    eventTitle: {
-        fontSize: 22,
-        fontWeight: "700",
-        color: "#1F2937",
-        marginBottom: 6,
-    },
-    eventSubtitle: {
-        fontSize: 16,
-        color: "#3B82F6",
-        marginBottom: 4,
-    },
-    eventDate: {
-        fontSize: 16,
-        color: "#6B7280",
-    },
-    priceBox: {
-        backgroundColor: "#E5F3FF",
-        borderRadius: 10,
-        padding: 16,
-        marginBottom: 20,
-    },
-    priceText: {
-        fontSize: 18,
-        fontWeight: "500",
-        color: colors.primary,
-    },
-    priceValue: {
-        fontWeight: "700",
-        color: colors.primary,
-    },
-    totalText: {
-        fontSize: 18,
-        fontWeight: "500",
-        color: colors.primary,
-        marginTop: 8,
-    },
-    totalValue: {
-        fontWeight: "700",
-        color: colors.success,
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#F9FAFB",
-    },
-    loadingText: {
-        fontSize: 18,
-        color: "#6B7280",
-        marginTop: 12,
-    },
-    formTitle: {
-        fontSize: 22,
-        fontWeight: "700",
-        color: "#111827",
-        marginBottom: 16,
-    },
+  container: {
+    flexGrow: 1,
+    padding: paddings.large,
+    backgroundColor: colors.background,
+    gap: 24,
+  },
+
+  /* LOADING */
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.background,
+    padding: paddings.large,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: font.sizeMedium,
+    color: colors.textSecondary,
+  },
+
+  /* EVENTO */
+  eventCard: {
+    backgroundColor: colors.backgroundLight,
+    borderRadius: border.radiusLarge,
+    overflow: 'hidden',
+    ...shadows,
+  },
+  banner: {
+    width: '100%',
+    height: 180,
+  },
+  eventInfoBox: {
+    padding: paddings.large,
+  },
+  eventTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: colors.primary,
+  },
+  eventSubtitle: {
+    fontSize: 16,
+    color: colors.secondary,
+    marginTop: 4,
+  },
+  eventDate: {
+    fontSize: 15,
+    color: colors.textSecondary,
+    marginTop: 6,
+  },
+
+  /* BOX DE PREÇO */
+  priceBox: {
+    backgroundColor: colors.backgroundLight,
+    borderRadius: border.radiusLarge,
+    padding: paddings.large,
+    ...shadows,
+    gap: 12,
+  },
+
+  priceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  priceLabel: {
+    fontSize: 16,
+    color: colors.text,
+  },
+  priceValue: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.primary,
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: colors.borderLight,
+    marginVertical: 6,
+  },
+
+  totalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 4,
+  },
+  totalLabel: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  totalValue: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: colors.successDark,
+  },
+
+  formTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: colors.primary,
+    marginBottom: 12,
+  },
 });

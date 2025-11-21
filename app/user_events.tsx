@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { getIdToken, userPool } from '@/lib/cognito';
 import { getUserEvents } from '@/services/event_services';
 import { useNavigation, useRouter } from 'expo-router';
+import { Calendar, DollarSign, MapPin, Ticket, Users } from 'lucide-react-native';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -15,6 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+
 import { Event } from '../src/domain/events';
 import { colors } from './styles/themes';
 import { styles } from './styles/user_events.style';
@@ -31,6 +33,9 @@ export default function UserEventsScreen() {
   const router = useRouter();
   const { controller } = useAuth();
 
+  /* ---------------------------------------------
+     HEADER CUSTOM
+  --------------------------------------------- */
   useLayoutEffect(() => {
     navigation.setOptions({
       title: 'Eventos Disponíveis',
@@ -40,6 +45,9 @@ export default function UserEventsScreen() {
     });
   }, [navigation]);
 
+  /* ---------------------------------------------
+     LOAD EVENTS
+  --------------------------------------------- */
   useEffect(() => {
     fetchUserEvents();
   }, []);
@@ -60,22 +68,17 @@ export default function UserEventsScreen() {
       const token = await getIdToken();
       const eventsData = await getUserEvents(token);
 
-      setEvents(eventsData);
+      const sorted = [...eventsData].sort(
+        (a, b) => new Date(a.data).getTime() - new Date(b.data).getTime(),
+      );
 
-      if (eventsData.length > 0) {
-        setHighlightedEventId(eventsData[0].id);
-      }
-    } catch (error: any) {
-      const errorMessage = error.message || 'Erro ao carregar eventos';
-      setError(errorMessage);
+      setEvents(sorted);
 
-      if (error.name === 'AuthenticationError' || error === 'Nenhum usuário autenticado.') {
-        Alert.alert('Sessão Expirada', 'Sua sessão expirou. Por favor, faça login novamente.', [
-          { text: 'OK', onPress: () => router.replace('/') },
-        ]);
-      } else {
-        Alert.alert('Erro', errorMessage);
+      if (sorted.length > 0) {
+        setHighlightedEventId(sorted[0].id);
       }
+    } catch (err: any) {
+      setError(err?.message || 'Erro ao carregar eventos');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -87,14 +90,13 @@ export default function UserEventsScreen() {
     fetchUserEvents();
   };
 
-  const handleEventPress = (eventId: number) => {
-    router.push(`/event/${eventId}`);
-  };
-
-  const filteredEvents = events.filter((event) =>
-    event.nome.toLowerCase().includes(search.toLowerCase()),
+  const filteredEvents = events.filter((ev) =>
+    ev.nome.toLowerCase().includes(search.toLowerCase()),
   );
 
+  /* ---------------------------------------------
+     CARD DE EVENTO
+  --------------------------------------------- */
   const renderEventCard = ({ item }: { item: Event }) => {
     const isHighlighted = item.id === highlightedEventId;
 
@@ -107,41 +109,60 @@ export default function UserEventsScreen() {
     return (
       <TouchableOpacity
         style={[styles.card, isHighlighted && styles.cardHighlight]}
-        onPress={() => handleEventPress(item.id)}
+        onPress={() => router.push(`/event/${item.id}`)}
         activeOpacity={0.9}
       >
+        {/* Banner */}
         <Image
           source={{ uri: item.bannerUrl || undefined }}
           style={styles.eventBanner}
           resizeMode="cover"
         />
 
+        {/* Conteúdo */}
         <View style={styles.eventContent}>
           <Text style={styles.eventTitle} numberOfLines={2}>
             {item.nome}
           </Text>
 
+          {/* Local + Data */}
           <View style={styles.infoRow}>
-            <Text style={styles.eventInfo}>📍 {item.local}</Text>
-            <Text style={styles.eventInfo}>🗓️ {eventDate}</Text>
+            <MapPin size={18} color={colors.primary} />
+            <Text style={styles.eventInfo}>{item.local}</Text>
+
+            <Calendar size={18} color={colors.primary} />
+            <Text style={styles.eventInfo}>{eventDate}</Text>
           </View>
 
+          {/* Chips */}
           <View style={styles.metadataRow}>
             <View style={styles.chip}>
-              <Text style={styles.chipText}>👥 {item.capacity} pessoas</Text>
+              <Users size={16} color={colors.primaryDark} />
+              <Text style={styles.chipText}>{item.capacity} pessoas</Text>
             </View>
 
             {item.ticket_price && (
               <View style={[styles.chip, styles.priceChip]}>
+                <DollarSign size={16} color={colors.successDark} />
                 <Text style={styles.priceChipText}>R$ {Number(item.ticket_price).toFixed(2)}</Text>
               </View>
             )}
+
+            <View style={styles.chip}>
+              <Ticket size={16} color={colors.primaryDark} />
+              <Text style={styles.chipText}>
+                {item.sold_count || 0}/{item.capacity}
+              </Text>
+            </View>
           </View>
         </View>
       </TouchableOpacity>
     );
   };
 
+  /* ---------------------------------------------
+     ESTADOS: loading, erro, vazio
+  --------------------------------------------- */
   if (loading) {
     return (
       <View style={styles.centerContainer}>
@@ -173,35 +194,31 @@ export default function UserEventsScreen() {
     );
   }
 
+  /* --------------------------------------------- */
+  /*                   RENDER MAIN                 */
+  /* --------------------------------------------- */
   return (
     <View style={styles.container}>
+      {/* Busca */}
       <View style={styles.searchContainer}>
         <SearchInput value={search} onChangeText={setSearch} placeholder="Buscar eventos..." />
       </View>
 
-      {filteredEvents.length === 0 ? (
-        <View style={styles.centerContainer}>
-          <Text style={styles.emptyIcon}>🔍</Text>
-          <Text style={styles.emptyTitle}>Nenhum evento encontrado</Text>
-          <Text style={styles.emptySubtitle}>Tente buscar por outro nome</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={filteredEvents}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderEventCard}
-          contentContainerStyle={styles.listContent}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={handleRefresh}
-              colors={[colors.primary]}
-              tintColor={colors.primary}
-            />
-          }
-          showsVerticalScrollIndicator={false}
-        />
-      )}
+      <FlatList
+        data={filteredEvents}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderEventCard}
+        contentContainerStyle={styles.listContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={[colors.primary]}
+            tintColor={colors.primary}
+          />
+        }
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   );
 }

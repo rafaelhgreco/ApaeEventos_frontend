@@ -1,32 +1,52 @@
-import Button from '@/components/ATOMIC/atoms/button';
-import EventsCard from '@/components/cards/events_card';
-import { useNavigation, useRouter } from 'expo-router';
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Alert, Animated, Text, View } from 'react-native';
+import { QuickActionCard } from '@/components/ATOMIC/molecules/quick_action_card';
+import { EventCarouselCard } from '@/components/cards/event_carousel_card';
+import { useEvents } from '@/hooks/useEvents';
+import { getIdToken } from '@/lib/cognito';
+import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
+import { BarChart3, CalendarPlus, QrCode, UserPlus } from 'lucide-react-native';
+import React, { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
+import {
+  Alert,
+  Animated,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { styles } from './styles/management.style';
 
 export default function ManagementScreen() {
   const navigation = useNavigation();
   const router = useRouter();
-  const [loading, setLoading] = useState<boolean>(false);
+  const insets = useSafeAreaInsets();
+
+  const { events, fetchEvents, loading, error } = useEvents();
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(20)).current;
 
   useLayoutEffect(() => {
-    navigation.setOptions({
-      title: 'Gerenciador de Eventos',
-      headerRight: () => (
-        <Button
-          label="Logout"
-          variant="primary"
-          size="small"
-          onPress={handleSignOut}
-          loading={loading}
-        />
-      ),
-    });
-  }, []);
+    navigation.setOptions({ headerShown: false });
+  }, [navigation]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const load = async () => {
+        try {
+          const token = await getIdToken();
+          await fetchEvents(token);
+        } catch (e) {
+          console.log('Erro ao carregar eventos:', e);
+        }
+      };
+
+      load();
+    }, [fetchEvents]),
+  );
 
   useEffect(() => {
     Animated.parallel([
@@ -42,70 +62,120 @@ export default function ManagementScreen() {
         useNativeDriver: true,
       }),
     ]).start();
-  }, []);
+  }, [fadeAnim, slideAnim]);
 
   const handleSignOut = async () => {
-    setLoading(true);
     router.push('/');
     Alert.alert('Sucesso', 'Logout realizado com sucesso!');
   };
 
+  const sortedEvents = [...events].sort(
+    (a, b) => new Date(a.data).getTime() - new Date(b.data).getTime(),
+  );
+
+  const nextEvent = sortedEvents.find(
+    (ev) => new Date(ev.data).getTime() >= new Date().setHours(0, 0, 0, 0),
+  );
+
   return (
-    <Animated.ScrollView
-      style={{
-        opacity: fadeAnim,
-        transform: [{ translateY: slideAnim }],
-      }}
-      contentContainerStyle={styles.scrollContent}
-    >
-      {/* Seção 1 — Próximos Eventos */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Próximos Eventos</Text>
-        <EventsCard />
-      </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <Animated.View
+          style={{
+            flex: 1,
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }],
+          }}
+        >
+          <ScrollView
+            contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 24 }]}
+          >
+            {/* HEADER */}
+            <View style={styles.header}>
+              <View>
+                <Text style={styles.headerTitle}>Gerenciamento</Text>
+                <Text style={styles.headerSubtitle}>Painel Administrativo</Text>
+              </View>
 
-      {/* Seção 2 — Ações Rápidas */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Ações Rápidas</Text>
+              <TouchableOpacity onPress={handleSignOut} style={styles.logoutBtn}>
+                <Text style={styles.logoutText}>Sair</Text>
+              </TouchableOpacity>
+            </View>
 
-        <View style={styles.quickActionsGrid}>
-          <View style={styles.actionItem}>
-            <Button
-              label="Cadastrar Evento"
-              variant="dark"
-              containerStyle={{ width: '100%', height: 60 }}
-              onPress={() => router.push('/new_event')}
-            />
-          </View>
+            {/* AÇÕES RÁPIDAS */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Ações Rápidas</Text>
 
-          <View style={styles.actionItem}>
-            <Button
-              label="Validar Ingresso"
-              variant="dark"
-              containerStyle={{ width: '100%', height: 60 }}
-              onPress={() => router.push('/qrcode')}
-            />
-          </View>
+              <View style={styles.quickActionsGrid}>
+                <QuickActionCard
+                  label="Cadastrar"
+                  icon={CalendarPlus}
+                  color="#2980b9"
+                  onPress={() => router.push('/new_event')}
+                />
+                <QuickActionCard
+                  label="Validar"
+                  icon={QrCode}
+                  color="#27ae60"
+                  onPress={() => router.push('/qrcode')}
+                />
+                <QuickActionCard
+                  label="Dashboard"
+                  icon={BarChart3}
+                  color="#8e44ad"
+                  onPress={() => router.push('/dashboard')}
+                />
+                <QuickActionCard
+                  label="Registrar"
+                  icon={UserPlus}
+                  color="#c0392b"
+                  onPress={() => router.push('/admin_register')}
+                />
+              </View>
+            </View>
 
-          <View style={styles.actionItem}>
-            <Button
-              label="Dashboard"
-              variant="dark"
-              containerStyle={{ width: '100%', height: 60 }}
-              onPress={() => router.push('/dashboard')}
-            />
-          </View>
+            {/* CARROSSEL */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Próximos Eventos</Text>
 
-          <View style={styles.actionItem}>
-            <Button
-              label="Registrar Usuário"
-              variant="dark"
-              containerStyle={{ width: '100%', height: 60 }}
-              onPress={() => router.push('/admin_register')}
-            />
-          </View>
-        </View>
-      </View>
-    </Animated.ScrollView>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.carousel}
+              >
+                {loading && <Text style={{ padding: 10 }}>Carregando...</Text>}
+                {error && <Text style={{ color: 'red', padding: 10 }}>{error}</Text>}
+                {!loading && events.length === 0 && (
+                  <Text style={{ padding: 10 }}>Nenhum evento encontrado</Text>
+                )}
+
+                {sortedEvents.map((ev) => (
+                  <EventCarouselCard key={ev.id} event={ev} highlight={ev.id === nextEvent?.id} />
+                ))}
+              </ScrollView>
+
+              {/* VER TODOS */}
+              <TouchableOpacity
+                style={{
+                  marginTop: 16,
+                  paddingVertical: 12,
+                  backgroundColor: '#0ea5e9',
+                  borderRadius: 10,
+                  alignItems: 'center',
+                }}
+                onPress={() => router.push('/list_all_events')}
+              >
+                <Text style={{ color: '#fff', fontWeight: '700', fontSize: 16 }}>
+                  Ver todos os eventos
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </Animated.View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

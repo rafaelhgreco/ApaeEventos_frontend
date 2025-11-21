@@ -5,44 +5,44 @@ export const publicRegisterStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    padding: paddings.extraLarge,
+    padding: paddings.large,
     justifyContent: 'flex-start',
   },
 
-  logoContainer: {
-    width: '100%',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  // BANNER FULL WIDTH
+  /* ------------------------------
+        BANNER — some ao abrir teclado
+  ------------------------------ */
   bannerContainer: {
     width: '100%',
+    height: 280, // altura recomendada (pode ajustar entre 140–220)
     marginBottom: 24,
-    overflow: 'hidden',
-    // se quiser uma faixa de cor atrás do banner:
-    // backgroundColor: "#001122",
+    borderRadius: 16,
+    overflow: 'hidden', // garante que nada vaze das bordas arredondadas
+    backgroundColor: '#e9eef5', // fallback suave (sem tela branca enquanto carrega)
   },
+
   bannerImage: {
     width: '100%',
-    height: 200, // aumenta/diminui a altura do banner aqui
-    resizeMode: 'cover',
+    height: '100%',
+    resizeMode: 'cover', // hero de verdade: preenche e corta se precisar
   },
 
-  logo: {
-    width: '100%', // 👈 full width
-    height: 180, // 👈 tamanho tipo banner
-    resizeMode: 'contain',
-  },
-
+  /* ------------------------------
+        FORM
+  ------------------------------ */
   formWrapper: {
     backgroundColor: colors.backgroundLight,
-    padding: 20,
+    padding: 22,
     borderRadius: border.radiusLarge,
     marginTop: 10,
+
     shadowColor: '#000',
     shadowOpacity: 0.07,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 3 },
     elevation: 3,
+
+    // ESSENCIAL para o input não ficar atrás do teclado
+    marginBottom: 60,
   },
 });

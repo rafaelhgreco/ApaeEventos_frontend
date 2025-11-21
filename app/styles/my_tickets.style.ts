@@ -1,91 +1,107 @@
 import { StyleSheet } from 'react-native';
+import { border, colors, font, paddings, shadows } from './themes';
 
 export const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#F9FAFB',
-    padding: 16,
+    backgroundColor: colors.background,
+    padding: paddings.large,
   },
+
   title: {
-    fontSize: 26,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 20,
+    fontSize: font.sizeLarge,
+    fontWeight: '800',
+    color: colors.primary,
     textAlign: 'center',
+    marginBottom: paddings.large,
   },
+
   ticketCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 18,
-    marginBottom: 18,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 4,
+    backgroundColor: colors.backgroundLight,
+    borderRadius: border.radiusLarge,
+    padding: paddings.large,
+    marginBottom: paddings.large,
+    ...shadows,
+    elevation: 3,
   },
+
   eventTitle: {
-    fontSize: 20,
+    fontSize: font.sizeMedium,
     fontWeight: '700',
-    color: '#1E40AF',
-    marginBottom: 6,
+    color: colors.primary,
+    marginBottom: paddings.small,
   },
+
   eventDetails: {
-    fontSize: 15,
-    color: '#4B5563',
-    marginBottom: 8,
-    lineHeight: 22,
+    fontSize: font.sizeSmall,
+    color: colors.textSecondary,
+    marginBottom: paddings.small,
+    lineHeight: 20,
   },
+
   price: {
-    fontSize: 16,
-    color: '#047857',
-    fontWeight: '600',
-    marginBottom: 6,
+    fontSize: font.sizeDefault,
+    color: colors.successDark,
+    fontWeight: '700',
+    marginBottom: paddings.small,
   },
+
   status: {
-    fontSize: 15,
-    color: '#1F2937',
-    marginBottom: 12,
+    fontSize: font.sizeDefault,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: paddings.medium,
   },
+
   qrBox: {
     alignItems: 'center',
-    backgroundColor: '#F3F4F6',
-    borderRadius: 12,
-    padding: 16,
+    justifyContent: 'center',
+    backgroundColor: colors.backgroundDark,
+    padding: paddings.large,
+    borderRadius: border.radiusMedium,
+    marginTop: paddings.small,
   },
+
   qrImage: {
     width: 180,
     height: 180,
-    marginBottom: 8,
+    marginBottom: paddings.small,
   },
+
   code: {
-    fontSize: 14,
-    color: '#374151',
-    fontWeight: '500',
+    fontSize: font.sizeSmall,
+    fontWeight: '700',
+    color: colors.primary,
   },
+
   missingQr: {
     textAlign: 'center',
-    color: '#DC2626',
+    color: colors.error,
+    fontStyle: 'italic',
+    marginTop: paddings.small,
+  },
+
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  emptyText: {
+    fontSize: font.sizeMedium,
+    color: colors.textSecondary,
     fontStyle: 'italic',
   },
+
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   loadingText: {
-    marginTop: 8,
-    color: '#6B7280',
-    fontSize: 16,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: 18,
-    color: '#6B7280',
-    fontStyle: 'italic',
+    marginTop: paddings.small,
+    fontSize: font.sizeDefault,
+    color: colors.textSecondary,
   },
 });

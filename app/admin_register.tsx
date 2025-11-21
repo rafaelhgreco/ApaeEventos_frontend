@@ -1,52 +1,77 @@
-import Icon from "@/components/ATOMIC/atoms/icon";
-import GenericForm from "@/components/ATOMIC/molecules/form";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedView } from "@/components/ThemedView";
-import { signUp } from "@/lib/cognito";
-import { FormField } from "@/types/molecules";
-import { Image } from "expo-image";
-import { useNavigation } from "expo-router";
-import { useLayoutEffect, useRef, useState } from "react";
+import Icon from '@/components/ATOMIC/atoms/icon';
+import GenericForm from '@/components/ATOMIC/molecules/form';
+import { ThemedView } from '@/components/ThemedView';
+import { signUp } from '@/lib/cognito';
+import { FormField } from '@/types/molecules';
+
+import { Image } from 'expo-image';
+import { useNavigation } from 'expo-router';
+
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
   Alert,
   Animated,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  View,
-} from "react-native";
-import { styles } from "./styles/register.style";
+} from 'react-native';
 
-/**
- * AdminRegisterScreen allows administrators to create new users with
- * optional roles. To ensure good keyboard behaviour, the form is
- * wrapped in a KeyboardAvoidingView and ScrollView, and an
- * Animated.View shifts the form up slightly when an input field gains
- * focus. This mirrors the behaviour added to the login and public
- * register screens, providing a consistent, fluid experience when
- * entering data. After successful registration the form is reset and
- * a success message is displayed.
- */
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { styles } from './styles/register.style';
+
 export default function AdminRegisterScreen() {
+  const navigation = useNavigation();
+
   const [formData, setFormData] = useState({
-    nome: "",
-    email: "",
-    telefone: "",
-    password: "",
-    role: "",
+    nome: '',
+    email: '',
+    telefone: '',
+    password: '',
+    role: '',
   });
 
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigation();
-  // Animated value to translate the form when an input is focused.
-  const translateY = useRef(new Animated.Value(0)).current;
+
+  // 🔥 animações
+  const translateY = useRef(new Animated.Value(0));
+  const logoOpacity = useRef(new Animated.Value(1));
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: "Cadastro de Usuário (Admin)",
+      title: 'Cadastro de Usuário (Admin)',
     });
   }, [navigation]);
 
+  /* ----------------------------------------------------
+     ANIMAÇÃO DO TECLADO — LOGO SOME AO ABRIR TECLADO
+  ---------------------------------------------------- */
+  useEffect(() => {
+    const showSub = Keyboard.addListener('keyboardDidShow', () => {
+      Animated.timing(logoOpacity.current, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    });
+
+    const hideSub = Keyboard.addListener('keyboardDidHide', () => {
+      Animated.timing(logoOpacity.current, {
+        toValue: 1,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    });
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
+
+  /* ----------------------------------------------------
+     HANDLERS
+  ---------------------------------------------------- */
   const handleInputChange = (field: string) => (value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -55,62 +80,37 @@ export default function AdminRegisterScreen() {
     const { nome, email, password, telefone, role } = formData;
 
     if (!email || !password || !nome) {
-      Alert.alert(
-        "Campos obrigatórios",
-        "Preencha nome, e-mail e senha antes de continuar."
-      );
+      Alert.alert('Campos obrigatórios', 'Preencha nome, e-mail e senha antes de continuar.');
       return;
     }
 
-    // Format phone number if provided
-    let telefoneFormatado: string | undefined = undefined;
-    if (telefone.trim() !== "") {
-      const telefoneNumerico = telefone.replace(/\D/g, "");
-      if (telefoneNumerico.length < 10 || telefoneNumerico.length > 11) {
-        Alert.alert(
-          "Telefone inválido",
-          "Informe um número com DDD. Ex: 19981234567"
-        );
+    let telefoneFormatado: string | undefined;
+    if (telefone.trim()) {
+      const tel = telefone.replace(/\D/g, '');
+      if (tel.length < 10 || tel.length > 11) {
+        Alert.alert('Telefone inválido', 'Digite com DDD. Ex: 19981234567');
         return;
       }
-      telefoneFormatado = `+55${telefoneNumerico}`;
-      if (!/^\+55\d{10,11}$/.test(telefoneFormatado)) {
-        Alert.alert(
-          "Telefone inválido",
-          "O número precisa estar no formato +55DDDNÚMERO."
-        );
-        return;
-      }
+      telefoneFormatado = `+55${tel}`;
     }
-    const roleToSend = role.trim() === "" ? undefined : role.trim();
+
+    const roleToSend = role.trim() === '' ? undefined : role.trim();
 
     setLoading(true);
     try {
-      await signUp(
-        nome.trim(),
-        email.trim(),
-        password,
-        telefoneFormatado,
-        roleToSend
-      );
-      const msgGrupo = roleToSend
-        ? `Usuário adicionado ao grupo "${roleToSend}".`
-        : "Usuário adicionado ao grupo padrão (default).";
-      Alert.alert(
-        "Sucesso",
-        `Usuário ${nome} cadastrado com sucesso.\n${msgGrupo}`
-      );
-      // Reset form
+      await signUp(nome.trim(), email.trim(), password, telefoneFormatado, roleToSend);
+
+      Alert.alert('Sucesso', `Usuário ${nome} cadastrado.\nFunção: ${roleToSend ?? 'Default'}`);
+
       setFormData({
-        nome: "",
-        email: "",
-        telefone: "",
-        password: "",
-        role: "",
+        nome: '',
+        email: '',
+        telefone: '',
+        password: '',
+        role: '',
       });
     } catch (err: any) {
-      console.error("Erro ao criar usuário:", err);
-      Alert.alert("Erro", err.message || "Falha ao criar usuário.");
+      Alert.alert('Erro', err.message || 'Falha ao criar usuário.');
     } finally {
       setLoading(false);
     }
@@ -118,158 +118,164 @@ export default function AdminRegisterScreen() {
 
   const handleReset = () => {
     setFormData({
-      nome: "",
-      email: "",
-      telefone: "",
-      password: "",
-      role: "",
+      nome: '',
+      email: '',
+      telefone: '',
+      password: '',
+      role: '',
     });
   };
 
-  // Base form fields
+  /* ----------------------------------------------------
+     CAMPOS DO FORM
+  ---------------------------------------------------- */
   const formFields: FormField[] = [
     {
-      type: "input",
-      key: "nome",
+      type: 'input',
+      key: 'nome',
       props: {
-        label: "Nome Completo",
-        placeholder: "Digite o nome completo",
+        label: 'Nome Completo',
+        placeholder: 'Digite o nome completo',
         value: formData.nome,
-        onChangeText: handleInputChange("nome"),
+        onChangeText: handleInputChange('nome'),
         leftIcon: <Icon name="person-outline" color="#007AFF" size={20} />,
       },
     },
     {
-      type: "input",
-      key: "email",
+      type: 'input',
+      key: 'email',
       props: {
-        label: "E-mail",
-        placeholder: "Digite o e-mail",
+        label: 'E-mail',
+        placeholder: 'Digite o e-mail',
         value: formData.email,
-        onChangeText: handleInputChange("email"),
-        keyboardType: "email-address",
-        autoCapitalize: "none",
+        onChangeText: handleInputChange('email'),
+        keyboardType: 'email-address',
+        autoCapitalize: 'none',
       },
     },
     {
-      type: "input",
-      key: "telefone",
+      type: 'input',
+      key: 'telefone',
       props: {
-        label: "Telefone com DDD",
-        placeholder: "Ex: 19981234567",
+        label: 'Telefone com DDD',
+        placeholder: 'Ex: 19981234567',
         value: formData.telefone,
-        onChangeText: handleInputChange("telefone"),
-        keyboardType: "phone-pad",
+        onChangeText: handleInputChange('telefone'),
+        keyboardType: 'phone-pad',
         leftIcon: <Icon name="call-outline" color="#007AFF" size={20} />,
       },
     },
     {
-      type: "input",
-      key: "password",
+      type: 'input',
+      key: 'password',
       props: {
-        label: "Senha",
-        placeholder: "Digite a senha",
+        label: 'Senha',
+        placeholder: 'Digite a senha',
         value: formData.password,
-        onChangeText: handleInputChange("password"),
+        onChangeText: handleInputChange('password'),
         isPassword: true,
         leftIcon: <Icon name="lock-closed-outline" color="#007AFF" size={20} />,
       },
     },
     {
-      type: "select",
-      key: "role",
+      type: 'select',
+      key: 'role',
       props: {
-        title: "Função do Usuário",
+        title: 'Função do Usuário',
         options: [
-          { label: "Usuário Comum (Default)", value: "" },
-          { label: "Atendente", value: "staff" },
-          { label: "Administrador", value: "admin" },
+          { label: 'Usuário Comum (Default)', value: '' },
+          { label: 'Atendente', value: 'staff' },
+          { label: 'Administrador', value: 'admin' },
         ],
         selectedValue: formData.role,
-        onValueChange: handleInputChange("role"),
+        onValueChange: handleInputChange('role'),
       },
     },
     {
-      type: "button",
-      key: "submitSignUp",
+      type: 'button',
+      key: 'submitSignUp',
       props: {
-        label: loading ? "Cadastrando..." : "Cadastrar Usuário",
+        label: loading ? 'Cadastrando...' : 'Cadastrar Usuário',
         onPress: handleSignUp,
-        variant: "primary",
+        variant: 'primary',
         containerStyle: { marginTop: 16 },
       },
     },
     {
-      type: "button",
-      key: "reset",
+      type: 'button',
+      key: 'reset',
       props: {
-        label: "Limpar Campos",
+        label: 'Limpar Campos',
         onPress: handleReset,
-        variant: "outline",
+        variant: 'outline',
         containerStyle: { marginTop: 8 },
       },
     },
   ];
 
-  // Map over fields to add focus handlers to input fields. For the select
-  // and button types, we leave them unchanged.
+  /* ----------------------------------------------------
+     INPUTS: animação ao focar
+  ---------------------------------------------------- */
   const fieldsWithFocusHandlers: FormField[] = formFields.map((field) => {
-    if (field.type === "input") {
+    if (field.type === 'input') {
       return {
         ...field,
         props: {
           ...field.props,
-          onFocus: () => {
-            Animated.spring(translateY, {
+          onFocus: () =>
+            Animated.spring(translateY.current, {
               toValue: -40,
               useNativeDriver: true,
-            }).start();
-          },
-          onBlur: () => {
-            Animated.spring(translateY, {
+            }).start(),
+          onBlur: () =>
+            Animated.spring(translateY.current, {
               toValue: 0,
               useNativeDriver: true,
-            }).start();
-          },
+            }).start(),
         },
       };
     }
     return field;
   });
 
+  /* ----------------------------------------------------
+     LAYOUT COMPLETO — SAFE AREA + TECLADO + SCROLL
+  ---------------------------------------------------- */
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <View style={styles.container}>
-          <Image
-            source={require("@/assets/images/logo_apae.png")}
-            style={styles.reactLogo}
-          />
-        </View>
-      }
-    >
+    <SafeAreaView style={{ flex: 1 }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={120}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
       >
         <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ paddingBottom: 40 }}
         >
-          <ThemedView style={{ flex: 1 }}>
-            <Animated.View style={{ transform: [{ translateY }] }}>
+          <ThemedView style={{ flex: 1, paddingHorizontal: 20 }}>
+            {/* LOGO COM ANIMAÇÃO */}
+            <Animated.View
+              style={[styles.logoWrapper, { opacity: logoOpacity.current, marginBottom: 24 }]}
+            >
+              <Image
+                source={require('@/assets/images/logo_apae.png')}
+                style={styles.reactLogo}
+                contentFit="contain"
+              />
+            </Animated.View>
+
+            {/* FORM */}
+            <Animated.View style={{ transform: [{ translateY: translateY.current }] }}>
               <GenericForm
                 title="Cadastro de Usuário (Admin)"
                 fields={fieldsWithFocusHandlers}
-                // Use registerForm style for consistent spacing
                 containerStyle={styles.registerForm}
               />
             </Animated.View>
           </ThemedView>
         </ScrollView>
       </KeyboardAvoidingView>
-    </ParallaxScrollView>
+    </SafeAreaView>
   );
 }

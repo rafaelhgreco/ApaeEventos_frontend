@@ -14,18 +14,53 @@ export const styles = StyleSheet.create({
     marginTop: 40,
   },
 
+  /* CARD BASE */
   card: {
     backgroundColor: '#fff',
     borderRadius: border.radiusLarge,
     padding: 16,
-    marginBottom: 16,
+    marginBottom: 20,
     shadowColor: '#000',
     shadowOpacity: 0.06,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
     elevation: 3,
+
+    /* Para evitar cortes em devices com notch */
+    overflow: 'hidden',
+    position: 'relative',
   },
 
+  /* CARD DESTACADO (próximo evento) */
+  highlightCard: {
+    borderWidth: 2,
+    borderColor: '#0ea5e9',
+    shadowOpacity: 0.14,
+    shadowRadius: 14,
+    elevation: 6,
+    backgroundColor: '#f0faff', // leve azul para reforçar destaque
+  },
+
+  /* BADGE */
+  badge: {
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    backgroundColor: '#0284c7',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 8,
+    zIndex: 10,
+  },
+
+  badgeText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 12,
+    letterSpacing: 0.3,
+  },
+
+  /* BANNER */
   banner: {
     width: '100%',
     height: 180,
@@ -49,29 +84,39 @@ export const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
 
+  /* TÍTULO DO EVENTO */
   name: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1f2937',
-    marginBottom: 4,
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#1e293b',
+    marginBottom: 8,
+  },
+
+  /* LINHAS DE TEXTO */
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    gap: 6,
   },
 
   info: {
     fontSize: 15,
-    color: '#6b7280',
-    marginBottom: 4,
-  },
-
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
+    color: '#475569',
+    flexShrink: 1, // evita quebrar layout se texto for grande
   },
 
   tag: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#374151',
+    fontWeight: '700',
+    color: '#334155',
+    marginLeft: 6,
+  },
+
+  /* EXTRA: para listas com padding grande */
+  listContent: {
+    paddingBottom: 120, // garante que nada fica atrás da barra inferior
+    paddingHorizontal: 16,
   },
 });
 
