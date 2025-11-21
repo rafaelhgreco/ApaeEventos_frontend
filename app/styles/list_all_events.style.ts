@@ -14,6 +14,15 @@ export const styles = StyleSheet.create({
     marginTop: 40,
   },
 
+  /* TÍTULO DAS SEÇÕES (NOVO) */
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 12,
+    marginTop: 16,
+  },
+
   /* CARD BASE */
   card: {
     backgroundColor: '#fff',
@@ -26,12 +35,11 @@ export const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     elevation: 3,
 
-    /* Para evitar cortes em devices com notch */
     overflow: 'hidden',
     position: 'relative',
   },
 
-  /* CARD DESTACADO (próximo evento) */
+  /* CARD DESTACADO (PRÓXIMO EVENTO) */
   highlightCard: {
     borderWidth: 2,
     borderColor: '#0ea5e9',
@@ -40,7 +48,6 @@ export const styles = StyleSheet.create({
     elevation: 6,
     backgroundColor: '#f0faff', // leve azul para reforçar destaque
   },
-
   /* BADGE */
   badge: {
     position: 'absolute',
@@ -92,7 +99,7 @@ export const styles = StyleSheet.create({
     marginBottom: 8,
   },
 
-  /* LINHAS DE TEXTO */
+  /* LINHAS */
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -103,7 +110,7 @@ export const styles = StyleSheet.create({
   info: {
     fontSize: 15,
     color: '#475569',
-    flexShrink: 1, // evita quebrar layout se texto for grande
+    flexShrink: 1,
   },
 
   tag: {
@@ -113,9 +120,9 @@ export const styles = StyleSheet.create({
     marginLeft: 6,
   },
 
-  /* EXTRA: para listas com padding grande */
+  /* LISTA */
   listContent: {
-    paddingBottom: 120, // garante que nada fica atrás da barra inferior
+    paddingBottom: 120,
     paddingHorizontal: 16,
   },
 });

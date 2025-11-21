@@ -69,13 +69,22 @@ export default function ManagementScreen() {
     Alert.alert('Sucesso', 'Logout realizado com sucesso!');
   };
 
-  const sortedEvents = [...events].sort(
-    (a, b) => new Date(a.data).getTime() - new Date(b.data).getTime(),
-  );
+  // -------------------------------------------------------------
+  // 🔥 FILTRAR SÓ EVENTOS FUTUROS (INCLUINDO HOJE) + ORDENAR
+  // -------------------------------------------------------------
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-  const nextEvent = sortedEvents.find(
-    (ev) => new Date(ev.data).getTime() >= new Date().setHours(0, 0, 0, 0),
-  );
+  const upcomingEvents = [...events]
+    .filter((ev) => {
+      if (!ev.data) return false;
+      const evDate = new Date(ev.data + 'T00:00:00');
+      return evDate.getTime() >= today.getTime();
+    })
+    .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime());
+
+  // Próximo evento
+  const nextEvent = upcomingEvents[0];
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -148,11 +157,11 @@ export default function ManagementScreen() {
               >
                 {loading && <Text style={{ padding: 10 }}>Carregando...</Text>}
                 {error && <Text style={{ color: 'red', padding: 10 }}>{error}</Text>}
-                {!loading && events.length === 0 && (
-                  <Text style={{ padding: 10 }}>Nenhum evento encontrado</Text>
+                {!loading && upcomingEvents.length === 0 && (
+                  <Text style={{ padding: 10 }}>Nenhum evento futuro encontrado</Text>
                 )}
 
-                {sortedEvents.map((ev) => (
+                {upcomingEvents.map((ev) => (
                   <EventCarouselCard key={ev.id} event={ev} highlight={ev.id === nextEvent?.id} />
                 ))}
               </ScrollView>

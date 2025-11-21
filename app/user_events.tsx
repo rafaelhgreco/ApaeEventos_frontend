@@ -27,7 +27,6 @@ export default function UserEventsScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [highlightedEventId, setHighlightedEventId] = useState<number | null>(null);
 
   const navigation = useNavigation();
   const router = useRouter();
@@ -58,25 +57,15 @@ export default function UserEventsScreen() {
       setError(null);
 
       const user = userPool.getCurrentUser();
-
       if (!user) {
         Alert.alert('Erro de Autenticação', 'Você precisa estar logado para visualizar eventos.');
-        router.replace('/');
-        return;
+        return router.replace('/');
       }
 
       const token = await getIdToken();
       const eventsData = await getUserEvents(token);
 
-      const sorted = [...eventsData].sort(
-        (a, b) => new Date(a.data).getTime() - new Date(b.data).getTime(),
-      );
-
-      setEvents(sorted);
-
-      if (sorted.length > 0) {
-        setHighlightedEventId(sorted[0].id);
-      }
+      setEvents(eventsData);
     } catch (err: any) {
       setError(err?.message || 'Erro ao carregar eventos');
     } finally {
@@ -90,21 +79,37 @@ export default function UserEventsScreen() {
     fetchUserEvents();
   };
 
-  const filteredEvents = events.filter((ev) =>
-    ev.nome.toLowerCase().includes(search.toLowerCase()),
-  );
+  /* ---------------------------------------------
+     LÓGICA DE EVENTOS FUTUROS + BUSCA
+  --------------------------------------------- */
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const searched = events.filter((ev) => ev.nome.toLowerCase().includes(search.toLowerCase()));
+
+  // Só FUTUROS
+  const upcomingEvents = searched
+    .filter((ev) => new Date(ev.data + 'T00:00:00').getTime() >= today.getTime())
+    .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime());
+
+  const nextEvent = upcomingEvents[0];
+
+  /* ---------------------------------------------
+     FORMATAÇÃO DE DATA
+  --------------------------------------------- */
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+  };
 
   /* ---------------------------------------------
      CARD DE EVENTO
   --------------------------------------------- */
   const renderEventCard = ({ item }: { item: Event }) => {
-    const isHighlighted = item.id === highlightedEventId;
-
-    const eventDate = new Date(item.data).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
+    const isHighlighted = item.id === nextEvent?.id;
 
     return (
       <TouchableOpacity
@@ -131,7 +136,7 @@ export default function UserEventsScreen() {
             <Text style={styles.eventInfo}>{item.local}</Text>
 
             <Calendar size={18} color={colors.primary} />
-            <Text style={styles.eventInfo}>{eventDate}</Text>
+            <Text style={styles.eventInfo}>{formatDate(String(item.data))}</Text>
           </View>
 
           {/* Chips */}
@@ -184,12 +189,12 @@ export default function UserEventsScreen() {
     );
   }
 
-  if (events.length === 0) {
+  if (upcomingEvents.length === 0) {
     return (
       <View style={styles.centerContainer}>
-        <Text style={styles.emptyIcon}>📅</Text>
+        <Text style={styles.emptyIcon}>🎉</Text>
         <Text style={styles.emptyTitle}>Nenhum evento disponível</Text>
-        <Text style={styles.emptySubtitle}>Não há eventos cadastrados no momento.</Text>
+        <Text style={styles.emptySubtitle}>Em breve novos eventos serão liberados!</Text>
       </View>
     );
   }
@@ -205,7 +210,7 @@ export default function UserEventsScreen() {
       </View>
 
       <FlatList
-        data={filteredEvents}
+        data={upcomingEvents}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderEventCard}
         contentContainerStyle={styles.listContent}

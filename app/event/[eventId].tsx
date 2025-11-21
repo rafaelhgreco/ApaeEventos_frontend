@@ -57,8 +57,24 @@ function parseDateSafe(value: string | Date) {
 
 function parseTimeSafe(value: string | Date) {
   if (!value) return new Date();
-  const d = typeof value === 'string' ? new Date(value) : value;
-  return new Date(0, 0, 0, d.getHours(), d.getMinutes());
+
+  if (typeof value === 'string') {
+    // Se for só hora ("HH:mm" ou "HH:mm:ss")
+    const isOnlyTime = /^\d{2}:\d{2}(:\d{2})?$/.test(value);
+
+    if (isOnlyTime) {
+      const [h, m, s = '00'] = value.split(':');
+      return new Date(1970, 0, 1, Number(h), Number(m), Number(s));
+    }
+
+    // Se for string completa, tenta converter normal
+    const d = new Date(value);
+    if (!isNaN(d.getTime())) return d;
+  }
+
+  // Se já veio como Date
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? new Date() : d;
 }
 
 /* -----------------------------------------------------------
