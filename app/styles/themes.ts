@@ -1,6 +1,7 @@
 export const colors = {
   // Paleta principal
   primary: '#2c3e50',
+  primaryDark: '#1a252f',
   secondary: '#8BC34A',
   terceary: '#FFEB3B',
 

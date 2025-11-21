@@ -1,42 +1,67 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
-/**
- * Styles for the admin and public register screens. The registerForm
- * no longer centers its content vertically; instead it starts near
- * the top, allowing KeyboardAvoidingView and ScrollView to push
- * the content up when necessary. The container retains centered
- * alignment for the header image, while the reactLogo maintains
- * its large dimensions.
- */
 export const styles = StyleSheet.create({
-    titleContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 8,
-    },
-    stepContainer: {
-        gap: 8,
-        marginBottom: 8,
-    },
-    reactLogo: {
-        width: 518,
-        height: 316,
-    },
-    container: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#001122",
-    },
-    registerForm: {
-        flex: 1,
-        justifyContent: "flex-start", // allow content to start at the top
-        padding: 16,
-    },
-    title: {
-        fontSize: 32,
-        fontWeight: "bold",
-        color: "black",
-        marginBottom: 16,
-    },
+  /* ---------------------------------------------------------
+     HEADER / TÍTULO (se necessário no GenericForm)
+  --------------------------------------------------------- */
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+
+  stepContainer: {
+    gap: 8,
+    marginBottom: 8,
+  },
+
+  /* ---------------------------------------------------------
+     LOGO DO TOPO (com animação)
+  --------------------------------------------------------- */
+  logoWrapper: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+    marginBottom: 16,
+  },
+
+  reactLogo: {
+    width: 180, // antes estava 518px, gigante
+    height: 180,
+    resizeMode: 'contain',
+  },
+
+  /* ---------------------------------------------------------
+     CONTAINER PRINCIPAL
+  --------------------------------------------------------- */
+  container: {
+    flex: 1,
+    width: '100%',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    backgroundColor: '#001122', // seu tema atual
+  },
+
+  /* ---------------------------------------------------------
+     FORMULÁRIO
+  --------------------------------------------------------- */
+  registerForm: {
+    width: '100%',
+    marginTop: 10,
+    paddingBottom: 40,
+  },
+
+  /* ---------------------------------------------------------
+     TÍTULO PRINCIPAL DO FORM
+  --------------------------------------------------------- */
+  title: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#fff',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
 });

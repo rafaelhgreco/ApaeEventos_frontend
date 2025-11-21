@@ -7,11 +7,16 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ChevronLeft } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { authEvents } from '@/lib/authEvents';
 import { getUserName } from '@/lib/cognito';
 
+/* --------------------------------------------------------
+    SAUDAÇÃO DINÂMICA
+-------------------------------------------------------- */
 function getGreeting() {
   const h = new Date().getHours();
   if (h < 12) return 'Bom dia';
@@ -26,6 +31,9 @@ export default function RootLayout() {
   const segments = useSegments();
   const canGoBack = segments.length > 1;
 
+  /* --------------------------------------------------------
+      CARREGAR NOME E ATUALIZAR AUTOMATICAMENTE
+  -------------------------------------------------------- */
   useEffect(() => {
     const load = async () => {
       const name = await getUserName();
@@ -34,34 +42,42 @@ export default function RootLayout() {
 
     load();
 
+    // atualiza nome no header quando troca de usuário
     const sub = authEvents.addListener(load);
     return () => sub.remove();
   }, []);
 
+  /* --------------------------------------------------------
+      LAYOUT
+  -------------------------------------------------------- */
   return (
     <StripeProvider publishableKey={STRIPE_PUBLISHABLE_KEY}>
       <ThemeProvider value={DefaultTheme}>
         <Stack
           screenOptions={{
             headerTitle: '',
-            headerStyle: { backgroundColor: '#fff' },
             headerShadowVisible: false,
+
+            // Header custom em SafeAreaView para respeitar notch
             header: () => (
-              <View style={styles.header}>
-                {canGoBack && (
+              <SafeAreaView edges={['top']} style={styles.header}>
+                {/* BOTÃO DE VOLTAR */}
+                {canGoBack ? (
                   <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
                     <ChevronLeft size={28} color="#1f2937" />
                   </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity style={styles.backButtonInvisible} />
                 )}
 
-                <View>
-                  <Text style={styles.greeting}>{getGreeting()}</Text>
-                  <Text style={styles.name}>{userName || 'Carregando...'}</Text>
-                </View>
-              </View>
+                {/* TEXTO: Saudação + Nome */}
+                <Text style={styles.greeting}>{getGreeting()}</Text>
+                <Text style={styles.name}>{userName || 'Carregando...'}</Text>
+              </SafeAreaView>
             ),
           }}
         >
+          {/* Telas principais */}
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
@@ -72,6 +88,9 @@ export default function RootLayout() {
   );
 }
 
+/* --------------------------------------------------------
+    STYLES
+-------------------------------------------------------- */
 const styles = StyleSheet.create({
   header: {
     height: 85,
@@ -81,15 +100,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 14,
   },
+
   backButton: {
     padding: 4,
-    marginRight: 10,
+    marginRight: 4,
   },
+
+  // mantém alinhamento perfeito mesmo sem botão de voltar
+  backButtonInvisible: {
+    width: 36,
+  },
+
   greeting: {
     fontSize: 14,
     color: '#6b7280',
     fontWeight: '600',
   },
+
   name: {
     fontSize: 18,
     fontWeight: '700',

@@ -6,14 +6,17 @@ import {
   updateEvent,
   uploadBannerService,
 } from '@/services/event_services';
+
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
+
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   Image,
+  KeyboardAvoidingView,
   Platform,
   ScrollView,
   Text,
@@ -21,7 +24,9 @@ import {
   View,
 } from 'react-native';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '../../components/ATOMIC/atoms/button';
+
 import { Event } from '../../src/domain/events';
 import styles from '../styles/eventId.style';
 import { colors } from '../styles/themes';
@@ -38,9 +43,11 @@ import {
   Users,
 } from 'lucide-react-native';
 
+/* -----------------------------------------------------------
+    UTILITÁRIOS DE DATA
+----------------------------------------------------------- */
 function parseDateSafe(value: string | Date) {
   if (!value) return new Date();
-
   const iso = typeof value === 'string' ? value : value.toISOString();
   const onlyDate = iso.length === 10 ? `${iso}T00:00:00` : iso;
 
@@ -50,11 +57,13 @@ function parseDateSafe(value: string | Date) {
 
 function parseTimeSafe(value: string | Date) {
   if (!value) return new Date();
-
   const d = typeof value === 'string' ? new Date(value) : value;
   return new Date(0, 0, 0, d.getHours(), d.getMinutes());
 }
 
+/* -----------------------------------------------------------
+    COMPONENTE PRINCIPAL
+----------------------------------------------------------- */
 export default function EventDetailsPage() {
   const { eventId } = useLocalSearchParams();
   const navigation = useNavigation();
@@ -83,14 +92,12 @@ export default function EventDetailsPage() {
   });
 
   useLayoutEffect(() => {
-    navigation.setOptions({
-      title: 'Detalhes do Evento',
-    });
+    navigation.setOptions({ title: 'Detalhes do Evento' });
   }, [navigation]);
 
-  /* -----------------------------------------------------
-       CARREGAR ROLE E EVENTO
-    ----------------------------------------------------- */
+  /* -----------------------------------------------------------
+      CARREGAR EVENTO + ROLE
+  ----------------------------------------------------------- */
   useEffect(() => {
     if (!eventId) return;
 
@@ -140,9 +147,9 @@ export default function EventDetailsPage() {
     }
   };
 
-  /* -----------------------------------------------------
-       TROCAR BANNER
-    ----------------------------------------------------- */
+  /* -----------------------------------------------------------
+      TROCAR BANNER
+  ----------------------------------------------------------- */
   const handlePickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -175,9 +182,9 @@ export default function EventDetailsPage() {
     }
   };
 
-  /* -----------------------------------------------------
-       SALVAR EDIÇÕES
-    ----------------------------------------------------- */
+  /* -----------------------------------------------------------
+      SALVAR EDIÇÕES
+  ----------------------------------------------------------- */
   const handleSave = async () => {
     try {
       const token = await getIdToken();
@@ -205,9 +212,9 @@ export default function EventDetailsPage() {
     }
   };
 
-  /* -----------------------------------------------------
-       EXCLUIR EVENTO
-    ----------------------------------------------------- */
+  /* -----------------------------------------------------------
+      EXCLUIR EVENTO
+  ----------------------------------------------------------- */
   const handleDelete = () => {
     Alert.alert('Excluir evento', 'Tem certeza?', [
       { text: 'Cancelar', style: 'cancel' },
@@ -225,9 +232,9 @@ export default function EventDetailsPage() {
     ]);
   };
 
-  /* -----------------------------------------------------
-       RENDER
-    ----------------------------------------------------- */
+  /* -----------------------------------------------------------
+      RENDER PRINCIPAL
+  ----------------------------------------------------------- */
   if (loading) return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
   if (error || !event) return <Text style={styles.error}>{error}</Text>;
 
@@ -240,200 +247,209 @@ export default function EventDetailsPage() {
   const banner = editedEvent.bannerUrl || event.bannerUrl || '';
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {banner !== '' && <Image source={{ uri: banner }} style={styles.banner} resizeMode="cover" />}
-
-      {/* -----------------------------------------------------
-               VISUALIZAÇÃO
-            ----------------------------------------------------- */}
-      {!isEditing && (
-        <>
-          <View style={styles.box}>
-            <Text style={styles.title}>{event.nome}</Text>
-
-            <View style={styles.infoRow}>
-              <MapPin size={20} color={colors.primary} />
-              <Text style={styles.date}>{event.local}</Text>
-            </View>
-
-            <View style={styles.infoRow}>
-              <Calendar size={20} color={colors.primary} />
-              <Text style={styles.date}>{formattedDate}</Text>
-            </View>
-
-            <View style={styles.infoRow}>
-              <Clock size={20} color={colors.primary} />
-              <Text style={styles.date}>{formattedTime}</Text>
-            </View>
-
-            {/* TODOS VEEM O PREÇO */}
-            <View style={styles.infoRow}>
-              <DollarSign size={20} color={colors.primary} />
-              <Text style={styles.date}>R$ {Number(event.ticket_price).toFixed(2)}</Text>
-            </View>
-
-            {/* APENAS ADMIN */}
-            {role === 'admin' && (
-              <>
-                <View style={styles.infoRow}>
-                  <Users size={20} color={colors.primary} />
-                  <Text style={styles.date}>{event.capacity} pessoas</Text>
-                </View>
-
-                <View style={styles.infoRow}>
-                  <CheckCircle2 size={20} color={colors.primary} />
-                  <Text style={styles.date}>{event.status}</Text>
-                </View>
-
-                <View style={styles.infoRow}>
-                  <BarChart3 size={20} color={colors.primary} />
-                  <Text style={styles.date}>
-                    {event.sold_count || 0} / {event.capacity}
-                  </Text>
-                </View>
-
-                <View style={styles.infoRow}>
-                  <TrendingUp size={20} color={colors.primary} />
-                  <Text style={styles.date}>
-                    R$
-                    {(Number(event.ticket_price) * Number(event.sold_count || 0)).toFixed(2)}
-                  </Text>
-                </View>
-              </>
-            )}
-          </View>
-
-          {/* BOTÕES POR ROLE */}
-          {role === 'admin' ? (
-            <View style={styles.buttonBox}>
-              <Button
-                label="Editar Evento"
-                variant="secondary"
-                onPress={() => setIsEditing(true)}
-              />
-              <Button label="Excluir Evento" variant="outline" onPress={handleDelete} />
-              <Button
-                label="Escanear Ingresso"
-                variant="primary"
-                onPress={() => router.push(`/qrcode?eventId=${event.id}`)}
-              />
-            </View>
-          ) : (
-            <View style={styles.buttonBox}>
-              <Button
-                label="Comprar Ingressos"
-                variant="secondary"
-                onPress={() => router.push(`/ticket?eventId=${event.id}`)}
-              />
-            </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+      >
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* BANNER */}
+          {banner !== '' && (
+            <Image source={{ uri: banner }} style={styles.banner} resizeMode="cover" />
           )}
 
-          <View style={styles.buttonBox}>
-            <Button
-              label="Meus ingressos"
-              variant="outline"
-              onPress={() => router.push(`/my_tickets`)}
-            />
-          </View>
-        </>
-      )}
+          {/* VISUALIZAÇÃO */}
+          {!isEditing && (
+            <>
+              <View style={styles.box}>
+                <Text style={styles.title}>{event.nome}</Text>
 
-      {/* -----------------------------------------------------
-               MODO EDIÇÃO
-            ----------------------------------------------------- */}
-      {isEditing && (
-        <View style={{ gap: 16 }}>
-          <Text style={styles.label}>Banner</Text>
-          <Button
-            label={uploadingBanner ? 'Enviando...' : 'Alterar Banner'}
-            variant="outline"
-            onPress={handlePickImage}
-          />
+                <View style={styles.infoRow}>
+                  <MapPin size={20} color={colors.primary} />
+                  <Text style={styles.date}>{event.local}</Text>
+                </View>
 
-          <Text style={styles.label}>Nome</Text>
-          <TextInput
-            style={styles.input}
-            value={editedEvent.nome}
-            onChangeText={(t) => setEditedEvent({ ...editedEvent, nome: t })}
-          />
+                <View style={styles.infoRow}>
+                  <Calendar size={20} color={colors.primary} />
+                  <Text style={styles.date}>{formattedDate}</Text>
+                </View>
 
-          <Text style={styles.label}>Local</Text>
-          <TextInput
-            style={styles.input}
-            value={editedEvent.local}
-            onChangeText={(t) => setEditedEvent({ ...editedEvent, local: t })}
-          />
+                <View style={styles.infoRow}>
+                  <Clock size={20} color={colors.primary} />
+                  <Text style={styles.date}>{formattedTime}</Text>
+                </View>
 
-          <Text style={styles.label}>Data</Text>
-          <Button
-            label={editedEvent.data.toLocaleDateString('pt-BR')}
-            variant="outline"
-            onPress={() => setShowPicker((p) => ({ ...p, date: !p.date }))}
-          />
+                <View style={styles.infoRow}>
+                  <DollarSign size={20} color={colors.primary} />
+                  <Text style={styles.date}>R$ {Number(event.ticket_price).toFixed(2)}</Text>
+                </View>
 
-          {showPicker.date && (
-            <DateTimePicker
-              value={editedEvent.data}
-              mode="date"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={(_, selected) => {
-                if (selected)
-                  setEditedEvent({
-                    ...editedEvent,
-                    data: parseDateSafe(selected),
-                  });
-                setShowPicker((p) => ({ ...p, date: false }));
-              }}
-            />
+                {role === 'admin' && (
+                  <>
+                    <View style={styles.infoRow}>
+                      <Users size={20} color={colors.primary} />
+                      <Text style={styles.date}>{event.capacity} pessoas</Text>
+                    </View>
+
+                    <View style={styles.infoRow}>
+                      <CheckCircle2 size={20} color={colors.primary} />
+                      <Text style={styles.date}>{event.status}</Text>
+                    </View>
+
+                    <View style={styles.infoRow}>
+                      <BarChart3 size={20} color={colors.primary} />
+                      <Text style={styles.date}>
+                        {event.sold_count || 0} / {event.capacity}
+                      </Text>
+                    </View>
+
+                    <View style={styles.infoRow}>
+                      <TrendingUp size={20} color={colors.primary} />
+                      <Text style={styles.date}>
+                        R$
+                        {(Number(event.ticket_price) * Number(event.sold_count || 0)).toFixed(2)}
+                      </Text>
+                    </View>
+                  </>
+                )}
+              </View>
+
+              {/* BOTÕES POR ROLE */}
+              {role === 'admin' ? (
+                <View style={styles.buttonBox}>
+                  <Button
+                    label="Editar Evento"
+                    variant="secondary"
+                    onPress={() => setIsEditing(true)}
+                  />
+                  <Button label="Excluir Evento" variant="outline" onPress={handleDelete} />
+                  <Button
+                    label="Escanear Ingresso"
+                    variant="primary"
+                    onPress={() => router.push(`/qrcode?eventId=${event.id}`)}
+                  />
+                </View>
+              ) : (
+                <View style={styles.buttonBox}>
+                  <Button
+                    label="Comprar Ingressos"
+                    variant="secondary"
+                    onPress={() => router.push(`/ticket?eventId=${event.id}`)}
+                  />
+                </View>
+              )}
+
+              <View style={styles.buttonBox}>
+                <Button
+                  label="Meus ingressos"
+                  variant="outline"
+                  onPress={() => router.push(`/my_tickets?eventId=${event.id}`)}
+                />
+              </View>
+            </>
           )}
 
-          <Text style={styles.label}>Horário</Text>
-          <Button
-            label={editedEvent.starts_at.toLocaleTimeString('pt-BR', {
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
-            variant="outline"
-            onPress={() => setShowPicker((p) => ({ ...p, time: !p.time }))}
-          />
+          {/* MODO EDIÇÃO */}
+          {isEditing && (
+            <View style={{ gap: 16, paddingBottom: 50 }}>
+              <Text style={styles.label}>Banner</Text>
+              <Button
+                label={uploadingBanner ? 'Enviando...' : 'Alterar Banner'}
+                variant="outline"
+                onPress={handlePickImage}
+              />
 
-          {showPicker.time && (
-            <DateTimePicker
-              value={editedEvent.starts_at}
-              mode="time"
-              is24Hour
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={(_, selected) => {
-                if (selected)
-                  setEditedEvent({
-                    ...editedEvent,
-                    starts_at: parseTimeSafe(selected),
-                  });
-                setShowPicker((p) => ({ ...p, time: false }));
-              }}
-            />
+              <Text style={styles.label}>Nome</Text>
+              <TextInput
+                style={styles.input}
+                value={editedEvent.nome}
+                onChangeText={(t) => setEditedEvent({ ...editedEvent, nome: t })}
+              />
+
+              <Text style={styles.label}>Local</Text>
+              <TextInput
+                style={styles.input}
+                value={editedEvent.local}
+                onChangeText={(t) => setEditedEvent({ ...editedEvent, local: t })}
+              />
+
+              <Text style={styles.label}>Data</Text>
+              <Button
+                label={editedEvent.data.toLocaleDateString('pt-BR')}
+                variant="outline"
+                onPress={() => setShowPicker((p) => ({ ...p, date: !p.date }))}
+              />
+
+              {showPicker.date && (
+                <DateTimePicker
+                  value={editedEvent.data}
+                  mode="date"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  onChange={(_, selected) => {
+                    if (selected)
+                      setEditedEvent({
+                        ...editedEvent,
+                        data: parseDateSafe(selected),
+                      });
+                    setShowPicker((p) => ({ ...p, date: false }));
+                  }}
+                />
+              )}
+
+              <Text style={styles.label}>Horário</Text>
+              <Button
+                label={editedEvent.starts_at.toLocaleTimeString('pt-BR', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+                variant="outline"
+                onPress={() => setShowPicker((p) => ({ ...p, time: !p.time }))}
+              />
+
+              {showPicker.time && (
+                <DateTimePicker
+                  value={editedEvent.starts_at}
+                  mode="time"
+                  is24Hour
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  onChange={(_, selected) => {
+                    if (selected)
+                      setEditedEvent({
+                        ...editedEvent,
+                        starts_at: parseTimeSafe(selected),
+                      });
+                    setShowPicker((p) => ({ ...p, time: false }));
+                  }}
+                />
+              )}
+
+              <Text style={styles.label}>Capacidade</Text>
+              <TextInput
+                style={styles.input}
+                value={editedEvent.capacity}
+                onChangeText={(t) => setEditedEvent({ ...editedEvent, capacity: t })}
+                keyboardType="numeric"
+              />
+
+              <Text style={styles.label}>Preço (R$)</Text>
+              <TextInput
+                style={styles.input}
+                value={editedEvent.ticket_price}
+                onChangeText={(t) => setEditedEvent({ ...editedEvent, ticket_price: t })}
+                keyboardType="decimal-pad"
+              />
+
+              <Button label="Salvar" variant="primary" onPress={handleSave} />
+              <Button label="Cancelar" variant="outline" onPress={() => setIsEditing(false)} />
+            </View>
           )}
-
-          <Text style={styles.label}>Capacidade</Text>
-          <TextInput
-            style={styles.input}
-            value={editedEvent.capacity}
-            onChangeText={(t) => setEditedEvent({ ...editedEvent, capacity: t })}
-            keyboardType="numeric"
-          />
-
-          <Text style={styles.label}>Preço (R$)</Text>
-          <TextInput
-            style={styles.input}
-            value={editedEvent.ticket_price}
-            onChangeText={(t) => setEditedEvent({ ...editedEvent, ticket_price: t })}
-            keyboardType="decimal-pad"
-          />
-
-          <Button label="Salvar" variant="primary" onPress={handleSave} />
-          <Button label="Cancelar" variant="outline" onPress={() => setIsEditing(false)} />
-        </View>
-      )}
-    </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

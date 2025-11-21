@@ -5,26 +5,34 @@ import { getIdToken } from '@/lib/cognito';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { BarChart3, CalendarPlus, QrCode, UserPlus } from 'lucide-react-native';
 import React, { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
-import { Alert, Animated, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Animated,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { styles } from './styles/management.style';
 
 export default function ManagementScreen() {
   const navigation = useNavigation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
-  // Carregar eventos
   const { events, fetchEvents, loading, error } = useEvents();
 
-  // Animações
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(20)).current;
 
-  // Custom header
   useLayoutEffect(() => {
     navigation.setOptions({ headerShown: false });
   }, [navigation]);
 
-  // Carrega eventos sempre que entra na tela
   useFocusEffect(
     useCallback(() => {
       const load = async () => {
@@ -40,7 +48,6 @@ export default function ManagementScreen() {
     }, [fetchEvents]),
   );
 
-  // Animações de entrada
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
@@ -57,128 +64,118 @@ export default function ManagementScreen() {
     ]).start();
   }, [fadeAnim, slideAnim]);
 
-  // Logout
   const handleSignOut = async () => {
     router.push('/');
     Alert.alert('Sucesso', 'Logout realizado com sucesso!');
   };
 
-  // -----------------------------
-  // 🔥 Destacar o próximo evento
-  // -----------------------------
-  const getSortedEvents = () => {
-    return [...events].sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime());
-  };
+  const sortedEvents = [...events].sort(
+    (a, b) => new Date(a.data).getTime() - new Date(b.data).getTime(),
+  );
 
-  const getNextEvent = () => {
-    const today = new Date().setHours(0, 0, 0, 0);
-    return getSortedEvents().find((ev) => new Date(ev.data).getTime() >= today);
-  };
-
-  const sortedEvents = getSortedEvents();
-  const nextEvent = getNextEvent();
+  const nextEvent = sortedEvents.find(
+    (ev) => new Date(ev.data).getTime() >= new Date().setHours(0, 0, 0, 0),
+  );
 
   return (
-    <Animated.View
-      style={{
-        opacity: fadeAnim,
-        transform: [{ translateY: slideAnim }],
-        flex: 1,
-      }}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* HEADER CUSTOM */}
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.headerTitle}>Gerenciamento</Text>
-            <Text style={styles.headerSubtitle}>Painel Administrativo</Text>
-          </View>
-
-          <TouchableOpacity onPress={handleSignOut} style={styles.logoutBtn}>
-            <Text style={styles.logoutText}>Sair</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* AÇÕES RÁPIDAS */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Ações Rápidas</Text>
-
-          <View style={styles.quickActionsGrid}>
-            <QuickActionCard
-              label="Cadastrar"
-              icon={CalendarPlus}
-              onPress={() => router.push('/new_event')}
-              color="#2980b9"
-            />
-
-            <QuickActionCard
-              label="Validar"
-              icon={QrCode}
-              onPress={() => router.push('/qrcode')}
-              color="#27ae60"
-            />
-
-            <QuickActionCard
-              label="Dashboard"
-              icon={BarChart3}
-              onPress={() => router.push('/dashboard')}
-              color="#8e44ad"
-            />
-
-            <QuickActionCard
-              label="Registrar"
-              icon={UserPlus}
-              onPress={() => router.push('/admin_register')}
-              color="#c0392b"
-            />
-          </View>
-        </View>
-
-        {/* CARROSSEL DE EVENTOS */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Próximos Eventos</Text>
-
+    <SafeAreaView style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <Animated.View
+          style={{
+            flex: 1,
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }],
+          }}
+        >
           <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.carousel}
+            contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 24 }]}
           >
-            {loading && <Text style={{ padding: 10 }}>Carregando...</Text>}
+            {/* HEADER */}
+            <View style={styles.header}>
+              <View>
+                <Text style={styles.headerTitle}>Gerenciamento</Text>
+                <Text style={styles.headerSubtitle}>Painel Administrativo</Text>
+              </View>
 
-            {error && <Text style={{ color: 'red', padding: 10 }}>{error}</Text>}
+              <TouchableOpacity onPress={handleSignOut} style={styles.logoutBtn}>
+                <Text style={styles.logoutText}>Sair</Text>
+              </TouchableOpacity>
+            </View>
 
-            {!loading && events.length === 0 && (
-              <Text style={{ padding: 10 }}>Nenhum evento encontrado</Text>
-            )}
+            {/* AÇÕES RÁPIDAS */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Ações Rápidas</Text>
 
-            {sortedEvents.map((ev: any) => (
-              <EventCarouselCard key={ev.id} event={ev} highlight={ev.id === nextEvent?.id} />
-            ))}
+              <View style={styles.quickActionsGrid}>
+                <QuickActionCard
+                  label="Cadastrar"
+                  icon={CalendarPlus}
+                  color="#2980b9"
+                  onPress={() => router.push('/new_event')}
+                />
+                <QuickActionCard
+                  label="Validar"
+                  icon={QrCode}
+                  color="#27ae60"
+                  onPress={() => router.push('/qrcode')}
+                />
+                <QuickActionCard
+                  label="Dashboard"
+                  icon={BarChart3}
+                  color="#8e44ad"
+                  onPress={() => router.push('/dashboard')}
+                />
+                <QuickActionCard
+                  label="Registrar"
+                  icon={UserPlus}
+                  color="#c0392b"
+                  onPress={() => router.push('/admin_register')}
+                />
+              </View>
+            </View>
+
+            {/* CARROSSEL */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Próximos Eventos</Text>
+
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.carousel}
+              >
+                {loading && <Text style={{ padding: 10 }}>Carregando...</Text>}
+                {error && <Text style={{ color: 'red', padding: 10 }}>{error}</Text>}
+                {!loading && events.length === 0 && (
+                  <Text style={{ padding: 10 }}>Nenhum evento encontrado</Text>
+                )}
+
+                {sortedEvents.map((ev) => (
+                  <EventCarouselCard key={ev.id} event={ev} highlight={ev.id === nextEvent?.id} />
+                ))}
+              </ScrollView>
+
+              {/* VER TODOS */}
+              <TouchableOpacity
+                style={{
+                  marginTop: 16,
+                  paddingVertical: 12,
+                  backgroundColor: '#0ea5e9',
+                  borderRadius: 10,
+                  alignItems: 'center',
+                }}
+                onPress={() => router.push('/list_all_events')}
+              >
+                <Text style={{ color: '#fff', fontWeight: '700', fontSize: 16 }}>
+                  Ver todos os eventos
+                </Text>
+              </TouchableOpacity>
+            </View>
           </ScrollView>
-
-          {/* 🔥 Botão de listar eventos */}
-          <TouchableOpacity
-            style={{
-              marginTop: 16,
-              paddingVertical: 12,
-              backgroundColor: '#0ea5e9',
-              borderRadius: 10,
-              alignItems: 'center',
-            }}
-            onPress={() => router.push('/list_all_events')}
-          >
-            <Text
-              style={{
-                color: '#fff',
-                fontWeight: '700',
-                fontSize: 16,
-              }}
-            >
-              Ver todos os eventos
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </Animated.View>
+        </Animated.View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

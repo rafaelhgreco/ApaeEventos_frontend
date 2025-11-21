@@ -14,6 +14,7 @@ import {
   View,
 } from 'react-native';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './styles/list_all_events.style';
 
 export default function EventsPage() {
@@ -25,9 +26,6 @@ export default function EventsPage() {
 
   const navigation = useNavigation();
   const router = useRouter();
-
-
-
 
   /* -------------------------------
      HEADER
@@ -42,13 +40,12 @@ export default function EventsPage() {
   useEffect(() => {
     loadRole();
     fetchEvents();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadRole = async () => {
     try {
       const r = await getUserRole();
-      setRole(r === 'admin' ? 'admin' : 'default'); // <-- normalização
+      setRole(r === 'admin' ? 'admin' : 'default');
     } catch {
       setRole('default');
     }
@@ -143,80 +140,89 @@ export default function EventsPage() {
   if (error) return <Text style={styles.error}>{error}</Text>;
 
   return (
-    <View style={styles.container}>
-      {/* BUSCA */}
-      <View style={{ padding: 16 }}>
-        <SearchInput
-          value={search}
-          onChangeText={setSearch}
-          placeholder="Buscar eventos por nome..."
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        {/* BUSCA */}
+        <View style={{ padding: 16 }}>
+          <SearchInput
+            value={search}
+            onChangeText={setSearch}
+            placeholder="Buscar eventos por nome..."
+          />
+        </View>
+
+        <FlatList
+          data={filteredEvents}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={{
+            paddingHorizontal: 16,
+            paddingBottom: 120, // evita ficar atrás da barra inferior
+          }}
+          initialNumToRender={10}
+          maxToRenderPerBatch={6}
+          windowSize={5}
+          removeClippedSubviews
+          renderItem={({ item }) => {
+            const isNext = item.id === nextEvent?.id;
+
+            return (
+              <TouchableOpacity
+                style={[styles.card, isNext && styles.highlightCard]}
+                onPress={() => router.push(`/event/${item.id}`)}
+              >
+                {/* Badge */}
+                {isNext && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>PRÓXIMO EVENTO</Text>
+                  </View>
+                )}
+
+                {/* Banner */}
+                {item.bannerUrl ? (
+                  <Image source={{ uri: item.bannerUrl }} style={styles.banner} />
+                ) : (
+                  <View style={styles.bannerPlaceholder}>
+                    <Text style={styles.bannerText}>Sem banner</Text>
+                  </View>
+                )}
+
+                {/* Nome */}
+                <Text style={styles.name}>{item.nome}</Text>
+
+                {/* Data */}
+                <View style={styles.row}>
+                  <Calendar size={18} color="#4b5563" />
+                  <Text style={styles.info}>{formatEventDate(item.data)}</Text>
+                </View>
+
+                {/* Local */}
+                <View style={styles.row}>
+                  <MapPin size={18} color="#4b5563" />
+                  <Text style={styles.info}>{item.local}</Text>
+                </View>
+
+                {/* Infos */}
+                <View style={styles.row}>
+                  <Ticket size={18} color="#374151" />
+                  <Text style={styles.tag}>
+                    {item.sold_count || 0}/{item.capacity || 0}
+                  </Text>
+
+                  {role === 'admin' && (
+                    <>
+                      <DollarSign size={18} color="#374151" />
+                      <Text style={styles.tag}>R$ {item.ticket_price}</Text>
+
+                      <User size={18} color="#374151" />
+                      <Text style={styles.tag}>Criado por {item.created_by_name}</Text>
+                    </>
+                  )}
+                </View>
+              </TouchableOpacity>
+            );
+          }}
         />
       </View>
-
-      <FlatList
-        data={filteredEvents}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32 }}
-        renderItem={({ item }) => {
-          const isNext = item.id === nextEvent?.id;
-
-          return (
-            <TouchableOpacity
-              style={[styles.card, isNext && styles.highlightCard]}
-              onPress={() => router.push(`/event/${item.id}`)}
-            >
-              {/* Badge */}
-              {isNext && (
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>PRÓXIMO EVENTO</Text>
-                </View>
-              )}
-
-              {/* Banner */}
-              {item.bannerUrl ? (
-                <Image source={{ uri: item.bannerUrl }} style={styles.banner} />
-              ) : (
-                <View style={styles.bannerPlaceholder}>
-                  <Text style={styles.bannerText}>Sem banner</Text>
-                </View>
-              )}
-
-              {/* Nome */}
-              <Text style={styles.name}>{item.nome}</Text>
-
-              {/* Data */}
-              <View style={styles.row}>
-                <Calendar size={18} color="#4b5563" />
-                <Text style={styles.info}>{formatEventDate(item.data)}</Text>
-              </View>
-
-              {/* Local */}
-              <View style={styles.row}>
-                <MapPin size={18} color="#4b5563" />
-                <Text style={styles.info}>{item.local}</Text>
-              </View>
-
-              {/* Infos */}
-              <View style={styles.row}>
-                <Ticket size={18} color="#374151" />
-                <Text style={styles.tag}>
-                  {item.sold_count || 0}/{item.capacity || 0}
-                </Text>
-
-                {role === 'admin' && (
-                  <>
-                    <DollarSign size={18} color="#374151" />
-                    <Text style={styles.tag}>R$ {item.ticket_price}</Text>
-
-                    <User size={18} color="#374151" />
-                    <Text style={styles.tag}>Criado por {item.created_by_name}</Text>
-                  </>
-                )}
-              </View>
-            </TouchableOpacity>
-          );
-        }}
-      />
-    </View>
+    </SafeAreaView>
   );
 }

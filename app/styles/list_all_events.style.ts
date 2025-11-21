@@ -14,34 +14,42 @@ export const styles = StyleSheet.create({
     marginTop: 40,
   },
 
+  /* CARD BASE */
   card: {
     backgroundColor: '#fff',
     borderRadius: border.radiusLarge,
     padding: 16,
-    marginBottom: 16,
+    marginBottom: 20,
     shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
+
+    /* Para evitar cortes em devices com notch */
+    overflow: 'hidden',
     position: 'relative',
   },
 
+  /* CARD DESTACADO (próximo evento) */
   highlightCard: {
     borderWidth: 2,
     borderColor: '#0ea5e9',
-    shadowOpacity: 0.12,
-    shadowRadius: 10,
+    shadowOpacity: 0.14,
+    shadowRadius: 14,
+    elevation: 6,
+    backgroundColor: '#f0faff', // leve azul para reforçar destaque
   },
 
+  /* BADGE */
   badge: {
     position: 'absolute',
-    top: 10,
-    left: 10,
-    backgroundColor: '#0ea5e9',
-    paddingHorizontal: 10,
+    top: 12,
+    left: 12,
+    backgroundColor: '#0284c7',
+    paddingHorizontal: 12,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: 8,
     zIndex: 10,
   },
 
@@ -49,8 +57,10 @@ export const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '700',
     fontSize: 12,
+    letterSpacing: 0.3,
   },
 
+  /* BANNER */
   banner: {
     width: '100%',
     height: 180,
@@ -74,19 +84,15 @@ export const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
 
+  /* TÍTULO DO EVENTO */
   name: {
     fontSize: 22,
-    fontWeight: '700',
-    color: '#1f2937',
+    fontWeight: '800',
+    color: '#1e293b',
     marginBottom: 8,
   },
 
-  info: {
-    fontSize: 15,
-    color: '#4b5563',
-    marginLeft: 6,
-  },
-
+  /* LINHAS DE TEXTO */
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -94,11 +100,23 @@ export const styles = StyleSheet.create({
     gap: 6,
   },
 
+  info: {
+    fontSize: 15,
+    color: '#475569',
+    flexShrink: 1, // evita quebrar layout se texto for grande
+  },
+
   tag: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#374151',
+    fontWeight: '700',
+    color: '#334155',
     marginLeft: 6,
+  },
+
+  /* EXTRA: para listas com padding grande */
+  listContent: {
+    paddingBottom: 120, // garante que nada fica atrás da barra inferior
+    paddingHorizontal: 16,
   },
 });
 
