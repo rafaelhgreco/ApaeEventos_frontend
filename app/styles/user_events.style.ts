@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { border, colors, font, paddings, shadows } from './themes';
+import { border, colors, font, paddings } from './themes';
 
 export const styles = StyleSheet.create({
   container: {
@@ -13,17 +13,17 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: paddings.large,
-    backgroundColor: colors.background,
   },
 
   loadingText: {
     marginTop: paddings.medium,
     fontSize: font.sizeMedium,
     color: colors.text,
+    opacity: 0.8,
   },
 
   errorIcon: {
-    fontSize: 60,
+    fontSize: 56,
     marginBottom: paddings.medium,
   },
 
@@ -32,20 +32,25 @@ export const styles = StyleSheet.create({
     color: colors.error,
     fontSize: font.sizeMedium,
     marginBottom: paddings.medium,
+    lineHeight: 22,
   },
 
   retryButton: {
     backgroundColor: colors.button,
-    paddingHorizontal: paddings.extraLarge,
     paddingVertical: paddings.medium,
-    borderRadius: border.radiusMedium,
-    ...shadows,
+    paddingHorizontal: paddings.extraLarge,
+    borderRadius: border.radiusLarge,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
 
   retryButtonText: {
     color: colors.backgroundLight,
     fontSize: font.sizeMedium,
-    fontWeight: '600',
+    fontWeight: '700',
+    letterSpacing: 0.4,
   },
 
   emptyIcon: {
@@ -55,17 +60,18 @@ export const styles = StyleSheet.create({
 
   emptyTitle: {
     fontSize: font.sizeLarge,
-    fontWeight: '700',
-    color: colors.primary,
+    fontWeight: '800',
+    color: colors.primaryDark,
     textAlign: 'center',
   },
 
   emptySubtitle: {
     marginTop: paddings.small,
-    color: colors.text,
+    color: colors.textSecondary,
     fontSize: font.sizeSmall,
     textAlign: 'center',
     paddingHorizontal: paddings.extraLarge,
+    lineHeight: 18,
   },
 
   /* ----- BUSCA ----- */
@@ -74,31 +80,52 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.backgroundLight,
     borderBottomWidth: 1,
     borderBottomColor: colors.borderLight,
-    ...shadows,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
   },
 
   /* ----- LISTA ----- */
   listContent: {
     padding: paddings.large,
-    paddingBottom: 40,
+    paddingBottom: 120,
+    gap: paddings.large,
+  },
+
+  /* ----- SEÇÃO ----- */
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: colors.primaryDark,
+    marginBottom: 12,
+    marginTop: 10,
+    paddingHorizontal: 6,
   },
 
   /* ----- CARD DE EVENTO ----- */
   card: {
     backgroundColor: colors.backgroundLight,
     borderRadius: border.radiusLarge,
-    marginBottom: paddings.extraLarge,
     overflow: 'hidden',
-    ...shadows,
-    elevation: 4,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
   },
 
   cardHighlight: {
     borderWidth: 2,
     borderColor: colors.terceary,
-    transform: [{ scale: 1.02 }],
-    elevation: 12,
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.18,
+    shadowRadius: 16,
+    elevation: 10,
+    transform: [{ scale: 1.01 }],
+  },
+
+  pastCard: {
+    opacity: 0.6,
   },
 
   eventBanner: {
@@ -113,7 +140,7 @@ export const styles = StyleSheet.create({
   },
 
   eventTitle: {
-    fontSize: font.sizeExtraLarge,
+    fontSize: font.sizeLarge,
     fontWeight: '800',
     color: colors.primaryDark,
     marginBottom: 4,
@@ -122,8 +149,8 @@ export const styles = StyleSheet.create({
   infoRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
     alignItems: 'center',
+    gap: 6,
   },
 
   eventInfo: {
@@ -143,9 +170,9 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.background,
-    paddingVertical: 6,
+    paddingVertical: 5,
     paddingHorizontal: 12,
-    borderRadius: 10,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: colors.borderLight,
     gap: 6,

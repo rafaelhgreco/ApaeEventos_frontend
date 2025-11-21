@@ -1,84 +1,88 @@
-import Button from "@/components/ATOMIC/atoms/button";
-import { ThemedView } from "@/components/ThemedView";
-import { checkQRCodeValidity } from "@/services/qr_code_services";
-import { CameraView, useCameraPermissions } from "expo-camera";
-import { useRef, useState } from "react";
-import { Alert, Modal, View } from "react-native";
-import styles from "../../app/styles/scan_qrcode.style";
+import Button from '@/components/ATOMIC/atoms/button';
+import { ThemedView } from '@/components/ThemedView';
+import { checkQRCodeValidity } from '@/services/qr_code_services';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import { XCircle } from 'lucide-react-native';
+
+import { useRef, useState } from 'react';
+import { ActivityIndicator, Alert, Modal, Text, TouchableOpacity, View } from 'react-native';
+
+import styles from '../../app/styles/scan_qrcode.style';
 
 export default function ValidateQRCode() {
-    const [modalIsVisible, setModalIsVisible] = useState(false);
-    const [permission, requestPermission] = useCameraPermissions();
-    const qrCodeLock = useRef(false);
+  const [modalIsVisible, setModalIsVisible] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
-    async function handleOpenCamera() {
-        try {
-            const { granted } = await requestPermission();
-            if (!granted) {
-                return Alert.alert("Câmera", "Habilite o uso da câmera.");
-            }
+  const [permission, requestPermission] = useCameraPermissions();
+  const qrLock = useRef(false);
 
-            setModalIsVisible(true);
-            qrCodeLock.current = false;
-        } catch (error) {
-            console.log(error);
-        }
+  async function openCamera() {
+    const { granted } = await requestPermission();
+    if (!granted) {
+      return Alert.alert('Permissão', 'Habilite o uso da câmera.');
     }
 
-    async function handleQRCodeRead(data: string) {
-        setModalIsVisible(false);
-        qrCodeLock.current = true;
+    setProcessing(false);
+    qrLock.current = false;
+    setModalIsVisible(true);
+  }
 
-        try {
-            const result = await checkQRCodeValidity(data);
+  async function handleScan(data: string) {
+    if (qrLock.current) return;
 
-            if (result.valid) {
-                Alert.alert(
-                    "Sucesso",
-                    "Ingresso válido e ainda não utilizado!"
-                );
-            } else {
-                Alert.alert(
-                    "Ingresso já utilizado",
-                    result.message || "Este ingresso já foi usado."
-                );
-            }
-        } catch (error: any) {
-            console.error(error);
-            Alert.alert(
-                "Erro",
-                error.message || "Falha ao verificar o ingresso."
-            );
-        }
+    qrLock.current = true;
+    setProcessing(true);
+
+    try {
+      const result = await checkQRCodeValidity(data);
+
+      setModalIsVisible(false);
+      setProcessing(false);
+
+      if (result.valid) {
+        Alert.alert('✔️ Válido', 'Ingresso ainda não utilizado.');
+      } else {
+        Alert.alert('⚠️ Já usado', result.message || 'Este ingresso já foi utilizado.');
+      }
+    } catch (error: any) {
+      setProcessing(false);
+      Alert.alert('Erro', error.message || 'Falha ao verificar ingresso.');
     }
+  }
 
-    return (
-        <ThemedView style={styles.container}>
-            <Button
-                label="Verificar Ingresso"
-                onPress={handleOpenCamera}
-                variant="secondary"
-            />
+  return (
+    <ThemedView style={styles.container}>
+      <Button label="Verificar Ingresso" onPress={openCamera} variant="secondary" />
 
-            <Modal visible={modalIsVisible} style={{ flex: 1 }}>
-                <CameraView
-                    style={{ flex: 1 }}
-                    facing="back"
-                    onBarcodeScanned={({ data }) => {
-                        if (data && !qrCodeLock.current) {
-                            qrCodeLock.current = true;
-                            handleQRCodeRead(data);
-                        }
-                    }}
-                />
+      <Modal visible={modalIsVisible} animationType="fade">
+        <View style={styles.modalContainer}>
+          <CameraView
+            style={styles.camera}
+            facing="back"
+            onBarcodeScanned={({ data }) => {
+              if (data && !qrLock.current && !processing) {
+                handleScan(data);
+              }
+            }}
+          />
 
-                <View style={styles.footer}>
-                    <Button
-                        label="Cancelar"
-                        onPress={() => setModalIsVisible(false)}
-                    />
-                </View>
-            </Modal>
-        </ThemedView>
-    );
+          {/* Moldura */}
+          <View style={styles.scanFrameContainer}>
+            <View style={styles.scanFrame} />
+          </View>
+
+          <TouchableOpacity style={styles.closeButton} onPress={() => setModalIsVisible(false)}>
+            <XCircle size={42} color="#fff" />
+          </TouchableOpacity>
+
+          {processing && (
+            <View style={styles.loadingOverlay}>
+              <ActivityIndicator size="large" color="#fff" />
+              <Text style={styles.loadingText}>Verificando...</Text>
+            </View>
+          )}
+        </View>
+      </Modal>
+    </ThemedView>
+  );
 }

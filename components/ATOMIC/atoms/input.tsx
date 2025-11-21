@@ -51,6 +51,8 @@ const Input: React.FC<InputProps> = ({
           style={[styles.input, inputStyle]}
           placeholderTextColor={colors.textSecondary}
           secureTextEntry={isSecure}
+          autoCapitalize={isPassword ? 'none' : props.autoCapitalize}
+          autoCorrect={isPassword ? false : props.autoCorrect}
         />
 
         {/* RIGHT ICON */}

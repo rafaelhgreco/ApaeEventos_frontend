@@ -10,6 +10,9 @@ export const colors = {
   textSecondary: '#6C7A89',
   input: '#000000',
 
+  textDark: '#2C3E50',
+  textMuted: '#6C7A89',
+
   // Feedback
   success: '#28a745',
   successLight: '#DFFBEA',

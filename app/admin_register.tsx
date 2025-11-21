@@ -4,7 +4,6 @@ import { ThemedView } from '@/components/ThemedView';
 import { signUp } from '@/lib/cognito';
 import { FormField } from '@/types/molecules';
 
-import { Image } from 'expo-image';
 import { useNavigation } from 'expo-router';
 
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
@@ -183,7 +182,7 @@ export default function AdminRegisterScreen() {
       props: {
         title: 'Função do Usuário',
         options: [
-          { label: 'Usuário Comum (Default)', value: '' },
+          { label: 'Usuário', value: '' },
           { label: 'Atendente', value: 'staff' },
           { label: 'Administrador', value: 'admin' },
         ],
@@ -254,17 +253,6 @@ export default function AdminRegisterScreen() {
           contentContainerStyle={{ paddingBottom: 40 }}
         >
           <ThemedView style={{ flex: 1, paddingHorizontal: 20 }}>
-            {/* LOGO COM ANIMAÇÃO */}
-            <Animated.View
-              style={[styles.logoWrapper, { opacity: logoOpacity.current, marginBottom: 24 }]}
-            >
-              <Image
-                source={require('@/assets/images/logo_apae.png')}
-                style={styles.reactLogo}
-                contentFit="contain"
-              />
-            </Animated.View>
-
             {/* FORM */}
             <Animated.View style={{ transform: [{ translateY: translateY.current }] }}>
               <GenericForm

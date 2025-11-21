@@ -1,132 +1,138 @@
-import { themeColors } from "@/app/styles/dashboard.style";
-import { getIdToken } from "@/lib/cognito";
-import { getEventReport, getUserEvents } from "@/services/chart_services";
-import { useEffect, useState } from "react";
-import { Alert } from "react-native";
+import { getIdToken } from '@/lib/cognito';
+// eslint-disable-next-line import/no-unresolved
+import { API_BASE_URL } from '@env';
+import axios from 'axios';
+import { useCallback, useEffect, useState } from 'react';
+import { Alert } from 'react-native';
+
+interface DashboardEventSummary {
+  event_id: number;
+  event_name: string;
+  data: string;
+  tickets_issued: number;
+  tickets_used: number;
+  revenue: number;
+  capacity: number;
+  remaining: number;
+}
+
+interface EventCheckins {
+  total_scans: number;
+  unique_tickets_scanned: number;
+  first_scan_at: string | null;
+  last_scan_at: string | null;
+}
 
 interface ChartData {
-    labels: string[];
-    datasets: {
-        data: number[];
-        color: (opacity: number) => string;
-        strokeWidth?: number;
-    }[];
-    legend?: string[];
+  labels: string[];
+  datasets: any[];
+  legend?: string[];
 }
 
-interface UseDashboardController {
-    loadChartData: () => Promise<void>;
-}
+export const useDashboard = () => {
+  const [loading, setLoading] = useState(true);
 
-interface UseDashboardReturn {
-    controller: UseDashboardController;
-    chartData: ChartData;
-    loading: boolean;
-}
+  const [eventsList, setEventsList] = useState<DashboardEventSummary[]>([]);
+  const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<DashboardEventSummary | null>(null);
+  const [checkins, setCheckins] = useState<EventCheckins | null>(null);
 
-export const useDashboard = (): UseDashboardReturn => {
-    const [loading, setLoading] = useState<boolean>(true);
-    const [chartData, setChartData] = useState<ChartData>({
-        labels: [],
-        datasets: [],
-    });
+  const [chartData, setChartData] = useState<ChartData>({
+    labels: [],
+    datasets: [],
+    legend: [],
+  });
 
-    const loadChartData = async () => {
-        try {
-            setLoading(true);
-            const token = await getIdToken();
+  /**
+   * ============================================================
+   * FUNÇÃO PRINCIPAL: LOAD DASHBOARD
+   * ============================================================
+   */
+  const loadDashboard = useCallback(async () => {
+    try {
+      setLoading(true);
 
-            if (!token) {
-                Alert.alert("Erro", "Você precisa estar autenticado");
-                return;
-            }
+      const token = await getIdToken();
+      if (!token) {
+        Alert.alert('Erro', 'Você precisa estar autenticado.');
+        return;
+      }
 
-            const events = await getUserEvents(token);
+      // 1 — OVERVIEW
+      const overview = await axios.get(`${API_BASE_URL}/dashboard/overview`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-            if (!events || events.length === 0) {
-                setChartData({ labels: [], datasets: [] });
-                return;
-            }
+      const allEvents = overview.data.events || [];
+      setEventsList(allEvents);
 
-            const labels: string[] = [];
-            const totalData: number[] = [];
-            const usedData: number[] = [];
+      // Se não tem evento selecionado ainda, só exibe o global
+      if (!selectedEventId) {
+        setChartData({
+          labels: allEvents.map((e: DashboardEventSummary) => e.event_name.substring(0, 10)),
+          datasets: [
+            {
+              data: allEvents.map((e: DashboardEventSummary) => e.tickets_issued),
+              color: () => '#16A34A',
+            },
+            {
+              data: allEvents.map((e: DashboardEventSummary) => e.tickets_used),
+              color: () => '#DC2626',
+            },
+          ],
+          legend: ['Emitidos', 'Usados'],
+        });
+        return;
+      }
 
-            for (const event of events) {
-                try {
-                    const report = await getEventReport(event.id, token);
-                    labels.push(event.nome.substring(0, 10));
-                    totalData.push(report.total || 0);
-                    usedData.push(report.usados || 0);
-                } catch (error: any) {
-                    if (error.response?.status === 404) {
-                        console.log(
-                            `ℹ️ Evento ${event.id} (${event.nome}) não tem relatório ainda`
-                        );
-                        labels.push(event.nome.substring(0, 10));
-                        totalData.push(0);
-                        usedData.push(0);
-                    } else {
-                        console.error(
-                            `❌ Erro ao buscar relatório do evento ${event.id}:`,
-                            error.message
-                        );
-                        labels.push(event.nome.substring(0, 10));
-                        totalData.push(0);
-                        usedData.push(0);
-                    }
-                }
-            }
+      // 2 — DETALHES DO EVENTO
+      const detail = await axios.get(`${API_BASE_URL}/dashboard/events/${selectedEventId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-            if (labels.length === 0) {
-                setChartData({ labels: [], datasets: [] });
-                return;
-            }
+      const summary = detail.data.sales;
+      const checkinsData = detail.data.checkins;
+      const timeline = detail.data.timeline || [];
 
-            const hasData =
-                totalData.some((val) => val > 0) ||
-                usedData.some((val) => val > 0);
+      setSelectedEvent(summary);
+      setCheckins(checkinsData);
 
-            setChartData({
-                labels,
-                datasets: [
-                    {
-                        data: hasData ? totalData : totalData.map(() => 0.1),
-                        color: (opacity = 1) =>
-                            themeColors.blue.replace("1.0", `${opacity}`),
-                        strokeWidth: 2,
-                    },
-                    {
-                        data: hasData ? usedData : usedData.map(() => 0.1),
-                        color: (opacity = 1) =>
-                            themeColors.green.replace("1.0", `${opacity}`),
-                        strokeWidth: 2,
-                    },
-                ],
-                legend: ["Total Gerados", "Usados"],
-            });
-        } catch (error) {
-            console.error("❌ Erro ao carregar dados do gráfico:", error);
-            Alert.alert(
-                "Erro",
-                "Não foi possível carregar os dados do gráfico"
-            );
-        } finally {
-            setLoading(false);
-        }
-    };
+      setChartData({
+        labels: timeline.map((d: any) => d.dia.substring(5)),
+        datasets: [
+          {
+            data: timeline.map((d: any) => d.scans),
+            color: () => '#4F46E5',
+          },
+        ],
+        legend: ['Check-ins por dia'],
+      });
+    } catch (err) {
+      console.error('❌ Erro no dashboard:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedEventId]);
 
-    useEffect(() => {
-        loadChartData();
-    }, []);
+  /**
+   * ============================================================
+   * EFEITOS
+   * ============================================================
+   */
 
-    const controller: UseDashboardController = {
-        loadChartData,
-    };
+  // CARREGAR AO INICIAR
+  useEffect(() => {
+    loadDashboard();
+  }, [loadDashboard]);
 
-    return {
-        controller,
-        chartData,
-        loading,
-    };
+  return {
+    loading,
+    eventsList,
+    selectedEventId,
+    setSelectedEventId,
+    selectedEvent,
+    checkins,
+    chartData,
+    refresh: loadDashboard,
+  };
 };

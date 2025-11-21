@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-unresolved
-import { API_BASE_URL } from "@env";
-import axios from "axios";
-import { handleApiError } from "./auth_services";
+import { API_BASE_URL } from '@env';
+import axios from 'axios';
+import { handleApiError } from './auth_services';
 
 /**
  * 🧾 Tipagem completa do evento conforme o novo banco
@@ -15,18 +15,28 @@ export interface EventData {
   ticket_price: number;
   starts_at?: string | null;
   ends_at?: string | null;
-  status?: "draft" | "published" | "canceled" | "finished";
+  status?: 'draft' | 'published' | 'canceled' | 'finished';
 }
 
 /**
  * 🧠 Normaliza data para formato MySQL (YYYY-MM-DD)
  */
 const normalizeDate = (date: string | Date): string => {
+  if (!date) return '';
+
+  // Se já está no formato certo, não tocar
+  if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return date;
+  }
+
   const d = new Date(date);
-  if (isNaN(d.getTime())) return "";
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
+  if (isNaN(d.getTime())) return '';
+
+  // Usar UTC evita o rollback de timezone
+  const year = d.getUTCFullYear();
+  const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(d.getUTCDate()).padStart(2, '0');
+
   return `${year}-${month}-${day}`;
 };
 
@@ -35,9 +45,25 @@ const normalizeDate = (date: string | Date): string => {
  */
 const normalizeDateTime = (value?: string | Date | null): string | null => {
   if (!value) return null;
+
+  // Se já vier uma string "HH:mm" ou "HH:mm:ss", só normaliza
+  if (typeof value === 'string') {
+    const match = value.match(/^(\d{2}):(\d{2})(?::(\d{2}))?$/);
+    if (match) {
+      const [, h, m, s = '00'] = match;
+      return `${h}:${m}:${s}`;
+    }
+  }
+
   const d = new Date(value);
   if (isNaN(d.getTime())) return null;
-  return d.toISOString().slice(0, 19).replace("T", " ");
+
+  const h = String(d.getHours()).padStart(2, '0');
+  const m = String(d.getMinutes()).padStart(2, '0');
+  const s = String(d.getSeconds()).padStart(2, '0');
+
+  // Se sua coluna no MySQL é TIME, isso aqui é o formato ideal:
+  return `${h}:${m}:${s}`;
 };
 
 /**
@@ -48,13 +74,13 @@ export const getUserEvents = async (token: string) => {
     const response = await axios.get(`${API_BASE_URL}/events`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
 
     const normalized = response.data.map((event: any) => ({
       ...event,
-      data: event.data ? event.data.split("T")[0] : "",
+      data: event.data ? event.data.split('T')[0] : '',
       ticket_price: Number(event.ticket_price || 0),
       sold_count: Number(event.sold_count || 0),
       capacity: Number(event.capacity || 0),
@@ -62,7 +88,7 @@ export const getUserEvents = async (token: string) => {
 
     return normalized;
   } catch (error) {
-    console.error("❌ Erro ao buscar eventos:", error);
+    console.error('❌ Erro ao buscar eventos:', error);
     handleApiError(error);
   }
 };
@@ -81,19 +107,19 @@ export const createEvent = async (event: EventData, token: string) => {
       ticket_price: event.ticket_price,
       starts_at: normalizeDateTime(event.starts_at),
       ends_at: normalizeDateTime(event.ends_at),
-      status: event.status || "published",
+      status: event.status || 'published',
     };
 
     const response = await axios.post(`${API_BASE_URL}/events`, payload, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
 
     return response.data;
   } catch (error) {
-    console.error("❌ Erro ao criar evento:", error);
+    console.error('❌ Erro ao criar evento:', error);
     handleApiError(error);
   }
 };
@@ -101,31 +127,25 @@ export const createEvent = async (event: EventData, token: string) => {
 /**
  * 🔹 Atualiza evento existente
  */
-export const updateEvent = async (
-  id: number,
-  event: Partial<EventData>,
-  token: string
-) => {
+export const updateEvent = async (id: number, event: Partial<EventData>, token: string) => {
   try {
     const payload = {
       ...event,
       data: event.data ? normalizeDate(event.data) : undefined,
-      starts_at: event.starts_at
-        ? normalizeDateTime(event.starts_at)
-        : undefined,
+      starts_at: event.starts_at ? normalizeDateTime(event.starts_at) : undefined,
       ends_at: event.ends_at ? normalizeDateTime(event.ends_at) : undefined,
     };
 
     const response = await axios.put(`${API_BASE_URL}/events/${id}`, payload, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
 
     return response.data;
   } catch (error) {
-    console.error("❌ Erro ao atualizar evento:", error);
+    console.error('❌ Erro ao atualizar evento:', error);
     handleApiError(error);
   }
 };
@@ -138,13 +158,13 @@ export const deleteEvent = async (id: number, token: string) => {
     const response = await axios.delete(`${API_BASE_URL}/events/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
 
     return response.data;
   } catch (error) {
-    console.error("❌ Erro ao excluir evento:", error);
+    console.error('❌ Erro ao excluir evento:', error);
     handleApiError(error);
   }
 };
@@ -154,13 +174,10 @@ export const deleteEvent = async (id: number, token: string) => {
  * Recebe FormData com campo "file"
  * Retorna: { url: "https://s3.amazonaws..." }
  */
-export const uploadBannerService = async (
-  formData: FormData,
-  token: string
-) => {
+export const uploadBannerService = async (formData: FormData, token: string) => {
   try {
     const response = await fetch(`${API_BASE_URL}/events/upload-banner`, {
-      method: "POST",
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
         // não definir "Content-Type" aqui, o próprio fetch + FormData cuidam disso
@@ -169,18 +186,14 @@ export const uploadBannerService = async (
     });
 
     if (!response.ok) {
-      const text = await response.text().catch(() => "");
-      console.error(
-        "Resposta não OK no upload do banner:",
-        response.status,
-        text
-      );
-      throw new Error("Erro ao enviar banner para o servidor");
+      const text = await response.text().catch(() => '');
+      console.error('Resposta não OK no upload do banner:', response.status, text);
+      throw new Error('Erro ao enviar banner para o servidor');
     }
 
     return await response.json();
   } catch (error) {
-    console.error("❌ Erro no upload do banner:", error);
+    console.error('❌ Erro no upload do banner:', error);
     throw error;
   }
 };
