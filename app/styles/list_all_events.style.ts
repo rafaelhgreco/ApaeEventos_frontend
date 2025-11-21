@@ -20,10 +20,35 @@ export const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
     shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
     shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
+    elevation: 2,
+    position: 'relative',
+  },
+
+  highlightCard: {
+    borderWidth: 2,
+    borderColor: '#0ea5e9',
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+  },
+
+  badge: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    backgroundColor: '#0ea5e9',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+    zIndex: 10,
+  },
+
+  badgeText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 12,
   },
 
   banner: {
@@ -50,28 +75,30 @@ export const styles = StyleSheet.create({
   },
 
   name: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
     color: '#1f2937',
-    marginBottom: 4,
+    marginBottom: 8,
   },
 
   info: {
     fontSize: 15,
-    color: '#6b7280',
-    marginBottom: 4,
+    color: '#4b5563',
+    marginLeft: 6,
   },
 
   row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
+    alignItems: 'center',
+    marginBottom: 8,
+    gap: 6,
   },
 
   tag: {
     fontSize: 15,
     fontWeight: '600',
     color: '#374151',
+    marginLeft: 6,
   },
 });
 

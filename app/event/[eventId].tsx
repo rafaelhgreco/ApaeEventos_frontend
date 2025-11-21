@@ -38,9 +38,6 @@ import {
   Users,
 } from 'lucide-react-native';
 
-/* -----------------------------------------------------
-   CORREÇÃO DE TIMEZONE (SEM PERDER 1 DIA)
------------------------------------------------------ */
 function parseDateSafe(value: string | Date) {
   if (!value) return new Date();
 
