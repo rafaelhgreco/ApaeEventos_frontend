@@ -1,0 +1,98 @@
+appId: com.anonymous.apaeeventos
+---
+# Suite de Testes Completa - Login
+# Testa todos os cenários possíveis de login: casos de erro e sucesso
+
+# ========================================
+# Caso 1: Campos vazios
+# ========================================
+- launchApp
+- assertVisible: "Login"
+
+# Tentar fazer login sem preencher nada
+- tapOn: "Iniciar sessão"
+- assertVisible: ".*[Ee]rro.*|.*obrigatório.*|.*preencha.*|.*campo.*"
+- tapOn: "OK"
+
+# ========================================
+# Caso 2: Apenas email preenchido
+# ========================================
+- tapOn: "Digite seu e-mail"
+- inputText: "user@user.com"
+
+# Tentar fazer login sem a senha
+- tapOn: "Iniciar sessão"
+- assertVisible: ".*[Ee]rro.*|.*senha.*|.*obrigatório.*"
+- tapOn: "OK"
+
+# Limpar formulário para próximo teste
+- tapOn: "Limpar"
+
+# ========================================
+# Caso 3: Apenas senha preenchida
+# ========================================
+- tapOn: "Digite sua senha"
+- inputText: "Senh@123"
+
+# Tentar fazer login sem o email
+- tapOn: "Iniciar sessão"
+- assertVisible: ".*[Ee]rro.*|.*e-mail.*|.*email.*|.*obrigatório.*"
+- tapOn: "OK"
+
+# Limpar formulário para próximo teste
+- tapOn: "Limpar"
+
+# ========================================
+# Caso 4: Email e senha incorretos
+# ========================================
+- tapOn: "Digite seu e-mail"
+- inputText: "usuario_invalido@teste.com"
+
+- tapOn: "Digite sua senha"
+- inputText: "senhaErrada123"
+
+# Tentar fazer login com credenciais inválidas
+- tapOn: "Iniciar sessão"
+- assertVisible: ".*[Ee]rro.*|.*inválid.*|.*incorret.*|.*não encontrad.*"
+- tapOn: "OK"
+
+# Limpar formulário para próximo teste
+- tapOn: "Limpar"
+
+# ========================================
+# Caso 5: Email correto e senha incorreta
+# ========================================
+- tapOn: "Digite seu e-mail"
+- inputText: "user@user.com"
+
+- tapOn: "Digite sua senha"
+- inputText: "senhaErrada123"
+
+# Tentar fazer login com senha incorreta
+- tapOn: "Iniciar sessão"
+- assertVisible: ".*[Ee]rro.*|.*senha.*inválid.*|.*senha.*incorret.*|.*credenciais.*"
+- tapOn: "OK"
+
+# Limpar formulário para o teste final
+- tapOn: "Limpar"
+
+# ========================================
+# Caso 6: Login com sucesso (email e senha corretos)
+# ========================================
+- tapOn: "Digite seu e-mail"
+- inputText: "user@user.com"
+
+- tapOn: "Digite sua senha"
+- inputText: "Senh@123"
+
+# Fazer login com credenciais corretas
+- tapOn: "Iniciar sessão"
+
+- tapOn: "OK"
+
+# Aguardar navegação e verificar tela de sucesso
+# Ajuste o texto/ID conforme a tela que aparece após login bem-sucedido
+- assertVisible: ".*Dashboard.*|.*Eventos.*|.*Início.*|.*Bem-vindo.*"
+# ========================================
+# Fim dos Testes
+# ========================================
