@@ -12,6 +12,7 @@
         "dev": "react-native start --reset-cache",
         "test:e2e": "./run-maestro-test.sh .maestro/",
         "test:e2e:login": "./run-maestro-test.sh .maestro/basic_navigation.yaml",
+        "test:e2e:login-suite": "./run-maestro-test.sh .maestro/login_test_suite.yaml",
         "test:e2e:studio": "maestro studio"
     },
     "dependencies": {
