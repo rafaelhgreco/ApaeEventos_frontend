@@ -8,14 +8,17 @@ import { StatusBar } from 'expo-status-bar';
 import { ChevronLeft } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { authEvents } from '@/lib/authEvents';
 import { getUserName } from '@/lib/cognito';
 
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from '@/hooks/use-auth';
 
+// 🔥 Chatbot imports
+import ChatbotButton from '@/components/chatbot/ChatbotButton';
+import { useChatbot } from '@/hooks/useChatbot';
 
 /* --------------------------------------------------------
     SAUDAÇÃO DINÂMICA
@@ -37,6 +40,8 @@ export default function RootLayout() {
   const pathname = usePathname();
   const { controller } = useAuth();
 
+  // 👉 Hook global do Chatbot
+  const chatbot = useChatbot();
 
   /* --------------------------------------------------------
       CARREGAR NOME E ATUALIZAR AUTOMATICAMENTE
@@ -74,12 +79,13 @@ export default function RootLayout() {
                     <ChevronLeft size={28} color="#1f2937" />
                   </TouchableOpacity>
                 ) : (
-                  <TouchableOpacity style={styles.backButtonInvisible} />
+                  <View style={styles.backButtonInvisible} />
                 )}
 
                 {/* TEXTO: Saudação + Nome */}
                 <Text style={styles.greeting}>{getGreeting()}</Text>
                 <Text style={styles.name}>{userName || 'Carregando...'}</Text>
+
                 {/* BOTÃO DE LOGOUT APENAS NA TELA DE EVENTOS */}
                 {pathname === '/user_events' && (
                   <TouchableOpacity onPress={controller.handleLogout} style={styles.logoutButton}>
@@ -94,6 +100,9 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
+
+        {/* 💬 Botão global do Chatbot */}
+        <ChatbotButton />
 
         <StatusBar style="dark" />
       </ThemeProvider>
