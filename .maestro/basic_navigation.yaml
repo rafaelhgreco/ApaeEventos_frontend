@@ -1,0 +1,13 @@
+appId: com.anonymous.apaeeventos
+---
+# Teste básico de navegação
+- launchApp
+- assertVisible: "Login"
+- tapOn: "Digite seu e-mail"
+- inputText:
+      text: "user@user.com"
+      # Digitação instantânea ao invés de simular tecla por tecla
+- tapOn: "Digite sua senha"
+- inputText:
+      text: "Senh@123"
+- tapOn: "Iniciar sessão"

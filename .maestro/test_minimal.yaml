@@ -1,0 +1,6 @@
+appId: com.anonymous.apaeeventos
+---
+# Teste minimalista apenas para verificar conectividade
+- clearState: com.anonymous.apaeeventos
+- launchApp
+- assertVisible: ".*"
