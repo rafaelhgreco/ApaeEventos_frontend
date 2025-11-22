@@ -1,0 +1,5 @@
+appId: com.anonymous.apaeeventos
+---
+# Teste de login rápido
+- launchApp
+- assertVisible: "Login"
