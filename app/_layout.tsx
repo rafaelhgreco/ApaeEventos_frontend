@@ -3,7 +3,7 @@
 import { STRIPE_PUBLISHABLE_KEY } from '@env';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { StripeProvider } from '@stripe/stripe-react-native';
-import { Stack, usePathname, useRouter, useSegments } from 'expo-router';
+import { Stack, usePathname, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ChevronLeft } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
@@ -34,14 +34,15 @@ export default function RootLayout() {
   const [userName, setUserName] = useState<string | null>(null);
 
   const router = useRouter();
-  const segments = useSegments();
-  const canGoBack = segments.length > 1;
+  const canGoBack = router.canGoBack();
 
   const pathname = usePathname();
   const { controller } = useAuth();
 
   // 👉 Hook global do Chatbot
   const chatbot = useChatbot();
+
+  const isAuthRoute = pathname === '/' || pathname === '/login';
 
   /* --------------------------------------------------------
       CARREGAR NOME E ATUALIZAR AUTOMATICAMENTE
@@ -72,23 +73,34 @@ export default function RootLayout() {
 
             // Header custom em SafeAreaView para respeitar notch
             header: () => (
-              <SafeAreaView edges={['top']} style={styles.header}>
-                {/* BOTÃO DE VOLTAR */}
-                {canGoBack ? (
-                  <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-                    <ChevronLeft size={28} color="#1f2937" />
-                  </TouchableOpacity>
-                ) : (
-                  <View style={styles.backButtonInvisible} />
-                )}
+              <SafeAreaView edges={['top']} style={styles.headerContainer}>
+                <View style={styles.headerLeft}>
+                  {canGoBack ? (
+                    <TouchableOpacity
+                      style={styles.backButtonModern}
+                      onPress={() => router.back()}
+                      activeOpacity={0.75}
+                    >
+                      <ChevronLeft size={22} color="#111" strokeWidth={3} />
+                    </TouchableOpacity>
+                  ) : (
+                    <View style={styles.backButtonPlaceholder} />
+                  )}
 
-                {/* TEXTO: Saudação + Nome */}
-                <Text style={styles.greeting}>{getGreeting()}</Text>
-                <Text style={styles.name}>{userName || 'Carregando...'}</Text>
+                  {!isAuthRoute && (
+                    <View style={styles.textBlock}>
+                      <Text style={styles.greeting}>{getGreeting()}</Text>
+                      <Text style={styles.userName}>{userName || 'Carregando...'}</Text>
+                    </View>
+                  )}
+                </View>
 
-                {/* BOTÃO DE LOGOUT APENAS NA TELA DE EVENTOS */}
-                {pathname === '/user_events' && (
-                  <TouchableOpacity onPress={controller.handleLogout} style={styles.logoutButton}>
+                {!isAuthRoute && (
+                  <TouchableOpacity
+                    onPress={controller.handleLogout}
+                    style={styles.logoutButtonModern}
+                    activeOpacity={0.85}
+                  >
                     <Text style={styles.logoutText}>Sair</Text>
                   </TouchableOpacity>
                 )}
@@ -102,7 +114,7 @@ export default function RootLayout() {
         </Stack>
 
         {/* 💬 Botão global do Chatbot */}
-        <ChatbotButton />
+        {pathname !== '/' && pathname !== '/login' && <ChatbotButton />}
 
         <StatusBar style="dark" />
       </ThemeProvider>
@@ -114,48 +126,83 @@ export default function RootLayout() {
     STYLES
 -------------------------------------------------------- */
 const styles = StyleSheet.create({
-  header: {
-    height: 85,
-    backgroundColor: '#fff',
+  headerContainer: {
+    backgroundColor: '#ffffff',
     paddingHorizontal: 20,
+    paddingBottom: 10,
+    paddingTop: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+
+    // sombra bem elegante e suave — classe premium
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 4,
+  },
+
+  headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
   },
 
-  backButton: {
-    padding: 4,
-    marginRight: 4,
+  backButtonModern: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: 'rgba(0,0,0,0.05)',
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
   },
 
-  // mantém alinhamento perfeito mesmo sem botão de voltar
-  backButtonInvisible: {
-    width: 36,
+  backButtonPlaceholder: {
+    width: 42,
+    height: 42,
+  },
+
+  textBlock: {
+    flexDirection: 'column',
   },
 
   greeting: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#6b7280',
-    fontWeight: '600',
+    marginBottom: -2,
+    fontWeight: '500',
   },
 
-  name: {
+  userName: {
     fontSize: 18,
     fontWeight: '700',
     color: '#1f2937',
     textTransform: 'capitalize',
   },
 
-  logoutButton: {
-    marginLeft: 'auto',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+  logoutButtonModern: {
     backgroundColor: '#ef4444',
-    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 10,
+
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
   },
 
   logoutText: {
     color: '#fff',
     fontWeight: '700',
+    fontSize: 14,
   },
 });
