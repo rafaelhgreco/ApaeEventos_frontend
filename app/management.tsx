@@ -4,9 +4,8 @@ import { useEvents } from '@/hooks/useEvents';
 import { getIdToken } from '@/lib/cognito';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { BarChart3, CalendarPlus, QrCode, UserPlus } from 'lucide-react-native';
-import React, { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import {
-  Alert,
   Animated,
   KeyboardAvoidingView,
   Platform,
@@ -28,10 +27,6 @@ export default function ManagementScreen() {
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(20)).current;
-
-  useLayoutEffect(() => {
-    navigation.setOptions({ headerShown: false });
-  }, [navigation]);
 
   useFocusEffect(
     useCallback(() => {
@@ -63,11 +58,6 @@ export default function ManagementScreen() {
       }),
     ]).start();
   }, [fadeAnim, slideAnim]);
-
-  const handleSignOut = async () => {
-    router.push('/');
-    Alert.alert('Sucesso', 'Logout realizado com sucesso!');
-  };
 
   // -------------------------------------------------------------
   // 🔥 FILTRAR SÓ EVENTOS FUTUROS (INCLUINDO HOJE) + ORDENAR
@@ -103,15 +93,9 @@ export default function ManagementScreen() {
             contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 24 }]}
           >
             {/* HEADER */}
-            <View style={styles.header}>
-              <View>
-                <Text style={styles.headerTitle}>Gerenciamento</Text>
-                <Text style={styles.headerSubtitle}>Painel Administrativo</Text>
-              </View>
-
-              <TouchableOpacity onPress={handleSignOut} style={styles.logoutBtn}>
-                <Text style={styles.logoutText}>Sair</Text>
-              </TouchableOpacity>
+            <View>
+              <Text style={styles.headerTitle}>Gerenciamento</Text>
+              <Text style={styles.headerSubtitle}>Painel Administrativo</Text>
             </View>
 
             {/* AÇÕES RÁPIDAS */}

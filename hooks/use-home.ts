@@ -131,16 +131,6 @@ export const useHome = (): UseHomeReturn => {
         containerStyle: { marginTop: 16 },
       },
     },
-    {
-      type: 'button',
-      key: 'reset',
-      props: {
-        label: 'Limpar',
-        onPress: controller.handleReset,
-        variant: 'outline',
-        containerStyle: { marginTop: 8 },
-      },
-    },
   ];
 
   return {
