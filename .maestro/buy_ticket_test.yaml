@@ -1,0 +1,67 @@
+appId: com.anonymous.apaeeventos
+---
+# Suite de Testes de Compra de Ingresso (Fluxo Cancelado)
+# Testa o fluxo de compra até o pagamento e cancelamento
+
+# 1. Login
+- launchApp
+- tapOn: "Digite seu e-mail"
+- inputText: "user@user.com"
+- tapOn: "Digite sua senha"
+- inputText: "Senh@123"
+- tapOn: "Iniciar sessão"
+- tapOn: "OK"
+
+# 2. Acessar Evento
+# Seleciona o primeiro evento da lista clicando na informação de capacidade
+- tapOn:
+      text: "Festa de Natal APAE"
+      index: 0
+
+# 3. Iniciar Compra
+- scrollUntilVisible:
+      element:
+          text: "Comprar Ingressos"
+      direction: DOWN
+- tapOn: "Comprar Ingressos"
+
+- scroll
+
+- tapOn: "Continuar para Pagamento"
+
+# 5. Tela de Pagamento
+- assertVisible: "Pagamento Seguro"
+
+# Aguardar carregamento do Stripe (pode demorar um pouco)
+- assertVisible: "Pagar Agora"
+
+# Simular espera do usuário (3 segundos)
+# Nota: O comando sleep aceita milissegundos (ms) ou segundos (s) dependendo da versão,
+# mas geralmente é em ms. Se não funcionar, o teste apenas prossegue.
+- swipe:
+      start: 50%, 50%
+      end: 50%, 50%
+      duration: 3000
+
+# 6. Tentar Pagar
+- tapOn: "Pagar Agora"
+
+# Aguardar a sheet do Stripe abrir (pode levar alguns segundos)
+# Como é uma UI de sistema, não conseguimos fazer assert em elementos dela facilmente.
+# Vamos esperar um pouco para garantir que abriu.
+- swipe:
+      start: 50%, 50%
+      end: 50%, 50%
+      duration: 3000
+
+# 7. Cancelar Pagamento
+# Pressionar o botão de voltar do dispositivo para fechar a sheet
+- back
+
+# 8. Verificar Cancelamento
+# O app deve exibir um alerta "Cancelado"
+- assertVisible: "Cancelado"
+- tapOn: "OK"
+
+# Deve permanecer na tela de pagamento
+- assertVisible: "Pagamento Seguro"

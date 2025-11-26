@@ -1,0 +1,50 @@
+appId: com.anonymous.apaeeventos
+---
+# Testa o ciclo completo de criação de um evento pelo Admin
+
+# ========================================
+# 1. Login como Admin
+# ========================================
+- launchApp
+- tapOn: "Digite seu e-mail"
+- inputText: "admin@admin.com"
+- tapOn: "Digite sua senha"
+- inputText: "Senh@123"
+- tapOn: "Iniciar sessão"
+- tapOn: "OK"
+
+# Verificar se entrou na tela de gestão
+- assertVisible: "Gerenciamento"
+- assertVisible: "Painel Administrativo"
+
+# ========================================
+# 2. Criar Evento (Create)
+# ========================================
+- tapOn: "Cadastrar"
+- assertVisible: "Cadastro de Novo Evento"
+
+# Preencher formulário
+- tapOn: "Ex: Festa Junina APAE"
+- inputText: "Evento Maestro Teste"
+
+- tapOn: "Digite o local"
+- inputText: "Sede APAE"
+
+- tapOn: "Número máximo de pessoas"
+- inputText: "100"
+
+- tapOn: "Ex: 10.00"
+- inputText: "1.00"
+
+# Data e Hora já vêm preenchidos com hoje/agora, vamos manter
+
+- hideKeyboard
+- scroll
+- tapOn: "Cadastrar Evento"
+
+# Validar sucesso
+- assertVisible: "Sucesso"
+- tapOn: "OK"
+
+# Deve voltar para a tela de gestão
+- assertVisible: "Gerenciamento"

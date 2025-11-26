@@ -1,0 +1,126 @@
+appId: com.anonymous.apaeeventos
+---
+# Suite de Testes de Registro Completa
+# Testa validações (campos vazios, senha fraca) e fluxo de sucesso
+
+- launchApp
+
+# ========================================
+# Caso 1: Campos Vazios
+# ========================================
+- tapOn: "Fazer Cadastro"
+- assertVisible: "Criar Conta"
+
+- tapOn: "Criar Conta" # Clicar no título para garantir foco fora
+
+- scrollUntilVisible:
+      element:
+          text: "Criar Conta"
+          index: 1
+      direction: DOWN
+
+- tapOn:
+      text: "Criar Conta"
+      index: 1
+
+- assertVisible: ".*[Ee]rro.*|.*obrigatório.*|.*Preencha.*"
+- tapOn: "OK"
+
+# Reiniciar tela para limpar campos
+- back
+- tapOn: "Fazer Cadastro"
+
+# ========================================
+# Caso 2: Sem Email (Campos Obrigatórios)
+# ========================================
+- tapOn: "Nome completo"
+- inputText: "Usuario Sem Email"
+
+- tapOn: "Senha"
+- inputText: "SenhaForte@123"
+
+- tapOn: "Criar Conta" # Título
+
+- scrollUntilVisible:
+      element:
+          text: "Criar Conta"
+          index: 1
+      direction: DOWN
+
+- tapOn:
+      text: "Criar Conta"
+      index: 1
+
+- assertVisible: ".*[Ee]rro.*|.*obrigatório.*|.*Preencha.*"
+- tapOn: "OK"
+
+# Reiniciar tela
+- back
+- tapOn: "Fazer Cadastro"
+
+# ========================================
+# Caso 3: Senha Fraca
+# ========================================
+- tapOn: "Nome completo"
+- inputText: "Usuario Senha Fraca"
+
+- tapOn: "E-mail"
+- inputRandomEmail
+
+- tapOn: "Senha"
+- inputText: "123" # Senha muito curta
+
+- hideKeyboard
+- tapOn: "Criar Conta" # Título
+
+- scrollUntilVisible:
+      element:
+          text: "Criar Conta"
+          index: 1
+      direction: DOWN
+
+- tapOn:
+      text: "Criar Conta"
+      index: 1
+
+# O erro vem do Cognito (ex: Password not long enough) ou validação local se houver
+- assertVisible: ".*[Ee]rro.*|.*senha.*|.*password.*"
+- tapOn: "OK"
+
+# Reiniciar tela
+- back
+- tapOn: "Fazer Cadastro"
+
+# ========================================
+# Caso 4: Happy Path (Sucesso)
+# ========================================
+- tapOn: "Nome completo"
+- inputText: "Usuario Happy Path"
+
+- tapOn: "E-mail"
+- inputRandomEmail
+
+- tapOn: "Telefone com DDD (opcional)"
+- inputText: "11999999999"
+
+- tapOn: "Senha"
+- inputText: "SenhaForte@123"
+
+- hideKeyboard
+- tapOn: "Criar Conta" # Título
+
+- scrollUntilVisible:
+      element:
+          text: "Criar Conta"
+          index: 1
+      direction: DOWN
+
+- tapOn:
+      text: "Criar Conta"
+      index: 1
+
+- assertVisible: "Conta criada!"
+- tapOn: "OK"
+
+# Deve voltar para a tela de login
+- assertVisible: "Login"
