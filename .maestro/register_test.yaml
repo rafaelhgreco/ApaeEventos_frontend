@@ -9,6 +9,7 @@ appId: com.anonymous.apaeeventos
 # Caso 1: Campos Vazios
 # ========================================
 - tapOn: "Fazer Cadastro"
+- scroll
 - assertVisible: "Criar Conta"
 
 - tapOn: "Criar Conta" # Clicar no título para garantir foco fora

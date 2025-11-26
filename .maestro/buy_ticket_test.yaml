@@ -7,8 +7,10 @@ appId: com.anonymous.apaeeventos
 - launchApp
 - tapOn: "Digite seu e-mail"
 - inputText: "user@user.com"
+- scroll
 - tapOn: "Digite sua senha"
 - inputText: "Senh@123"
+- scroll
 - tapOn: "Iniciar sessão"
 - tapOn: "OK"
 

@@ -8,6 +8,7 @@ appId: com.anonymous.apaeeventos
 # ========================================
 - launchApp
 - assertVisible: "Login"
+- scroll
 
 # Tentar fazer login sem preencher nada
 - tapOn: "Iniciar sessão"
@@ -26,6 +27,7 @@ appId: com.anonymous.apaeeventos
 - tapOn: "OK"
 
 # Limpar formulário para próximo teste
+- hideKeyboard
 - tapOn: "Limpar"
 
 # ========================================
@@ -40,6 +42,7 @@ appId: com.anonymous.apaeeventos
 - tapOn: "OK"
 
 # Limpar formulário para próximo teste
+- hideKeyboard
 - tapOn: "Limpar"
 
 # ========================================
@@ -57,6 +60,7 @@ appId: com.anonymous.apaeeventos
 - tapOn: "OK"
 
 # Limpar formulário para próximo teste
+- hideKeyboard
 - tapOn: "Limpar"
 
 # ========================================
@@ -74,6 +78,7 @@ appId: com.anonymous.apaeeventos
 - tapOn: "OK"
 
 # Limpar formulário para o teste final
+- hideKeyboard
 - tapOn: "Limpar"
 
 # ========================================

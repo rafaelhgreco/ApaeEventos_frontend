@@ -6,8 +6,10 @@ appId: com.anonymous.apaeeventos
 # 1. Login como Admin
 # ========================================
 - launchApp
+- scroll
 - tapOn: "Digite seu e-mail"
 - inputText: "admin@admin.com"
+- scroll
 - tapOn: "Digite sua senha"
 - inputText: "Senh@123"
 - tapOn: "Iniciar sessão"
