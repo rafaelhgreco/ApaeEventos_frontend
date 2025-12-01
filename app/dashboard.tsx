@@ -1,4 +1,4 @@
-import { chartConfig, screenWidth, styles, themeColors } from '@/app/styles/dashboard.style';
+import { chartConfig, screenWidth, styles, themeColors } from '@/src/styles/dashboard.style';
 
 import DashboardTabs from '@/components/dashboard/DashboardTabs';
 import EventSelect from '@/components/dashboard/EventSelect';

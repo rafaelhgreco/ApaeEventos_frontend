@@ -27,9 +27,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '../../components/ATOMIC/atoms/button';
 
+import styles from '@/src/styles/eventId.style';
+import { colors } from '@/src/styles/themes';
 import { Event } from '../../src/domain/events';
-import styles from '../styles/eventId.style';
-import { colors } from '../styles/themes';
 
 // ÍCONES LUCIDE
 import {

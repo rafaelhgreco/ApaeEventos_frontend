@@ -1,8 +1,8 @@
 import React from 'react';
 import { ActivityIndicator, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { usePayment } from '../hooks/use-payment';
-import { styles } from './styles/payment.style';
-import { colors } from './styles/themes';
+import { styles } from '@/src/styles/payment.style';
+import { colors } from '@/src/styles/themes';
 
 export default function PaymentScreen() {
   const {

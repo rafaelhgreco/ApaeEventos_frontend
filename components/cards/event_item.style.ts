@@ -1,6 +1,5 @@
 import { Dimensions, StyleSheet } from "react-native";
 
-const smallPadding = 8;
 
 export const styles = StyleSheet.create({
     container: {

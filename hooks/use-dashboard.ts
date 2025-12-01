@@ -1,5 +1,4 @@
 import { getIdToken } from '@/lib/cognito';
-// eslint-disable-next-line import/no-unresolved
 import { API_BASE_URL } from '@env';
 import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';

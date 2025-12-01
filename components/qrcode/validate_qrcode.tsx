@@ -7,13 +7,13 @@ import { XCircle } from 'lucide-react-native';
 import { useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Modal, Text, TouchableOpacity, View } from 'react-native';
 
-import styles from '../../app/styles/scan_qrcode.style';
+import styles from '@/src/styles/scan_qrcode.style';
 
 export default function ValidateQRCode() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const [processing, setProcessing] = useState(false);
 
-  const [permission, requestPermission] = useCameraPermissions();
+  const [, requestPermission] = useCameraPermissions();
   const qrLock = useRef(false);
 
   async function openCamera() {

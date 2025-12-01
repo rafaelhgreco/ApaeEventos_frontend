@@ -1,5 +1,3 @@
-// lib/cognito.ts
-// eslint-disable-next-line import/no-unresolved
 import { EXPO_PUBLIC_COGNITO_CLIENT_ID, EXPO_PUBLIC_COGNITO_USER_POOL_ID } from '@env';
 
 import {

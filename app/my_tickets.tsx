@@ -1,7 +1,8 @@
 import { getIdToken } from '@/lib/cognito';
 import { listUserTickets } from '@/services/ticket_services';
+import { styles } from '@/src/styles/my_tickets.style';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -11,7 +12,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import { styles } from './styles/my_tickets.style';
 
 export default function MyTicketsScreen() {
   const [tickets, setTickets] = useState<any[]>([]);
@@ -20,17 +20,12 @@ export default function MyTicketsScreen() {
 
   const navigation = useNavigation();
   const { eventId } = useLocalSearchParams();
-  
 
   useLayoutEffect(() => {
     navigation.setOptions({ title: 'Ingressos' });
   }, [navigation]);
 
-  useEffect(() => {
-    fetchTickets();
-  }, [eventId]); // Atualiza quando o eventId mudar
-
-  const fetchTickets = async () => {
+  const fetchTickets = useCallback(async () => {
     try {
       const token = await getIdToken();
       const response = await listUserTickets(token);
@@ -49,7 +44,11 @@ export default function MyTicketsScreen() {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [eventId]);
+
+  useEffect(() => {
+    fetchTickets();
+  }, [fetchTickets]);
 
   const onRefresh = () => {
     setRefreshing(true);

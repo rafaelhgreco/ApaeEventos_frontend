@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { publicRegisterStyles as styles } from '../app/styles/public_register.style';
+import { publicRegisterStyles as styles } from '@/src/styles/public_register.style';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -70,6 +70,7 @@ export default function RegisterScreen() {
       show.remove();
       hide.remove();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* ------------------------------

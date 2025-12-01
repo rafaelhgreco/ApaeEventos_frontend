@@ -10,8 +10,8 @@ import {
   ViewStyle,
 } from 'react-native';
 
+import { colors } from '@/src/styles/themes';
 import { Eye, EyeOff } from 'lucide-react-native';
-import { colors } from '../../../app/styles/themes';
 import { styles } from './input.style';
 
 interface InputProps extends TextInputProps {
