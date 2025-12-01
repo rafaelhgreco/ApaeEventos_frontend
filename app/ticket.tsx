@@ -5,8 +5,8 @@ import { FormField } from '@/types/molecules';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Image, ScrollView, Text, View } from 'react-native';
-import { colors } from './styles/themes';
-import { styles } from './styles/ticket.style';
+import { colors } from '@/src/styles/themes';
+import { styles } from '@/src/styles/ticket.style';
 
 export default function TicketsScreen() {
   const [formData, setFormData] = useState({

@@ -3,7 +3,7 @@ import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import { getEventReport, ReportData } from "../../services/report_services";
-import { styles } from "./event_id.style";
+import { styles } from "@/src/styles/event_id.style";
 
 export default function ReportScreen() {
     const [report, setReport] = useState<ReportData | null>(null);

@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { border, paddings } from '../styles/themes';
+import { border, paddings } from '@/src/styles/themes';
 
 export const styles = StyleSheet.create({
   scrollContent: {

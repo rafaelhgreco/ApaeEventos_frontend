@@ -1,4 +1,4 @@
-import { styles } from '@/app/styles/dashboard.style';
+import { styles } from '@/src/styles/dashboard.style';
 import { Picker } from '@react-native-picker/picker';
 import React from 'react';
 import { Text, View } from 'react-native';

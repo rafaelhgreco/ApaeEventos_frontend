@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { styles } from './styles/register.style';
+import { styles } from '@/src/styles/register.style';
 
 export default function AdminRegisterScreen() {
   const navigation = useNavigation();

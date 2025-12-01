@@ -1,12 +1,10 @@
 import { StyleSheet } from "react-native";
 import {
     border,
-    borderWidth,
     colors,
     font,
-    paddings,
     shadows,
-} from "../../../app/styles/themes";
+} from "@/src/styles/themes";
 
 export const styles = StyleSheet.create({
     /* ----------------------------------------

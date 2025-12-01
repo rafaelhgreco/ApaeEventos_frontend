@@ -67,7 +67,7 @@ export interface ButtonProps extends Omit<TouchableOpacityProps, 'style'> {
   label: string;
 
   /** Visual do botão */
-  variant?: 'primary' | 'secondary' | 'outline' | 'dark' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'outline' | 'dark';
 
   /** Tamanho físico */
   size?: 'small' | 'medium' | 'large';

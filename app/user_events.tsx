@@ -17,9 +17,9 @@ import {
   View,
 } from 'react-native';
 
+import { colors } from '@/src/styles/themes';
+import { styles } from '@/src/styles/user_events.style';
 import { Event } from '../src/domain/events';
-import { colors } from './styles/themes';
-import { styles } from './styles/user_events.style';
 
 export default function UserEventsScreen() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -49,7 +49,7 @@ export default function UserEventsScreen() {
   --------------------------------------------- */
   useEffect(() => {
     fetchUserEvents();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchUserEvents = async () => {

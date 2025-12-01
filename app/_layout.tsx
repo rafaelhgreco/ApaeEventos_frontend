@@ -1,5 +1,3 @@
-// app/_layout.tsx
-// eslint-disable-next-line import/no-unresolved
 import { STRIPE_PUBLISHABLE_KEY } from '@env';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { StripeProvider } from '@stripe/stripe-react-native';
@@ -18,7 +16,6 @@ import { useAuth } from '@/hooks/use-auth';
 
 // 🔥 Chatbot imports
 import ChatbotButton from '@/components/chatbot/ChatbotButton';
-import { useChatbot } from '@/hooks/useChatbot';
 
 /* --------------------------------------------------------
     SAUDAÇÃO DINÂMICA
@@ -38,9 +35,6 @@ export default function RootLayout() {
 
   const pathname = usePathname();
   const { controller } = useAuth();
-
-  // 👉 Hook global do Chatbot
-  const chatbot = useChatbot();
 
   const isAuthRoute = pathname === '/' || pathname === '/login';
 

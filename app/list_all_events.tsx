@@ -3,7 +3,7 @@ import { getIdToken, getUserRole, userPool } from '@/lib/cognito';
 import { getUserEvents } from '@/services/event_services';
 import { useNavigation, useRouter } from 'expo-router';
 import { Calendar, DollarSign, MapPin, Ticket, User } from 'lucide-react-native';
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -14,8 +14,8 @@ import {
   View,
 } from 'react-native';
 
+import { styles } from '@/src/styles/list_all_events.style';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { styles } from './styles/list_all_events.style';
 
 export default function EventsPage() {
   const [search, setSearch] = useState('');
@@ -31,21 +31,16 @@ export default function EventsPage() {
     navigation.setOptions({ title: 'Todos os Eventos' });
   }, [navigation]);
 
-  useEffect(() => {
-    loadRole();
-    fetchEvents();
-  }, []);
-
-  const loadRole = async () => {
+  const loadRole = useCallback(async () => {
     try {
       const r = await getUserRole();
       setRole(r === 'admin' ? 'admin' : 'default');
     } catch {
       setRole('default');
     }
-  };
+  }, []);
 
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -65,7 +60,13 @@ export default function EventsPage() {
     } finally {
       setLoading(false);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    loadRole();
+    fetchEvents();
+  }, [fetchEvents, loadRole]);
 
   /* ----------------------------------
      FILTRO DE BUSCA

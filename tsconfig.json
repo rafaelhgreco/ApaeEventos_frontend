@@ -2,10 +2,18 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+
+    "baseUrl": ".",
+
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@env": ["./env.d.ts"]
     },
-    "typeRoots": ["./types", "./node_modules/@types"]
+
+    "typeRoots": ["./types", "./node_modules/@types"],
+
+    "ignoreDeprecations": "6.0"
   },
-  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "types/*.d.ts"]
+
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "types/*.d.ts", "env.d.ts"]
 }

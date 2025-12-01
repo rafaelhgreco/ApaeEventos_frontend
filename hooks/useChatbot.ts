@@ -1,10 +1,9 @@
-import { getIdToken, userPool } from "@/lib/cognito";
-// eslint-disable-next-line import/no-unresolved
-import { API_BASE_URL } from "@env";
-import axios from "axios";
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { ChatMessage } from "@/types/chatbot";
-import { FlatList } from "react-native";
+import { getIdToken, userPool } from '@/lib/cognito';
+import type { ChatMessage } from '@/types/chatbot';
+import { API_BASE_URL } from '@env';
+import axios from 'axios';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { FlatList } from 'react-native';
 
 export function useChatbot() {
   const [visible, setVisible] = useState<boolean>(false);
@@ -12,15 +11,15 @@ export function useChatbot() {
   // memo para evitar recriações
   const initialMessage = useMemo<ChatMessage>(
     () => ({
-      id: "welcome",
-      sender: "bot",
-      text: "Olá! Sou o assistente virtual da APAE. Como posso ajudar?",
+      id: 'welcome',
+      sender: 'bot',
+      text: 'Olá! Sou o assistente virtual da APAE. Como posso ajudar?',
     }),
-    []
+    [],
   );
 
   const [messages, setMessages] = useState<ChatMessage[]>([initialMessage]);
-  const [input, setInput] = useState<string>("");
+  const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
   const flatListRef = useRef<FlatList<ChatMessage> | null>(null);
@@ -54,6 +53,13 @@ export function useChatbot() {
     setVisible(false);
   }
 
+  function sanitizeMarkdown(text: string) {
+    return text
+      .replace(/^\s*[-*]\s*$/gm, '') // remove "-" ou "*" sozinhos
+      .replace(/^\s*•\s*$/gm, '') // remove bullet "•" sozinho
+      .replace(/\n{3,}/g, '\n\n'); // remove espaços demasia
+  }
+
   /**
    * ENVIO DE MENSAGEM
    */
@@ -61,11 +67,11 @@ export function useChatbot() {
     if (!input.trim()) return;
 
     const text = input.trim();
-    setInput("");
+    setInput('');
 
     const userMsg: ChatMessage = {
       id: Date.now().toString(),
-      sender: "user",
+      sender: 'user',
       text,
     };
 
@@ -74,7 +80,7 @@ export function useChatbot() {
 
     try {
       const currentUser = userPool.getCurrentUser();
-      if (!currentUser) throw new Error("Usuário não autenticado");
+      if (!currentUser) throw new Error('Usuário não autenticado');
 
       const token = await getIdToken();
 
@@ -83,21 +89,21 @@ export function useChatbot() {
         { message: text },
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
 
       const botMsg: ChatMessage = {
-        id: Date.now().toString() + "_bot",
-        sender: "bot",
-        text: response.data.reply || "Não encontrei essa informação.",
+        id: Date.now().toString() + '_bot',
+        sender: 'bot',
+        text: sanitizeMarkdown(response.data.reply || 'Não encontrei essa informação.'),
       };
 
       setMessages((prev) => [...prev, botMsg]);
     } catch {
       const errorMsg: ChatMessage = {
-        id: Date.now().toString() + "_err",
-        sender: "bot",
-        text: "Erro ao conectar ao assistente.",
+        id: Date.now().toString() + '_err',
+        sender: 'bot',
+        text: 'Erro ao conectar ao assistente.',
       };
 
       setMessages((prev) => [...prev, errorMsg]);

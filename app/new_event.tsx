@@ -77,6 +77,7 @@ export default function NewEventScreen() {
 
       setFormData((prev) => ({ ...prev, bannerUrl: upload.url }));
     } catch (err) {
+      console.log('Erro ao enviar banner:', err);
       Alert.alert('Erro', 'Falha ao enviar o banner.');
     } finally {
       setUploadingBanner(false);

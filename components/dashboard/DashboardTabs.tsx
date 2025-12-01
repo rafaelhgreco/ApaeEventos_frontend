@@ -1,4 +1,4 @@
-import { styles } from '@/app/styles/dashboard.style';
+import { styles } from '@/src/styles/dashboard.style';
 import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 

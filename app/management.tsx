@@ -2,7 +2,7 @@ import { QuickActionCard } from '@/components/ATOMIC/molecules/quick_action_card
 import { EventCarouselCard } from '@/components/cards/event_carousel_card';
 import { useEvents } from '@/hooks/useEvents';
 import { getIdToken } from '@/lib/cognito';
-import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { BarChart3, CalendarPlus, QrCode, UserPlus } from 'lucide-react-native';
 import React, { useCallback, useEffect, useRef } from 'react';
 import {
@@ -15,11 +15,10 @@ import {
   View,
 } from 'react-native';
 
+import { styles } from '@/src/styles/management.style';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { styles } from './styles/management.style';
 
 export default function ManagementScreen() {
-  const navigation = useNavigation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
