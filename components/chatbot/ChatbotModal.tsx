@@ -43,7 +43,7 @@ export default function ChatbotModal({
     return (
       <View style={[styles.messageWrapper, isUser ? styles.userAlign : styles.botAlign]}>
         <View style={[styles.bubble, isUser ? styles.userBubble : styles.botBubble]}>
-          <Markdown style={isUser ? markdownUser : markdownBot}>{item.text}</Markdown>
+          <Markdown style={(isUser ? markdownUser : markdownBot) as any}>{item.text}</Markdown>
         </View>
       </View>
     );
@@ -106,10 +106,19 @@ const markdownBot = {
     lineHeight: 21,
     flexShrink: 1,
     flexWrap: 'wrap',
+    width: '100%',
+  },
+  bullet_list: {
+    marginLeft: 12,
+    width: '100%',
+  },
+  list_item: {
+    width: '100%',
+    flexShrink: 1,
+    flexWrap: 'wrap',
   },
   strong: { fontWeight: 700 },
-  bullet_list: { marginLeft: 12 },
-} as const;
+};
 
 const markdownUser = {
   body: {
@@ -118,10 +127,19 @@ const markdownUser = {
     lineHeight: 21,
     flexShrink: 1,
     flexWrap: 'wrap',
+    width: '100%',
+  },
+  bullet_list: {
+    marginLeft: 12,
+    width: '100%',
+  },
+  list_item: {
+    width: '100%',
+    flexShrink: 1,
+    flexWrap: 'wrap',
   },
   strong: { fontWeight: 700 },
-  bullet_list: { marginLeft: 12 },
-} as const;
+};
 
 /* --------------------------------------------------------
    LAYOUT FIX — anticorte
@@ -164,12 +182,13 @@ const styles = StyleSheet.create({
   botAlign: { alignItems: 'flex-start' },
 
   bubble: {
-    maxWidth: '92%', // 🔥 FIX PRINCIPAL
+    maxWidth: '92%',
     padding: 12,
     paddingBottom: 14,
     borderRadius: 16,
+    flexShrink: 1,
+    flexWrap: 'wrap',
   },
-
   userBubble: {
     backgroundColor: '#2C3E50',
     borderBottomRightRadius: 4,
