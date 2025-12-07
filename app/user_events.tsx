@@ -147,10 +147,15 @@ export default function UserEventsScreen() {
               <Text style={styles.chipText}>{item.capacity} pessoas</Text>
             </View>
 
-            {item.ticket_price && (
+            {Number(item.ticket_price) > 0 ? (
               <View style={[styles.chip, styles.priceChip]}>
                 <DollarSign size={16} color={colors.successDark} />
                 <Text style={styles.priceChipText}>R$ {Number(item.ticket_price).toFixed(2)}</Text>
+              </View>
+            ) : (
+              <View style={[styles.chip, styles.priceChip]}>
+                <DollarSign size={16} color={colors.successDark} />
+                <Text style={styles.priceChipText}>Gratuito</Text>
               </View>
             )}
 
