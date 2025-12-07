@@ -1,12 +1,12 @@
 import GenericForm from '@/components/ATOMIC/molecules/form';
 import { getCurrentUserEmail, getIdToken } from '@/lib/cognito';
 import { getUserEvents } from '@/services/event_services';
+import { colors } from '@/src/styles/themes';
+import { styles } from '@/src/styles/ticket.style';
 import { FormField } from '@/types/molecules';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Image, ScrollView, Text, View } from 'react-native';
-import { colors } from '@/src/styles/themes';
-import { styles } from '@/src/styles/ticket.style';
 
 export default function TicketsScreen() {
   const [formData, setFormData] = useState({
@@ -104,9 +104,11 @@ export default function TicketsScreen() {
   const quantity = Number(formData.quantity) || 1;
   const total = (ticketPrice * quantity).toFixed(2);
 
+  const isFree = ticketPrice === 0;
+
   const paymentMethods = [{ label: '💳 Cartão de Crédito', value: 'credit_card' }];
 
-  const formFields: FormField[] = [
+  let formFields: FormField[] = [
     {
       type: 'input',
       key: 'quantity',
@@ -118,27 +120,33 @@ export default function TicketsScreen() {
         onChangeText: handleInputChange('quantity'),
       },
     },
-    {
+  ];
+
+  // Se NÃO for gratuito → adiciona método de pagamento
+  if (!isFree) {
+    formFields.push({
       type: 'select',
       key: 'paymentMethod',
       props: {
         title: 'Método de Pagamento',
         selectedValue: formData.paymentMethod,
-        options: paymentMethods,
+        options: [{ label: '💳 Cartão de Crédito', value: 'credit_card' }],
         onValueChange: handleInputChange('paymentMethod'),
       },
+    });
+  }
+
+  // Sempre adiciona o botão, mas muda o texto dependendo do preço
+  formFields.push({
+    type: 'button',
+    key: 'submit',
+    props: {
+      label: isFree ? 'Confirmar Inscrição' : 'Continuar para Pagamento',
+      onPress: handleProceedToPayment,
+      variant: 'primary',
+      containerStyle: { marginTop: 16 },
     },
-    {
-      type: 'button',
-      key: 'submit',
-      props: {
-        label: 'Continuar para Pagamento',
-        onPress: handleProceedToPayment,
-        variant: 'primary',
-        containerStyle: { marginTop: 16 },
-      },
-    },
-  ];
+  });
 
   return (
     <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>

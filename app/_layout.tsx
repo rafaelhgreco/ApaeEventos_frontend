@@ -36,7 +36,8 @@ export default function RootLayout() {
   const pathname = usePathname();
   const { controller } = useAuth();
 
-  const isAuthRoute = pathname === '/' || pathname === '/login';
+  const authRoutes = ['/', '/login', '/public_register'];
+  const isAuthRoute = authRoutes.includes(pathname);
 
   /* --------------------------------------------------------
       CARREGAR NOME E ATUALIZAR AUTOMATICAMENTE
