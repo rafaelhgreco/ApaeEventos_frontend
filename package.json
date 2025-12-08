@@ -22,6 +22,7 @@
         "@react-navigation/native": "^7.1.6",
         "@stripe/stripe-react-native": "^0.55.1",
         "@types/date-fns": "^2.5.3",
+        "@wuba/react-native-echarts": "^3.0.1",
         "amazon-cognito-identity-js": "^6.3.15",
         "aws-amplify": "^6.15.7",
         "date-fns": "^4.1.0",
@@ -57,7 +58,7 @@
         "react-native-svg": "^15.11.2",
         "react-native-url-polyfill": "^2.0.0",
         "react-native-web": "~0.20.0",
-        "react-native-webview": "13.13.5",
+        "react-native-webview": "^13.13.5",
         "text-encoding-polyfill": "^0.6.7",
         "victory-native": "^41.17.4",
         "zustand": "^5.0.5"

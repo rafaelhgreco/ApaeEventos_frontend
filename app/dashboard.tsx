@@ -1,25 +1,35 @@
-import { chartConfig, screenWidth, styles, themeColors } from '@/src/styles/dashboard.style';
+import { styles } from '@/src/styles/dashboard.style';
 
 import DashboardTabs from '@/components/dashboard/DashboardTabs';
 import EventSelect from '@/components/dashboard/EventSelect';
+
+import CheckinsTimelineChart from '@/components/dashboard/charts/CheckinsTimelineChart';
+import DonutChart from '@/components/dashboard/charts/DonutChart';
+
+// ⭐ NOVOS COMPONENTES MODERNOS
+import KpiCard from '@/components/dashboard/modern/KpiCard';
+import NextEventCard from '@/components/dashboard/modern/NextEventCard';
+import SystemStatus from '@/components/dashboard/modern/SystemStatus';
+import TopEventsList from '@/components/dashboard/modern/TopEventsList';
+import TrendingSparkline from '@/components/dashboard/modern/TrendingSparkline';
+
 import { useDashboard } from '@/hooks/use-dashboard';
 
 import { useNavigation } from 'expo-router';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { ActivityIndicator, SafeAreaView, ScrollView, Text, View } from 'react-native';
-import { BarChart, LineChart } from 'react-native-chart-kit';
 
 export default function DashboardScreen() {
   const [tab, setTab] = useState<'geral' | 'evento'>('geral');
 
   const {
-    chartData,
     loading,
     eventsList,
     selectedEvent,
     selectedEventId,
     setSelectedEventId,
     checkins,
+    timeline,
   } = useDashboard();
 
   const navigation = useNavigation();
@@ -28,11 +38,17 @@ export default function DashboardScreen() {
     navigation.setOptions({ title: 'Dashboard 🎛️' });
   }, [navigation]);
 
+  // Auto-seleciona um evento quando a aba muda para "evento"
   useEffect(() => {
     if (tab === 'evento' && eventsList.length > 0 && !selectedEventId) {
       setSelectedEventId(eventsList[0].event_id);
     }
-  }, [tab, eventsList, selectedEventId, setSelectedEventId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, eventsList, selectedEventId]);
+
+  const totalIssued = eventsList.reduce((acc, e) => acc + (e.tickets_issued || 0), 0);
+  const totalUsed = eventsList.reduce((acc, e) => acc + (e.tickets_used || 0), 0);
+  const globalUsageRate = totalIssued > 0 ? Math.round((totalUsed / totalIssued) * 100) : 0;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -44,44 +60,33 @@ export default function DashboardScreen() {
         {/* ================================================= */}
         {tab === 'geral' && (
           <View style={styles.container}>
-            <Text style={styles.title}>Resumo de Todos os Eventos</Text>
+            {/* ⭐ HERO DO PRÓXIMO EVENTO */}
+            <NextEventCard events={eventsList} />
 
-            {/* --- CARDS --- */}
-            <View style={styles.cardsRow}>
-              <View style={styles.cardSmall}>
-                <Text style={styles.cardLabel}>Total Emitidos</Text>
-                <Text style={styles.cardValue}>
-                  {eventsList.reduce((acc, e) => acc + (e.tickets_issued || 0), 0)}
-                </Text>
-              </View>
-
-              <View style={styles.cardSmall}>
-                <Text style={styles.cardLabel}>Total Usados</Text>
-                <Text style={styles.cardValue}>
-                  {Number(eventsList.reduce((acc, e) => acc + (e.tickets_used || 0), 0))}
-                </Text>
-              </View>
+            {/* ⭐ KPIs BONITOS */}
+            <View style={styles.kpiRow}>
+              <KpiCard label="Total Emitidos" value={totalIssued} icon="tag" />
+              <KpiCard label="Total Usados" value={totalUsed} icon="check-circle" />
+              <KpiCard label="Utilização" value={`${globalUsageRate}%`} icon="activity" />
             </View>
 
-            {/* --- GRÁFICO GLOBAL (melhor com barras) --- */}
-            <View style={styles.card}>
-              {loading || !chartData?.labels?.length ? (
+            {/* ⭐ MINI TENDÊNCIA */}
+            <TrendingSparkline events={eventsList} />
+
+            {/* ⭐ RANKING DE EVENTOS */}
+            <TopEventsList events={eventsList} />
+
+            {/* ⭐ STATUS DO SISTEMA */}
+            <SystemStatus events={eventsList} />
+
+            {/* ⭐ DONUT GLOBAL */}
+            <View style={[styles.card, { marginTop: 20 }]}>
+              {loading ? (
                 <View style={styles.placeholderContainer}>
-                  <ActivityIndicator size="large" color={themeColors.accent} />
-                  <Text style={styles.placeholderText}>Carregando dados...</Text>
+                  <ActivityIndicator size="large" color="#6D28D9" />
                 </View>
               ) : (
-                <BarChart
-                  data={chartData}
-                  width={screenWidth - 64}
-                  height={300}
-                  chartConfig={chartConfig}
-                  verticalLabelRotation={45}
-                  fromZero
-                  yAxisLabel=""
-                  yAxisSuffix=""
-                  style={styles.chart}
-                />
+                <DonutChart issued={totalIssued} used={totalUsed} />
               )}
             </View>
           </View>
@@ -92,7 +97,6 @@ export default function DashboardScreen() {
         {/* ================================================= */}
         {tab === 'evento' && selectedEvent && (
           <View style={styles.container}>
-            {/* SELETOR DE EVENTO */}
             <EventSelect
               events={eventsList}
               selectedId={selectedEventId}
@@ -101,46 +105,32 @@ export default function DashboardScreen() {
 
             <Text style={styles.title}>{selectedEvent.event_name}</Text>
 
-            {/* --- CARDS DETALHES --- */}
-            <View style={styles.cardsRow}>
-              <View style={styles.cardSmall}>
-                <Text style={styles.cardLabel}>Emitidos</Text>
-                <Text style={styles.cardValue}>{selectedEvent.tickets_issued}</Text>
-              </View>
+            {/* ⭐ KPIs MODERNOS */}
+            <View style={styles.kpiRow}>
+              <KpiCard label="Emitidos" value={selectedEvent.tickets_issued} icon="tag" />
 
-              <View style={styles.cardSmall}>
-                <Text style={styles.cardLabel}>Usados</Text>
-                <Text style={styles.cardValue}>{selectedEvent.tickets_used}</Text>
-              </View>
+              <KpiCard label="Usados" value={selectedEvent.tickets_used} icon="check-circle" />
 
-              <View style={styles.cardSmall}>
-                <Text style={styles.cardLabel}>Check-ins</Text>
-                <Text style={styles.cardValue}>{checkins?.unique_tickets_scanned || 0}</Text>
-              </View>
+              <KpiCard
+                label="Check-ins"
+                value={checkins?.unique_tickets_scanned || 0}
+                icon="user-check"
+              />
             </View>
 
-            {/* --- GRÁFICO DO EVENTO --- */}
+            {/* ⭐ GRAFICO TIMELINE CHECK-INS */}
             <View style={styles.card}>
               {loading ? (
                 <View style={styles.placeholderContainer}>
-                  <ActivityIndicator size="large" color={themeColors.accent} />
+                  <ActivityIndicator size="large" color="#6D28D9" />
                   <Text style={styles.placeholderText}>Carregando dados...</Text>
                 </View>
-              ) : !chartData.labels.length ? (
+              ) : timeline.length === 0 ? (
                 <View style={styles.placeholderContainer}>
                   <Text style={styles.placeholderText}>Nenhum check-in registrado ainda</Text>
                 </View>
               ) : (
-                <LineChart
-                  data={chartData}
-                  width={screenWidth - 64}
-                  height={300}
-                  chartConfig={chartConfig}
-                  verticalLabelRotation={45}
-                  fromZero
-                  bezier
-                  style={styles.chart}
-                />
+                <CheckinsTimelineChart timeline={timeline} />
               )}
             </View>
           </View>

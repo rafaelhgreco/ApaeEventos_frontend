@@ -1,27 +1,34 @@
 import { Dimensions, StyleSheet } from 'react-native';
 
 export const themeColors = {
-  background: '#F8FAFC', // mais clean
+  background: '#F8FAFC',
   card: '#FFFFFF',
-  primary: '#1E293B', // slate 800
-  secondary: '#64748B', // slate 500
-  accent: '#3B82F6', // azul vibrante
-  muted: '#94A3B8', // slate 400
+
+  primary: '#1E293B',
+  secondary: '#64748B',
+  accent: '#6366F1',
+
+  muted: '#94A3B8',
   border: '#E2E8F0',
 
   tabBg: '#E2E8F0',
   tabActive: '#FFFFFF',
   tabBorder: '#CBD5E1',
+
+  success: '#10B981',
+  info: '#3B82F6',
 };
 
 export const screenWidth = Dimensions.get('window').width;
 
-/* 🎨 CHART CONFIG MODERNO */
+/* ---------------------------
+   📊 Chart config visual
+---------------------------- */
 export const chartConfig = {
   backgroundGradientFrom: '#FFFFFF',
   backgroundGradientTo: '#FFFFFF',
   decimalPlaces: 0,
-  color: (opacity = 1) => `rgba(30, 41, 59, ${opacity})`, // slate 800
+  color: (opacity = 1) => `rgba(30, 41, 59, ${opacity})`,
   labelColor: (opacity = 1) => `rgba(100, 116, 139, ${opacity})`,
   strokeWidth: 3,
 
@@ -33,7 +40,7 @@ export const chartConfig = {
   propsForDots: {
     r: '4',
     strokeWidth: '2',
-    stroke: '#3B82F6',
+    stroke: '#6366F1',
   },
 
   style: {
@@ -41,6 +48,9 @@ export const chartConfig = {
   },
 };
 
+/* ---------------------------
+   🧪 MAIN STYLES
+---------------------------- */
 export const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -49,7 +59,7 @@ export const styles = StyleSheet.create({
 
   scrollView: {
     flexGrow: 1,
-    paddingBottom: 40,
+    paddingBottom: 50,
   },
 
   container: {
@@ -57,12 +67,22 @@ export const styles = StyleSheet.create({
     padding: 20,
   },
 
+  /* ---------------------------
+      TITLES
+  ---------------------------- */
   title: {
     fontSize: 26,
     fontWeight: '700',
     color: themeColors.primary,
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 12,
+  },
+
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: themeColors.primary,
+    marginBottom: 16,
   },
 
   subtitle: {
@@ -72,7 +92,9 @@ export const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
-  /* ⭐ TABS MODERNAS */
+  /* ---------------------------
+      TABS
+  ---------------------------- */
   tabsContainer: {
     flexDirection: 'row',
     backgroundColor: themeColors.tabBg,
@@ -93,9 +115,8 @@ export const styles = StyleSheet.create({
   tabActive: {
     backgroundColor: themeColors.tabActive,
     shadowColor: '#000',
-    shadowOpacity: 0.07,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
     elevation: 3,
   },
 
@@ -105,43 +126,128 @@ export const styles = StyleSheet.create({
     color: themeColors.primary,
   },
 
-  /* ⭐ CARDS MODERNOS */
+  /* ---------------------------
+      HERO CARD (Próximo Evento)
+  ---------------------------- */
+  heroCard: {
+    backgroundColor: themeColors.card,
+    borderRadius: 24,
+    paddingVertical: 24,
+    paddingHorizontal: 20,
+    marginBottom: 26,
+    shadowColor: '#000',
+    shadowOpacity: 0.09,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+
+  heroTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: themeColors.secondary,
+  },
+
+  heroEvent: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: themeColors.primary,
+    marginTop: 4,
+  },
+
+  heroDate: {
+    fontSize: 14,
+    color: themeColors.muted,
+    marginTop: 2,
+  },
+
+  heroStatsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 18,
+  },
+
+  heroStat: {
+    flex: 1,
+    alignItems: 'center',
+  },
+
+  heroStatLabel: {
+    fontSize: 13,
+    color: themeColors.secondary,
+  },
+
+  heroStatValue: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: themeColors.primary,
+    marginTop: 4,
+  },
+
+  /* ---------------------------
+      KPI CARDS
+  ---------------------------- */
+  kpiRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+
+  kpiCard: {
+    flex: 1,
+    backgroundColor: themeColors.card,
+    borderRadius: 18,
+    paddingVertical: 18,
+    paddingHorizontal: 14,
+    marginHorizontal: 6,
+    alignItems: 'center',
+
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+
+  kpiLabel: {
+    fontSize: 13,
+    color: themeColors.secondary,
+    marginTop: 4,
+  },
+
+  kpiValue: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: themeColors.primary,
+    marginTop: 6,
+  },
+
+  /* ---------------------------
+      GENERAL CARD
+  ---------------------------- */
   card: {
     backgroundColor: themeColors.card,
     borderRadius: 20,
     padding: 22,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
-    shadowRadius: 16,
+    shadowRadius: 18,
     elevation: 6,
     marginBottom: 24,
-    minHeight: 260,
   },
 
-  chart: {
-    marginVertical: 8,
-    borderRadius: 20,
+  /* ---------------------------
+      SPARKLINE
+  ---------------------------- */
+  sparkline: {
+    height: 120,
+    width: '100%',
   },
 
-  /* PLACEHOLDER */
-  placeholderContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 30,
-  },
-  placeholderText: {
-    marginTop: 16,
-    fontSize: 15,
-    color: themeColors.muted,
-    textAlign: 'center',
-  },
-
-  /* ⭐ LISTA */
+  /* ---------------------------
+      RANKING LIST
+  ---------------------------- */
   listItem: {
     paddingVertical: 14,
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     backgroundColor: themeColors.card,
     borderRadius: 14,
     borderWidth: 1,
@@ -158,41 +264,37 @@ export const styles = StyleSheet.create({
   listSub: {
     fontSize: 13,
     color: themeColors.secondary,
-    marginTop: 4,
+    marginTop: 3,
   },
 
-  /* ⭐ CARDS PEQUENOS */
-  cardsRow: {
+  /* ---------------------------
+      SYSTEM STATUS
+  ---------------------------- */
+  statusRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-
-  cardSmall: {
-    flex: 1,
-    backgroundColor: themeColors.card,
-    borderRadius: 16,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
-    marginHorizontal: 6,
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 2,
     alignItems: 'center',
+    marginBottom: 10,
   },
 
-  cardLabel: {
-    fontSize: 13,
-    color: themeColors.secondary,
-    marginBottom: 4,
-    fontWeight: '500',
-  },
-
-  cardValue: {
-    fontSize: 22,
-    fontWeight: '700',
+  statusText: {
+    marginLeft: 10,
+    fontSize: 15,
     color: themeColors.primary,
+  },
+
+  /* ---------------------------
+      PLACEHOLDER
+  ---------------------------- */
+  placeholderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 30,
+  },
+  placeholderText: {
+    marginTop: 12,
+    fontSize: 15,
+    color: themeColors.muted,
+    textAlign: 'center',
   },
 });
