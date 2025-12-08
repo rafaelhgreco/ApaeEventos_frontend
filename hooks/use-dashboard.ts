@@ -22,10 +22,9 @@ interface EventCheckins {
   last_scan_at: string | null;
 }
 
-interface ChartData {
-  labels: string[];
-  datasets: any[];
-  legend?: string[];
+interface TimelinePoint {
+  dia: string;
+  scans: number;
 }
 
 export const useDashboard = () => {
@@ -35,12 +34,7 @@ export const useDashboard = () => {
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<DashboardEventSummary | null>(null);
   const [checkins, setCheckins] = useState<EventCheckins | null>(null);
-
-  const [chartData, setChartData] = useState<ChartData>({
-    labels: [],
-    datasets: [],
-    legend: [],
-  });
+  const [timeline, setTimeline] = useState<TimelinePoint[]>([]);
 
   /**
    * ============================================================
@@ -57,7 +51,9 @@ export const useDashboard = () => {
         return;
       }
 
-      // 1 — OVERVIEW
+      /** ============================
+       * 1) OVERVIEW GLOBAL
+       * ============================ */
       const overview = await axios.get(`${API_BASE_URL}/dashboard/overview`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -65,47 +61,31 @@ export const useDashboard = () => {
       const allEvents = overview.data.events || [];
       setEventsList(allEvents);
 
-      // Se não tem evento selecionado ainda, só exibe o global
+      /** ================================================
+       * Caso ainda não tenha evento selecionado, apenas
+       * carrega visão geral e não continua.
+       * ================================================ */
       if (!selectedEventId) {
-        setChartData({
-          labels: allEvents.map((e: DashboardEventSummary) => e.event_name.substring(0, 10)),
-          datasets: [
-            {
-              data: allEvents.map((e: DashboardEventSummary) => e.tickets_issued),
-              color: () => '#16A34A',
-            },
-            {
-              data: allEvents.map((e: DashboardEventSummary) => e.tickets_used),
-              color: () => '#DC2626',
-            },
-          ],
-          legend: ['Emitidos', 'Usados'],
-        });
+        setSelectedEvent(null);
+        setCheckins(null);
+        setTimeline([]);
         return;
       }
 
-      // 2 — DETALHES DO EVENTO
+      /** ============================
+       * 2) DETALHE DO EVENTO
+       * ============================ */
       const detail = await axios.get(`${API_BASE_URL}/dashboard/events/${selectedEventId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       const summary = detail.data.sales;
       const checkinsData = detail.data.checkins;
-      const timeline = detail.data.timeline || [];
+      const timelineData = detail.data.timeline || [];
 
       setSelectedEvent(summary);
       setCheckins(checkinsData);
-
-      setChartData({
-        labels: timeline.map((d: any) => d.dia.substring(5)),
-        datasets: [
-          {
-            data: timeline.map((d: any) => d.scans),
-            color: () => '#4F46E5',
-          },
-        ],
-        legend: ['Check-ins por dia'],
-      });
+      setTimeline(timelineData);
     } catch (err) {
       console.error('❌ Erro no dashboard:', err);
     } finally {
@@ -118,8 +98,6 @@ export const useDashboard = () => {
    * EFEITOS
    * ============================================================
    */
-
-  // CARREGAR AO INICIAR
   useEffect(() => {
     loadDashboard();
   }, [loadDashboard]);
@@ -131,7 +109,7 @@ export const useDashboard = () => {
     setSelectedEventId,
     selectedEvent,
     checkins,
-    chartData,
+    timeline,
     refresh: loadDashboard,
   };
 };
